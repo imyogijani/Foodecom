@@ -1,5 +1,5 @@
 import React from "react";
-import AdminHeader from "./Header/AdminHeader";
+import { Outlet } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 
 const AdminLayout = ({ children }) => {
@@ -8,7 +8,9 @@ const AdminLayout = ({ children }) => {
       <AdminSidebar />
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {/* <AdminHeader /> */}
-        <main style={{ flexGrow: 1, padding: "20px" }}>{children}</main>
+        <main style={{ flexGrow: 1, padding: "20px" }}>
+          <Outlet />
+        </main>
       </div>
     </div>
   );

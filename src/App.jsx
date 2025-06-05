@@ -42,11 +42,13 @@ function LayoutWrapper() {
         <Route path="restaurant" element={<Restaurants />} />
         <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
-        <Route path="admin" element={<AdminLayout />} />
-        <Route path="admin/dashboard" element={<Dashboard />} />
-        <Route path="admin/products" element={<Products />} />
-        <Route path="admin/orders" element={<Orders />} />
-        <Route path="admin/users" element={<Users />} />
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="products" element={<Products />} />
+          <Route path="orders" element={<Orders />} />
+          <Route path="users" element={<Users />} />
+        </Route>
         {/* Add more routes as needed */}
       </Routes>
       {!hideLayout && <Footer />}

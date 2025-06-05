@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
 /* ==== RESET & BASE ==== */
 * {
@@ -6,14 +6,17 @@
   padding: 0;
   box-sizing: border-box;
 }
-:root{
-    --dark-blue: #03081F;
-    --yellow: #FC8A06;
+:root {
+  --dark-blue: #03081f;
+  --yellow: #fc8a06;
 }
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
-  font-family: 'Poppins', sans-serif;
-  background-color: #FFFFFF;
+  font-family: "Poppins", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
   overflow-x: hidden;
 }
 
@@ -35,13 +38,13 @@ html, body, #root {
   justify-content: space-between;
   width: 100%;
   margin: 0;
-  background-color: #FFFFFF;
+  background-color: var(--background-color);
 }
 
 .navlinks .nav-item {
   font-weight: 500;
   font-size: 15px;
-  color: #03081F;
+  color: var(--text-color);
   text-decoration: none;
   padding: 6px 18px;
   transition: 0.2s ease;
@@ -49,20 +52,20 @@ html, body, #root {
 }
 
 .navlinks .nav-item:hover {
-  background-color: #f7921e3a;
-  color: #000000;
+  background-color: var(--yellow-hover);
+  color: var(--text-color);
   border-radius: 20px;
 }
 
 .navlinks .nav-item.active {
-  background-color: #f7931e;
-  color: #FFFFFF;
+  background-color: var(--yellow);
+  color: var(--text-color-inverted);
   border-radius: 20px;
 }
 
 .reg_btn {
-  background-color: #03081F;
-  color: #FFFFFF;
+  background-color: var(--dark-blue);
+  color: var(--text-color-inverted);
   padding: 6px 18px;
   border-radius: 20px;
   text-decoration: none;
@@ -71,11 +74,11 @@ html, body, #root {
 
 /* ==== HOME SECTION ==== */
 .Home {
-  background-color: #FFFFFF;
+  background-color: var(--card-background);
   width: 98vw;
   margin: 20px auto;
   border-radius: 12px;
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--border-color);
 }
 
 .Home .Home_text {
@@ -88,6 +91,7 @@ html, body, #root {
 
 .Home .Home_text .text h2 {
   margin-bottom: 10px;
+  color: var(--text-color);
 }
 
 .Home .Home_text .person {
@@ -128,11 +132,11 @@ html, body, #root {
 .top-deals-header h3 {
   font-size: 24px;
   font-weight: 600;
-  color: #03081F;
+  color: var(--text-color);
 }
 
 .top-deals-header h3 span {
-  color: #FC8A06;
+  color: var(--yellow);
 }
 
 .category-tabs {
@@ -143,20 +147,20 @@ html, body, #root {
 
 .category-tabs button {
   padding: 8px 16px;
-  border: 1px solid #FC8A06;
+  border: 1px solid var(--yellow);
   background: transparent;
   border-radius: 25px;
   font-size: 14px;
   font-weight: 500;
-  color: #03081F;
+  color: var(--text-color);
   cursor: pointer;
   transition: 0.3s;
 }
 
 .category-tabs button.active,
 .category-tabs button:hover {
-  background-color: #FC8A06;
-  color: white;
+  background-color: var(--yellow);
+  color: var(--text-color-inverted);
 }
 
 /* === Deal Cards === */
@@ -176,14 +180,7 @@ html, body, #root {
   border-radius: 15px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  /* flex: 1;
-  min-width: 300px;
-  border-radius: 15px;
-  overflow: hidden;
-  position: relative;
-  max-height: 240px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); */
+  box-shadow: 0 4px 20px var(--shadow-color);
 }
 
 .deal-card img {
@@ -234,7 +231,7 @@ html, body, #root {
 .popular-categories h3 {
   font-size: 24px;
   font-weight: 600;
-  color: #03081F;
+  color: #03081f;
   margin-bottom: 30px;
 }
 
@@ -252,11 +249,11 @@ html, body, #root {
   /* text-align: center; */
   transition: transform 0.3s;
   cursor: pointer;
-  border: 1px solid #F5F5F5;
-  background: #F5F5F5;
+  border: 1px solid #f5f5f5;
+  background: #f5f5f5;
   border-radius: 12px;
 }
-.category_text{
+.category_text {
   padding-left: min(12px, 3%);
   padding-bottom: min(12px, 3%);
 }
@@ -274,7 +271,7 @@ html, body, #root {
 
 .category-card h5 {
   font-size: 15px;
-  color: #03081F;
+  color: #03081f;
   margin: 5px 0;
   font-weight: 500;
 }
@@ -332,7 +329,7 @@ html, body, #root {
 .restaurant-card p {
   font-size: 13px;
   font-weight: 500;
-  color: #FFFFFF;
+  color: #ffffff;
   margin: 0;
   padding: 6px 2px 6px 4px;
   border-radius: 0px 0px 12px 12px;
