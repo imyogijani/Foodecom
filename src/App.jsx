@@ -23,6 +23,7 @@ function LayoutWrapper() {
   // Define paths where you DON'T want header, navbar, footer
   const hideLayoutPaths = [
     "/login",
+    "/admin",
     "/admin/dashboard",
     "/admin/products",
     "/admin/orders",
@@ -42,12 +43,12 @@ function LayoutWrapper() {
         <Route path="restaurant" element={<Restaurants />} />
         <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="products" element={<Products />} />
-          <Route path="orders" element={<Orders />} />
-          <Route path="users" element={<Users />} />
-        </Route>
+        <Route path="admin" element={<AdminLayout />} />
+        <Route path="admin/dashboard" element={<Dashboard />} />
+        <Route path="admin/products" element={<Products />} />
+        <Route path="admin/orders" element={<Orders />} />
+        <Route path="admin/users" element={<Users />} />
+        {/* Add more routes as needed */}
       </Routes>
       {!hideLayout && <Footer />}
     </>

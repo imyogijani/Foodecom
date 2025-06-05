@@ -1,11 +1,11 @@
 import React from "react";
-import AdminHeader from "./Header/AdminHeader";
+// import AdminHeader from "./Header/AdminHeader";
 import AdminSidebar from "./AdminSidebar";
 
 const AdminLayout = ({ children }) => {
   return (
     <div>
-      <AdminHeader />
+      {/* <AdminHeader /> */}
       <AdminSidebar />
       <main>{children}</main>
     </div>
