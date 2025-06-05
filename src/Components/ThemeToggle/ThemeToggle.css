@@ -1,0 +1,55 @@
+.toggle-switch {
+  width: 60px;
+  height: 30px;
+  background-color: var(--toggle-bg);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch[data-theme="light"] {
+  justify-content: flex-start;
+}
+
+.toggle-switch[data-theme="dark"] {
+  justify-content: flex-end;
+}
+
+.toggle-handle {
+  width: 26px;
+  height: 26px;
+  background-color: var(--toggle-handle-bg);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--toggle-icon-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Theme specific variables */
+:root {
+  --toggle-bg-light: #ccc;
+  --toggle-handle-bg-light: #fff;
+  --toggle-icon-color-light: #f39c12; /* Sun color */
+
+  --toggle-bg-dark: #34495e;
+  --toggle-handle-bg-dark: #fff;
+  --toggle-icon-color-dark: #3498db; /* Moon color */
+}
+
+[data-theme="light"] {
+  --toggle-bg: var(--toggle-bg-light);
+  --toggle-handle-bg: var(--toggle-handle-bg-light);
+  --toggle-icon-color: var(--toggle-icon-color-light);
+}
+
+[data-theme="dark"] {
+  --toggle-bg: var(--toggle-bg-dark);
+  --toggle-handle-bg: var(--toggle-handle-bg-dark);
+  --toggle-icon-color: var(--toggle-icon-color-dark);
+}

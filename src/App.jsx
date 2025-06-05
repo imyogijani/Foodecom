@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import "./App.css";
 import Home from "./Pages/Home/index";
-import Header from "./Components/Header/index";
+
 import Navbar from "./Pages/Home/Navbar";
 import Menu from "./Pages/Home/Menu";
 import Offers from "./Pages/Home/Offers";
@@ -34,7 +34,6 @@ function LayoutWrapper() {
 
   return (
     <>
-      {!hideLayout && <Header />}
       {!hideLayout && <Navbar />}
       <Routes>
         <Route path="/" element={<Home />} />

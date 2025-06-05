@@ -1,0 +1,36 @@
+header {
+  background-color: var(--dark-blue);
+  color: var(--text-color-header);
+  padding: 15px 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+header nav ul li {
+  margin-right: 20px;
+}
+
+header nav ul li a {
+  color: var(--text-color-header);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+header nav ul li a:hover {
+  color: var(--yellow);
+}
+
+header button {
+  padding: 8px 12px;
+  font-size: 0.9em;
+}
