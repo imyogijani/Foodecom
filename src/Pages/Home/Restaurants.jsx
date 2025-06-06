@@ -7,8 +7,17 @@ import burger1 from "../../images/burger1.png";
 // import burger2 from "../../images/burger2.png";
 
 const categories = [
-  "Offers", "Burgers", "Fries", "Snacks", "Salads", "Cold drinks",
-  "Happy Meal®", "Desserts", "Hot drinks", "Sauces", "Orbit®"
+  "Offers",
+  "Burgers",
+  "Fries",
+  "Snacks",
+  "Salads",
+  "Cold drinks",
+  "Happy Meal®",
+  "Desserts",
+  "Hot drinks",
+  "Sauces",
+  "Orbit®",
 ];
 
 const offerItems = [
@@ -82,14 +91,14 @@ export default function Restaurants() {
           <div className="burgers-grid">
             {burgerItems.map((burger) => (
               <div className="burger-card" key={burger.id}>
+                <div className="burger-img-wrap">
+                  <img src={burger.image} alt={burger.title} />
+                  <span className="plus-icon">+</span>
+                </div>
                 <div className="burger-info">
                   <h4>{burger.title}</h4>
                   <p>{burger.desc}</p>
                   <span className="price">{burger.price}</span>
-                </div>
-                <div className="burger-img-wrap">
-                  <img src={burger.image} alt={burger.title} />
-                  <span className="plus-icon">+</span>
                 </div>
               </div>
             ))}
