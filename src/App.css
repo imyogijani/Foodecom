@@ -44,14 +44,14 @@ body,
 .navbar .logo a {
   font-weight: bold;
   font-size: 32px;
-  color: var(--admin-sidebar-logo-color);
+  color: var(--logo-color);
   text-decoration: none;
 }
 
 .navlinks .nav-item {
   font-weight: 500;
   font-size: 15px;
-  color: var(--text-color);
+  color: var(--logo-color);
   text-decoration: none;
   padding: 6px 18px;
   transition: 0.2s ease;
@@ -60,13 +60,13 @@ body,
 
 .navlinks .nav-item:hover {
   background-color: var(--yellow-hover);
-  color: var(--text-color);
+  color: var(--logo-color);
   border-radius: 20px;
 }
 
 .navlinks .nav-item.active {
   background-color: var(--card-background);
-  color: var(--text-color);
+  color: var(--logo-color);
   border-radius: 20px;
 }
 
@@ -97,8 +97,8 @@ body,
 }
 
 .Home .Home_text .text h2 {
+  color: var(--logo-color);
   margin-bottom: 10px;
-  color: var(--text-color);
 }
 
 .Home .Home_text .person {
@@ -139,7 +139,7 @@ body,
 .top-deals-header h3 {
   font-size: 32px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--logo-color);
 }
 
 .top-deals-header h3 span {
@@ -159,7 +159,7 @@ body,
   border-radius: 25px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--logo-color);
   cursor: pointer;
   transition: 0.3s;
 }
@@ -167,7 +167,7 @@ body,
 .category-tabs button.active,
 .category-tabs button:hover {
   background-color: var(--card-background);
-  color: var(--text-color);
+  color: var(--logo-color);
 }
 
 /* === Deal Cards === */
@@ -238,7 +238,7 @@ body,
 .popular-categories h3 {
   font-size: 32px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--logo-color);
   margin-bottom: 30px;
 }
 
@@ -257,12 +257,13 @@ body,
   transition: transform 0.3s;
   cursor: pointer;
   border: 1px solid #f5f5f5;
-  background: #f5f5f5;
+  /* background: #f5f5f5; */
   border-radius: 12px;
 }
 .category_text {
   padding-left: min(12px, 3%);
   padding-bottom: min(12px, 3%);
+  color: var(--logo-color);
 }
 .category-card:hover {
   transform: translateY(-4px);
@@ -278,7 +279,7 @@ body,
 
 .category-card h5 {
   font-size: 15px;
-  color: var(--text-color);
+  color: var(--logo-color);
   margin: 5px 0;
   font-weight: 500;
 }
@@ -301,7 +302,7 @@ body,
 .popular_restaurants h3 {
   font-size: 32px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--logo-color);
   margin-bottom: 24px;
 }
 
@@ -337,7 +338,7 @@ body,
 .restaurant-card p {
   font-size: 13px;
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--logo-color);
   margin: 0;
   padding: 6px 2px 6px 4px;
   border-radius: 0px 0px 12px 12px;

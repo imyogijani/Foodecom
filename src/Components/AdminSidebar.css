@@ -27,17 +27,26 @@ aside ul li {
 }
 
 aside ul li a {
-  display: block;
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  padding: 12px 10px;
   color: var(--text-color-sidebar);
   text-decoration: none;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1.1em;
 }
 
-aside ul li a:hover {
+aside ul li a svg {
+  margin-right: 10px;
+  font-size: 1.3em;
+}
+
+aside ul li a:hover,
+aside ul li a.active {
   background-color: var(--yellow);
   color: var(--admin-sidebar-logo-color);
+  font-weight: bold;
 }
 
 aside button {

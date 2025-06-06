@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaHome, FaBox, FaShoppingCart, FaUsers } from "react-icons/fa";
 import { useTheme } from "../ThemeContext";
 import "./AdminSidebar.css";
@@ -13,18 +13,24 @@ const adminLinks = [
 
 const AdminSidebar = () => {
   const { theme } = useTheme();
+  const location = useLocation();
+
   return (
-    <aside>
+    <aside className={`sidebar ${theme}`}>
       <div className="admin-sidebar">
-        <h2 style={{ color: "white", marginBottom: "20px" }}>
-          E-Mall World Admin
-        </h2>
+        <h2 className="admin-title">E-Mall World Admin</h2>
         <nav>
-          <ul>
+          <ul className="admin-nav-list">
             {adminLinks.map((link) => (
               <li key={link.path}>
-                <Link to={link.path}>
-                  {link.icon} {link.name}
+                <Link
+                  to={link.path}
+                  className={`admin-nav-link ${
+                    location.pathname.includes(link.path) ? "active" : ""
+                  }`}
+                >
+                  <span className="admin-nav-icon">{link.icon}</span>
+                  <span className="admin-nav-text">{link.name}</span>
                 </Link>
               </li>
             ))}
