@@ -16,7 +16,9 @@ const AdminSidebar = () => {
   return (
     <aside>
       <div className="admin-sidebar">
-        <h2 style={{ color: "white", marginBottom: "20px" }}>Foodecom Admin</h2>
+        <h2 style={{ color: "white", marginBottom: "20px" }}>
+          E-Mall World Admin
+        </h2>
         <nav>
           <ul>
             {adminLinks.map((link) => (

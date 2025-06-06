@@ -9,6 +9,14 @@ aside {
   justify-content: space-between;
 }
 
+aside h2 {
+  font-weight: bold;
+  font-size: 32px;
+  color: var(--admin-sidebar-logo-color);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
 aside ul {
   list-style: none;
   padding: 0;
@@ -29,7 +37,7 @@ aside ul li a {
 
 aside ul li a:hover {
   background-color: var(--yellow);
-  color: white;
+  color: var(--admin-sidebar-logo-color);
 }
 
 aside button {

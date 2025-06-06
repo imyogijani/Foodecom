@@ -1,17 +1,13 @@
-:root{
-    --dark-blue: #03081F;
-    --yellow: #FC8A06;
-}
 .footer {
-  background-color: #f9f9f9;
-  color: #333;
+  background-color: var(--background-color);
+  color: var(--text-color);
   /* padding: 40px 20px 20px; */
   font-family: Arial, sans-serif;
   border-top: 1px solid #ddd;
 }
 
 .footer-container {
-    /* display: flex;
+  /* display: flex;
     flex-wrap: wrap; */
 
   padding: min(2em, 8%);
@@ -31,37 +27,27 @@
   font-size: 24px;
   margin-bottom: 10px;
 }
-.logo-img {
-  height: 40px; /* adjust size as needed */
-  object-fit: contain;
-}
-
-.app-links img {
-  height: 40px;
-  margin-right: 10px;
-}
 
 .footer-center {
   flex: 1;
   /* min-width: 250px; */
   /* margin: 20px 0; */
 
-   display: flex;
+  display: flex;
   flex-direction: column;
   /* align-items: center; */
 }
-.footer-center h4{
+.footer-center h4 {
   font-weight: bold;
   font-size: 1.2rem;
-  color: var(--dark-blue);
+  color: var(--text-color);
 }
-
 
 .subscribe {
   display: flex;
   /* border-radius: 999px; */
   overflow: hidden;
-  background-color: #eaeaea;
+  background-color: var(--card-background);
   max-width: 22vw;
   margin: 10px 0;
   border-radius: 25px;
@@ -78,7 +64,7 @@
 }
 
 .subscribe button {
-   border: none;
+  border: none;
   /* padding: 12px 24px; */
   padding-left: min(10px, 5%);
   padding-right: min(10px, 5%);
@@ -97,7 +83,7 @@
 .social-icons i {
   font-size: 20px;
   margin-right: 10px;
-  color: #333;
+  color: var(--text-color);
 }
 
 .footer-right {
@@ -126,14 +112,14 @@
 }
 
 .footer-section a {
-  color: #000000;
+  color: var(--text-color);
   text-decoration: none;
   font-size: 15px;
 }
 
 .footer-bottom {
-    background-color: var(--dark-blue);
-  border-top: 1px solid #ddd;
+  background-color: var(--dark-blue);
+  border-top: 1px solid var(--border-color);
   /* margin-top: 30px; */
   padding-top: min(12px, 2vw);
   padding-left: min(4em, 2%);
@@ -143,12 +129,12 @@
   flex-wrap: wrap;
   justify-content: space-between;
   /* align-items: center; */
-  color: #FFFF;
+  color: var(--text-color-inverted);
 }
 
 .bottom-links a {
   margin-left: 15px;
-  color: #FFFFFF;
+  color: var(--text-color-inverted);
   text-decoration: none;
   font-size: 15px;
 }

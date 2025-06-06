@@ -41,6 +41,13 @@ body,
   background-color: var(--background-color);
 }
 
+.navbar .logo a {
+  font-weight: bold;
+  font-size: 32px;
+  color: var(--admin-sidebar-logo-color);
+  text-decoration: none;
+}
+
 .navlinks .nav-item {
   font-weight: 500;
   font-size: 15px;
@@ -58,14 +65,14 @@ body,
 }
 
 .navlinks .nav-item.active {
-  background-color: var(--yellow);
-  color: var(--text-color-inverted);
+  background-color: var(--card-background);
+  color: var(--text-color);
   border-radius: 20px;
 }
 
 .reg_btn {
   background-color: var(--dark-blue);
-  color: var(--text-color-inverted);
+  color: var(--text-color);
   padding: 6px 18px;
   border-radius: 20px;
   text-decoration: none;
@@ -130,7 +137,7 @@ body,
 }
 
 .top-deals-header h3 {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
   color: var(--text-color);
 }
@@ -159,8 +166,8 @@ body,
 
 .category-tabs button.active,
 .category-tabs button:hover {
-  background-color: var(--yellow);
-  color: var(--text-color-inverted);
+  background-color: var(--card-background);
+  color: var(--text-color);
 }
 
 /* === Deal Cards === */
@@ -229,9 +236,9 @@ body,
 }
 
 .popular-categories h3 {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
-  color: #03081f;
+  color: var(--text-color);
   margin-bottom: 30px;
 }
 
@@ -271,7 +278,7 @@ body,
 
 .category-card h5 {
   font-size: 15px;
-  color: #03081f;
+  color: var(--text-color);
   margin: 5px 0;
   font-weight: 500;
 }
@@ -284,16 +291,17 @@ body,
 /* ===== Popular restuarants ==== */
 .popular_restaurants {
   /* padding: 40px 20px; */
-  background-color: #ffffff;
+  background-color: var(--card-background);
   margin: 40px auto;
   max-width: 1200px;
-  padding: 0 20px;
+  padding: 2rem 0;
+  text-align: center;
 }
 
 .popular_restaurants h3 {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 600;
-  color: #000000;
+  color: var(--text-color);
   margin-bottom: 24px;
 }
 
@@ -305,7 +313,7 @@ body,
 }
 
 .restaurant-card {
-  background-color: var(--yellow);
+  background-color: var(--card-background);
   /* width: 110px; */
   /* padding: 16px 12px; */
   border-radius: 12px;
@@ -329,7 +337,7 @@ body,
 .restaurant-card p {
   font-size: 13px;
   font-weight: 500;
-  color: #ffffff;
+  color: var(--text-color);
   margin: 0;
   padding: 6px 2px 6px 4px;
   border-radius: 0px 0px 12px 12px;

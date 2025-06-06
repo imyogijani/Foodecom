@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../../images/LOGO1.png";
+
 import { Link, NavLink, useLocation } from "react-router-dom";
 import usr from "../../images/MaleUser.png";
 import ThemeToggle from "../../Components/ThemeToggle/ThemeToggle";
@@ -21,9 +21,7 @@ export default function Navbar() {
       <div className="navbar">
         <div className="row">
           <div className="logo">
-            <Link to="/">
-              <img src={Logo} alt="Logo" />
-            </Link>
+            <Link to="/">E-Mall World</Link>
           </div>
           <div className="navbar-container">
             <div className="navlinks d-flex align-items-center gap-4">

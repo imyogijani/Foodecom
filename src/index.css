@@ -14,6 +14,7 @@
   --yellow-hover: #f7921e3a;
   --text-color-inverted: #ffffff;
   --shadow-color: rgba(0, 0, 0, 0.08);
+  --admin-sidebar-logo-color: var(--text-color);
 }
 
 [data-theme="dark"] {
@@ -32,6 +33,7 @@
   --yellow-hover: #f7921e3a;
   --text-color-inverted: #ffffff;
   --shadow-color: rgba(0, 0, 0, 0.3);
+  --admin-sidebar-logo-color: white;
 }
 
 body {
