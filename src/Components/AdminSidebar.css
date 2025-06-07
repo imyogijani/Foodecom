@@ -46,7 +46,8 @@ aside ul li a:hover,
 aside ul li a.active {
   background-color: var(--yellow);
   color: var(--admin-sidebar-logo-color);
-  font-weight: bold;
+  transition: background-color 0.5s ease, color 0.5s ease;
+  text-decoration: none; /* remove underline */
 }
 
 aside button {

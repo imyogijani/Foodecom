@@ -1,3 +1,4 @@
+import "../../App.css";
 import React from "react";
 import {
   LineChart,
@@ -22,12 +23,14 @@ const data = [
 
 const Dashboard = () => {
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Admin Dashboard</h1>
-      <p>Welcome to the admin panel!</p>
+    <div className="admin-dashboard">
+      <div className="admin-header">
+        <h1>Admin Dashboard</h1>
+        <p className="admin-subtitle">Manage your application settings</p>
+      </div>
 
-      <div style={{ width: "100%", height: 300, marginTop: "40px" }}>
-        <h2>Sales Overview</h2>
+      <div className="chart-container">
+        <h2 className="sales-overview-title">Sales Overview</h2>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -38,9 +41,9 @@ const Dashboard = () => {
               bottom: 5,
             }}
           >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
+            <XAxis dataKey="name" stroke="var(--text-color-dark)" />
+            <YAxis stroke="var(--text-color-dark)" />
             <Tooltip />
             <Legend />
             <Line

@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { FaSun, FaMoon } from "react-icons/fa";
 import "./ThemeToggle.css";
 

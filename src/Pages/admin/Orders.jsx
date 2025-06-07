@@ -1,10 +1,14 @@
 import React from "react";
+import "../../App.css";
 
 const Orders = () => {
   return (
-    <div>
-      <h1>Orders Management</h1>
-      <p>Manage customer orders here.</p>
+    <div className="admin-orders">
+      <div className="admin-header">
+        <h1>Orders</h1>
+      </div>
+      <p>Manage your orders here.</p>
+      {/* Add your orders content here */}
     </div>
   );
 };

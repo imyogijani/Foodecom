@@ -353,3 +353,43 @@ footer {
   font-size: 14px;
   margin-top: auto;
 }
+
+/* Dashboard */
+
+.admin-dashboard {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header h1 {
+  margin-bottom: 20px;
+  color: #03081f;
+  font-weight: 900;
+}
+
+.admin-dashboard,
+.admin-products,
+.admin-orders,
+.admin-users {
+  padding: 20px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.admin-header {
+  margin-bottom: 20px;
+}
+
+.admin-subtitle {
+  color: var(--text-color-dark);
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+  margin-top: 40px;
+}
+
+.sales-overview-title {
+  color: var(--text-color-dark);
+}
