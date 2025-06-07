@@ -118,8 +118,8 @@ body,
   display: none;
 }
 .deal-cards-wrapper {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 /* === Top Deals Section === */
 .top-deals-container {
