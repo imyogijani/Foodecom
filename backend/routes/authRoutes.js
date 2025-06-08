@@ -1,4 +1,3 @@
-// const express = require("express");
 import express from "express";
 const {
   registerController,
@@ -16,5 +15,4 @@ router.post("/login", loginController);
 //get current user || GET
 router.get("/current-user", authMiddleware, currentuserConroller);
 
-// module.exports = router;
 export default router;

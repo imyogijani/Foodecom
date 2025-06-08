@@ -104,4 +104,3 @@ const currentuserConroller = async (req, res) => {
   }
 };
 export { registerController, loginController, currentuserConroller };
-// module.exports = { registerController, loginController, currentuserConroller };
