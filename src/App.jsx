@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
@@ -12,10 +13,12 @@ import Track from "./Pages/Home/Track";
 import Footer from "./Components/Footer/index";
 import Login from "./Components/Login/registration";
 import AdminLayout from "./Components/AdminLayout";
+import SellerLayout from "./Components/SellerLayout";
 import Dashboard from "./Pages/admin/Dashboard";
 import Products from "./Pages/admin/Products";
 import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
+import SellerDashboard from "./Pages/Seller/SellerDashboard";
 
 function LayoutWrapper() {
   const location = useLocation();
@@ -28,6 +31,8 @@ function LayoutWrapper() {
     "/admin/products",
     "/admin/orders",
     "/admin/users",
+    "/seller",
+    "/seller/dashboard",
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
@@ -48,6 +53,10 @@ function LayoutWrapper() {
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
+        </Route>
+        <Route path="seller" element={<SellerLayout />}>
+          <Route index element={<SellerDashboard />} />
+          <Route path="dashboard" element={<SellerDashboard />} />
         </Route>
         {/* Add more routes as needed */}
       </Routes>

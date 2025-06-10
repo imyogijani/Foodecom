@@ -4,6 +4,12 @@ import { Link } from "react-router-dom";
 import { useTheme } from "../../ThemeContext";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
+import AdminHeader from "./AdminHeader";
+import SellerHeader from "./SellerHeader";
+
+export { AdminHeader, SellerHeader };
+
+// Original Header component (if still needed elsewhere)
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   return (

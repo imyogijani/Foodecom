@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { FaSun, FaMoon } from "react-icons/fa";
+import { motion } from "framer-motion";
 import "./ThemeToggle.css";
 
 const ThemeToggle = ({ theme, toggleTheme }) => {
