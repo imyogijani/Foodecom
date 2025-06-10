@@ -1,18 +1,16 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import SellerSidebar from "./SellerSidebar";
-import { SellerHeader } from "./Header";
-import Footer from "./Footer";
 
 const SellerLayout = () => {
   return (
-    <div className="admin-layout">
-      {/* <SellerHeader /> */}
+    <div style={{ display: "flex", minHeight: "100vh" }}>
       <SellerSidebar />
-      <main className="admin-content">
-        <Outlet />
-      </main>
-      {/* <Footer /> */}
+      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        <main style={{ flexGrow: 1, padding: "20px" }}>
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 };

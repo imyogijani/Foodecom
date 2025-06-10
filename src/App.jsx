@@ -19,6 +19,10 @@ import Products from "./Pages/admin/Products";
 import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
+import SellerProducts from "./Pages/Seller/SellerProducts";
+import AddProduct from "./Pages/Seller/AddProduct";
+import SellerOrders from "./Pages/Seller/SellerOrders";
+import SellerCustomers from "./Pages/Seller/SellerCustomers";
 
 function LayoutWrapper() {
   const location = useLocation();
@@ -33,6 +37,10 @@ function LayoutWrapper() {
     "/admin/users",
     "/seller",
     "/seller/dashboard",
+    "/seller/products/all",
+    "/seller/products/add",
+    "/seller/orders",
+    "/seller/customers"
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
@@ -57,6 +65,10 @@ function LayoutWrapper() {
         <Route path="seller" element={<SellerLayout />}>
           <Route index element={<SellerDashboard />} />
           <Route path="dashboard" element={<SellerDashboard />} />
+          <Route path="products/all" element={<SellerProducts />} />
+          <Route path="products/add" element={<AddProduct />} />
+          <Route path="orders" element={<SellerOrders />} />
+          <Route path="customers" element={<SellerCustomers />} />
         </Route>
         {/* Add more routes as needed */}
       </Routes>

@@ -1,0 +1,187 @@
+/* Product Listing Container */
+.products-container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #222;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Table Container */
+.products-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+/* Product Table */
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.products-table th,
+.products-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: #222;
+  font-weight: 500;
+}
+
+.products-table th {
+  background-color: #0d1b2a;
+  color: #fff;
+  font-weight: 600;
+}
+
+.products-table tr:hover {
+  background-color: #f2f2f2;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+.status-badge.in-stock {
+  background-color: #e6f4ea;
+  color: #1e7e34;
+}
+
+.status-badge.out-of-stock {
+  background-color: #fbe9e7;
+  color: #d32f2f;
+}
+
+.status-badge.low-stock {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+/* Action Buttons */
+.action-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85em;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.action-btn.edit {
+  background-color: #0d1b2a;
+  color: white;
+}
+
+.action-btn.delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.action-btn:hover {
+  opacity: 0.9;
+}
+
+/* Add Product Form */
+.add-product-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  color: #222;
+}
+
+/* Form Elements */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  background-color: #fff;
+  color: #222;
+  font-weight: 500;
+}
+
+.form-group select option {
+  background-color: #fff;
+  color: #222;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Form Buttons */
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.submit-btn {
+  background-color: #0d1b2a;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.submit-btn:hover,
+.cancel-btn:hover {
+  opacity: 0.9;
+}
+
+/* File Input */
+.form-group input[type="file"] {
+  padding: 8px;
+  border: 1px dashed #ccc;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #0d1b2a;
+}
