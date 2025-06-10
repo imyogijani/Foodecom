@@ -1,7 +1,8 @@
 // const userModel = require("../models/userModel");
 // const bcrypt = require("bcryptjs");
-import { bcrypt } from "bcryptjs";
+import bcrypt  from "bcryptjs";
 import jwt from "jsonwebtoken";
+import userModel from "../models/userModel.js"; // Importing user model
 // const jwt = require("jsonwebtoken");
 
 //registration
@@ -11,7 +12,7 @@ const registerController = async (req, res) => {
     //validation
     if (exisitingUser) {
       return res.status(200).send({
-        success: false,
+        success: false,                                                                                                                                                                                                                                                                                                                                                                   
         message: "User is already exists",
       });
     }

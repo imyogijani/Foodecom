@@ -7,7 +7,6 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 //dot config
-// dotenv.config({path: ""})
 dotenv.config();
 
 import connectDB from "./config/db.js";
