@@ -1,6 +1,16 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaBox, FaShoppingCart, FaUsers } from "react-icons/fa";
+import {
+  FaHome,
+  FaBox,
+  FaShoppingCart,
+  FaUsers,
+  FaChartBar,
+  FaStore,
+  FaUserCheck,
+  FaTruck,
+  FaCreditCard,
+} from "react-icons/fa";
 import { useTheme } from "../ThemeContext";
 import "./AdminSidebar.css";
 
@@ -9,6 +19,15 @@ const adminLinks = [
   { name: "Products", path: "products", icon: <FaBox /> },
   { name: "Orders", path: "orders", icon: <FaShoppingCart /> },
   { name: "Users", path: "users", icon: <FaUsers /> },
+  { name: "Analytics Dashboard", path: "analytics", icon: <FaChartBar /> },
+  { name: "Seller Analytics", path: "seller-analytics", icon: <FaStore /> },
+  {
+    name: "User Subscriptions",
+    path: "user-subscriptions",
+    icon: <FaUserCheck />,
+  },
+  { name: "Delivery Config", path: "delivery-config", icon: <FaTruck /> },
+  { name: "Payment Config", path: "payment-config", icon: <FaCreditCard /> },
 ];
 
 const AdminSidebar = () => {
