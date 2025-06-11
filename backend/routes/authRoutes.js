@@ -1,18 +1,21 @@
 import express from "express";
-const {
+import {
   registerController,
   loginController,
-  currentuserConroller,
-} = require("../controllers/authController");
-const authMiddleware = require("../middlewares/authMiddleware");
+  currentUserController,
+} from "../controllers/authController.js";
+import authMiddleware from "../middlewares/authMiddleware.js";
+
 const router = express.Router();
 
-//route
-//register || POST
+// Routes
+// Register || POST
 router.post("/register", registerController);
-//Login || POST
+
+// Login || POST
 router.post("/login", loginController);
-//get current user || GET
-router.get("/current-user", authMiddleware, currentuserConroller);
+
+// Get current user || GET
+router.get("/current-user", authMiddleware, currentUserController);
 
 export default router;

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import ProtectedRoute from "./Components/ProtectedRoute";
 import "./App.css";
 import Home from "./Pages/Home/index";
 
@@ -11,7 +12,8 @@ import Offers from "./Pages/Home/Offers";
 import Restaurants from "./Pages/Home/Restaurants";
 import Track from "./Pages/Home/Track";
 import Footer from "./Components/Footer/index";
-import Login from "./Components/Login/registration";
+import Login from "./Components/Login/Login";
+import Register from "./Components/Login/Register";
 import AdminLayout from "./Components/AdminLayout";
 import SellerLayout from "./Components/SellerLayout";
 import Dashboard from "./Pages/admin/Dashboard";
@@ -30,6 +32,7 @@ function LayoutWrapper() {
   // Define paths where you DON'T want header, navbar, footer
   const hideLayoutPaths = [
     "/login",
+    "/register",
     "/admin",
     "/admin/dashboard",
     "/admin/products",
@@ -55,14 +58,30 @@ function LayoutWrapper() {
         <Route path="restaurant" element={<Restaurants />} />
         <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
-        <Route path="admin" element={<AdminLayout />}>
+        <Route path="register" element={<Register />} />
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
         </Route>
-        <Route path="seller" element={<SellerLayout />}>
+
+        <Route
+          path="seller"
+          element={
+            <ProtectedRoute allowedRoles={["shopowner"]}>
+              <SellerLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<SellerDashboard />} />
           <Route path="dashboard" element={<SellerDashboard />} />
           <Route path="products/all" element={<SellerProducts />} />
