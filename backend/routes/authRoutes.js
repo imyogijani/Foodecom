@@ -2,7 +2,7 @@ import express from "express";
 import {
   registerController,
   loginController,
-  currentuserConroller,
+  currentUserController,
 } from "../controllers/authController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
@@ -16,6 +16,6 @@ router.post("/register", registerController);
 router.post("/login", loginController);
 
 // Get current user || GET
-router.get("/current-user", authMiddleware, currentuserConroller);
+router.get("/current-user", authMiddleware, currentUserController);
 
 export default router;

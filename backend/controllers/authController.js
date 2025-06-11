@@ -1,25 +1,22 @@
-// const userModel = require("../models/userModel");
-// const bcrypt = require("bcryptjs");
-import bcrypt  from "bcryptjs";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import userModel from "../models/userModel.js"; // Importing user model
-// const jwt = require("jsonwebtoken");
+import userModel from "../models/userModel.js";
 
 //registration
 const registerController = async (req, res) => {
   try {
-    const exisitingUser = await userModel.findOne({ email: req.body.email });
+    const existingUser = await userModel.findOne({ email: req.body.email });
     //validation
-    if (exisitingUser) {
-      return res.status(200).send({
+    if (existingUser) {
+      return res.status(409).send({
         success: false,                                                                                                                                                                                                                                                                                                                                                                   
         message: "User is already exists",
       });
     }
     //hash Password
     const salt = await bcrypt.genSalt(10);
-    const hasedPassword = await bcrypt.hash(req.body.password, salt);
-    req.body.password = hasedPassword;
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    req.body.password = hashedPassword;
     //rest data
     const user = new userModel(req.body);
     await user.save();
@@ -67,7 +64,7 @@ const loginController = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECERT, {
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     return res.status(200).send({
@@ -87,9 +84,9 @@ const loginController = async (req, res) => {
 };
 
 //current user controller
-const currentuserConroller = async (req, res) => {
+const currentUserController = async (req, res) => {
   try {
-    const user = await userModel.findOne({ _id: req.body.userId });
+    const user = await userModel.findById(req.userId);
     return res.status(200).send({
       success: true,
       message: "User Fetched succesfully🎉",
@@ -104,4 +101,4 @@ const currentuserConroller = async (req, res) => {
     });
   }
 };
-export { registerController, loginController, currentuserConroller };
+export { registerController, loginController, currentUserController };
