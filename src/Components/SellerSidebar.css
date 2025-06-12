@@ -1,48 +1,175 @@
-.admin-nav-link {
-  display: flex;
-  align-items: center;
-  padding: 12px 10px;
-  border-radius: 8px;
+.sidebar {
+  width: 280px;
+  background: linear-gradient(135deg, var(--dark-blue), rgba(0, 0, 20, 0.95));
   color: var(--text-color-sidebar);
-  font-size: 1.1em;
-  text-decoration: none;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.admin-nav-link:hover,
-.admin-nav-link.active {
-  background-color: var(--yellow);
-  color: var(--admin-sidebar-logo-color);
-}
-
-.admin-nav-icon {
+  padding: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   display: flex;
-  align-items: center;
-  font-size: 1.3em;
-  margin-right: 10px;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.arrow-icon {
-  margin-left: auto;
+.seller-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-.submenu {
-  margin-left: 30px;
-  margin-top: 5px;
+.seller-title {
+  font-weight: 700;
+  font-size: 2rem;
+  background: linear-gradient(135deg, #fff, var(--yellow));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 2rem;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.seller-nav-list {
   list-style: none;
   padding: 0;
+  margin: 1rem 0;
+  flex-grow: 1;
 }
 
-.submenu li a {
-  padding: 8px 10px;
-  font-size: 0.95em;
-  display: block;
-  border-radius: 6px;
-  transition: background-color 0.3s ease;
+.seller-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.submenu li a:hover,
-.submenu li a.active {
-  background-color: var(--yellow);
-  color: var(--admin-sidebar-logo-color);
+.seller-nav-link:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: var(--yellow);
+  opacity: 0.15;
+  transition: width 0.3s ease;
+}
+
+.seller-nav-link:hover:before,
+.seller-nav-link.active:before {
+  width: 100%;
+}
+
+.seller-nav-link:hover,
+.seller-nav-link.active {
+  color: var(--yellow);
+  transform: translateX(4px);
+}
+
+.seller-nav-icon {
+  margin-right: 1rem;
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.seller-nav-link:hover .seller-nav-icon {
+  transform: scale(1.1);
+}
+
+.seller-nav-text {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.theme-toggle-btn,
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0.875rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.logout-btn {
+  background: rgba(255, 71, 87, 0.1);
+}
+
+.logout-btn:hover {
+  background: rgba(255, 71, 87, 0.2);
+  transform: translateY(-2px);
+}
+
+.theme-toggle-btn svg,
+.logout-btn svg {
+  margin-right: 0.875rem;
+  font-size: 1.25rem;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-btn:hover svg,
+.logout-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.theme-toggle-btn span,
+.logout-btn span {
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 260px;
+    padding: 1.25rem;
+  }
+
+  .seller-title {
+    font-size: 1.75rem;
+  }
+
+  .seller-nav-link {
+    padding: 0.75rem 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 240px;
+    padding: 1rem;
+  }
+
+  .seller-nav-icon {
+    font-size: 1.125rem;
+  }
+
+  .seller-nav-text {
+    font-size: 0.875rem;
+  }
 }

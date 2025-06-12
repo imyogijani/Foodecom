@@ -24,6 +24,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-fileupload": "^1.5.1",
     "framer-motion": "^12.16.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.1",
@@ -33,6 +34,7 @@
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.6.1",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
     "styled-components": "^6.1.18"
   },

@@ -101,4 +101,67 @@ const currentUserController = async (req, res) => {
     });
   }
 };
-export { registerController, loginController, currentUserController };
+
+//update profile
+const updateProfileController = async (req, res) => {
+  try {
+    const { names, phone, address } = req.body;
+    const user = await userModel.findByIdAndUpdate(
+      req.userId,
+      { names, phone, address },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error in update profile API",
+      error,
+    });
+  }
+};
+
+//verify token
+export const verifyToken = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.userId);
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Token is valid",
+      user: {
+        _id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error in token verification",
+      error
+    });
+  }
+};
+
+export { registerController, loginController, currentUserController, updateProfileController };

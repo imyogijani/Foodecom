@@ -2,6 +2,8 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import "./App.css";
 import Home from "./Pages/Home/index";
@@ -25,8 +27,11 @@ import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
 import SellerOrders from "./Pages/Seller/SellerOrders";
 import SellerCustomers from "./Pages/Seller/SellerCustomers";
+import Cart from "./Components/Cart/Cart";
+import UserProfile from "./Components/UserProfile/UserProfile";
 
 function LayoutWrapper() {
+  const [showProfile, setShowProfile] = useState(false);
   const location = useLocation();
 
   // Define paths where you DON'T want header, navbar, footer
@@ -50,7 +55,8 @@ function LayoutWrapper() {
 
   return (
     <>
-      {!hideLayout && <Navbar />}
+      {!hideLayout && <Navbar onProfileClick={() => setShowProfile(true)} />}
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="menu" element={<Menu />} />
@@ -59,6 +65,11 @@ function LayoutWrapper() {
         <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="cart" element={
+          <ProtectedRoute allowedRoles={["Client"]}>
+            <Cart />
+          </ProtectedRoute>
+        } />
         <Route
           path="admin"
           element={
@@ -99,6 +110,18 @@ function LayoutWrapper() {
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <LayoutWrapper />
     </BrowserRouter>
   );

@@ -1,20 +1,37 @@
-# React + Vite
+# 🛒 E-Mall - Full-Stack E-commerce Web Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**E-Mall** is a modern full-stack e-commerce web application built using **React.js** for the frontend and **Node.js** with Express for the backend. It provides a seamless and responsive online shopping experience for users, with admin capabilities for product management.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## Expanding the ESLint configuration
+- ✅ User Registration and Login with JWT Authentication
+- 🛍️ Product Browsing and Search
+- 🛒 Shopping Cart with Quantity Control
+- 💳 Secure Checkout Process
+- 📦 Order Placement and History
+- 🛠️ Admin Dashboard to Manage Products and Orders
+- 📱 Fully Responsive Design (Mobile & Desktop)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
 
-**After clone repo do this: **
+## 🛠 Tech Stack
 
-if you are using npm then run **npm install** 
+| Layer     | Technology               |
+|-----------|---------------------------|
+| Frontend  | React.js, React Router    |
+| Backend   | Node.js, Express.js       |
+| Database  | MongoDB with Mongoose     |
+| Styling   | CSS, Bootstrap/Tailwind   |
+| Auth      | JSON Web Tokens (JWT)     |
 
-or you are using pnpm then run **pnpm install**
+---
 
-run this commands in terminal 
+## 📦 Installation Instructions
+
+### 📁 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/e-mall.git
+cd e-mall

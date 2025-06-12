@@ -1,130 +1,97 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { FaPlus } from "react-icons/fa";
+import axios from "../../utils/axios";
 import "../../App.css";
 import "./SellerProducts.css";
 
-const tempProducts = [
-  // Items from orders
-  {
-    id: 1,
-    name: "Classic Burger",
-    category: "Fast Food",
-    price: 12.99,
-    stock: 50,
-    status: "In Stock"
-  },
-  {
-    id: 2,
-    name: "French Fries",
-    category: "Fast Food",
-    price: 4.99,
-    stock: 100,
-    status: "In Stock"
-  },
-  {
-    id: 3,
-    name: "Coca Cola",
-    category: "Beverages",
-    price: 2.99,
-    stock: 200,
-    status: "In Stock"
-  },
-  {
-    id: 4,
-    name: "Margherita Pizza",
-    category: "Italian",
-    price: 15.99,
-    stock: 30,
-    status: "In Stock"
-  },
-  {
-    id: 5,
-    name: "Garlic Bread",
-    category: "Italian",
-    price: 4.99,
-    stock: 40,
-    status: "In Stock"
-  },
-  {
-    id: 6,
-    name: "Chicken Wings",
-    category: "Appetizers",
-    price: 12.99,
-    stock: 45,
-    status: "In Stock"
-  },
-  {
-    id: 7,
-    name: "Caesar Salad",
-    category: "Salads",
-    price: 8.99,
-    stock: 25,
-    status: "In Stock"
-  },
-  {
-    id: 8,
-    name: "Chocolate Cake",
-    category: "Desserts",
-    price: 6.99,
-    stock: 15,
-    status: "Low Stock"
-  },
-  {
-    id: 9,
-    name: "Soft Drinks",
-    category: "Beverages",
-    price: 2.99,
-    stock: 150,
-    status: "In Stock"
-  },
-  {
-    id: 10,
-    name: "Veggie Pizza",
-    category: "Italian",
-    price: 14.99,
-    stock: 25,
-    status: "In Stock"
-  },
-  {
-    id: 11,
-    name: "Pasta Alfredo",
-    category: "Italian",
-    price: 12.99,
-    stock: 30,
-    status: "In Stock"
-  },
-  {
-    id: 12,
-    name: "Grilled Chicken",
-    category: "Main Course",
-    price: 16.99,
-    stock: 35,
-    status: "In Stock"
-  },
-  {
-    id: 13,
-    name: "Mashed Potatoes",
-    category: "Sides",
-    price: 5.99,
-    stock: 40,
-    status: "In Stock"
-  },
-  {
-    id: 14,
-    name: "Garden Salad",
-    category: "Salads",
-    price: 7.99,
-    stock: 30,
-    status: "In Stock"
-  }
+const categories = [
+  'All',
+  'Burgers',
+  'Fries',
+  'Snacks',
+  'Salads',
+  'Cold drinks',
+  'Happy Meal',
+  'Desserts',
+  'Hot drinks',
+  'Sauces'
 ];
 
 const SellerProducts = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('/api/v1/products/seller-products', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (response.data.success) {
+        setProducts(response.data.products);
+      }
+    } catch (error) {
+      toast.error('Error fetching products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (productId) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(`/api/v1/products/${productId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.data.success) {
+          toast.success('Product deleted successfully');
+          fetchProducts();
+        }
+      } catch (error) {
+        toast.error('Error deleting product');
+      }
+    }
+  };
+
+  const filteredProducts = selectedCategory === 'All' 
+    ? products 
+    : products.filter(product => product.category === selectedCategory);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="admin-products">
       <div className="admin-header">
         <h1>Products</h1>
         <p className="admin-subtitle">Manage your products and inventory</p>
+        <Link to="/seller/products/add" className="add-product-btn">
+          <FaPlus style={{ marginRight: '0.5rem' }} />
+          Add New Product
+        </Link>
       </div>
+
+      <div className="category-filter">
+        {categories.map((category) => (
+          <button
+            key={category}
+            className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
       <div className="products-container">
         <div className="products-table-container">
           <table className="products-table">
@@ -140,7 +107,7 @@ const SellerProducts = () => {
               </tr>
             </thead>
             <tbody>
-              {tempProducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <tr key={product.id}>
                   <td>{product.id}</td>
                   <td>{product.name}</td>
@@ -148,13 +115,17 @@ const SellerProducts = () => {
                   <td>${product.price.toFixed(2)}</td>
                   <td>{product.stock}</td>
                   <td>
-                    <span className={`status-badge ${product.status.toLowerCase().replace(' ', '-')}`}>
+                    <span className={`status ${product.status.toLowerCase().replace(' ', '-')}`}>
                       {product.status}
                     </span>
                   </td>
                   <td>
-                    <button className="action-btn edit">Edit</button>
-                    <button className="action-btn delete">Delete</button>
+                    <Link to={`/seller/edit-product/${product.id}`} className="edit-btn">
+                      Edit
+                    </Link>
+                    <button onClick={() => handleDelete(product.id)} className="delete-btn">
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -166,4 +137,4 @@ const SellerProducts = () => {
   );
 };
 
-export default SellerProducts; 
+export default SellerProducts;

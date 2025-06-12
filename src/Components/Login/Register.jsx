@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from '../../utils/axios';
+import { FaEnvelope, FaLock, FaUser, FaPhone, FaMapMarkerAlt, FaStore } from 'react-icons/fa';
 import './Register.css';
 
 const Register = () => {
@@ -14,9 +16,11 @@ const Register = () => {
     address: ''
   });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
+    setError('');
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -25,104 +29,170 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/auth/register', formData);
+      const response = await axios.post('/api/v1/auth/register', formData);
       if (response.data.success) {
+        toast.success('Registration successful! Please login.');
         navigate('/login');
       } else {
         setError(response.data.message);
+        toast.error(response.data.message);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="register-container">
-      <form onSubmit={handleSubmit} className="register-form">
-        <h2>Register</h2>
-        {error && <div className="error-message">{error}</div>}
-
-        <div className="form-group">
-          <label>Role:</label>
-          <select name="role" value={formData.role} onChange={handleChange}>
-            <option value="Client">Client</option>
-            <option value="shopowner">Shop Owner</option>
-            <option value="admin">Admin</option>
-          </select>
+      <div className="register-card">
+        <div className="register-header">
+          <FaStore className="register-icon" />
+          <h2>Create Account</h2>
+          <p>Please fill in your information to register</p>
         </div>
 
-        {formData.role === 'Client' || formData.role === 'admin' ? (
-          <div className="form-group">
-            <label>Name:</label>
-            <input
-              type="text"
-              name="names"
-              value={formData.names}
-              onChange={handleChange}
-              required
-            />
-          </div>
-        ) : (
-          <div className="form-group">
-            <label>Shop Owner Name:</label>
-            <input
-              type="text"
-              name="shopownerName"
-              value={formData.shopownerName}
-              onChange={handleChange}
-              required
-            />
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
           </div>
         )}
 
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Phone:</label>
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        {formData.role !== 'admin' && (
+        <form onSubmit={handleSubmit} className="register-form">
           <div className="form-group">
-            <label>Address:</label>
-            <textarea
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              required
-            />
+            <div className="input-group">
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+                className="form-input role-select"
+              >
+                <option value="Client">Client</option>
+                <option value="shopowner">Shop Owner</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
           </div>
-        )}
 
-        <button type="submit" className="register-button">Register</button>
-      </form>
+          {formData.role === 'Client' || formData.role === 'admin' ? (
+            <div className="form-group">
+              <div className="input-group">
+                <FaUser className="input-icon" />
+                <input
+                  type="text"
+                  name="names"
+                  placeholder="Full Name"
+                  value={formData.names}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="form-group">
+              <div className="input-group">
+                <FaStore className="input-icon" />
+                <input
+                  type="text"
+                  name="shopownerName"
+                  placeholder="Shop Owner Name"
+                  value={formData.shopownerName}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="form-group">
+            <div className="input-group">
+              <FaEnvelope className="input-icon" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-group">
+              <FaLock className="input-icon" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="form-input"
+                minLength="6"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-group">
+              <FaPhone className="input-icon" />
+              <input
+                type="tel"
+                name="phone"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={handleChange}
+                required
+                className="form-input"
+                pattern="[0-9]{10}"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <div className="input-group">
+              <FaMapMarkerAlt className="input-icon" />
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <button 
+            type="submit" 
+            className={`register-button ${isLoading ? 'loading' : ''}`}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Creating Account...' : 'Create Account'}
+          </button>
+
+          <div className="register-footer">
+            <p>
+              Already have an account?{' '}
+              <Link to="/login" className="login-link">
+                Sign in here
+              </Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
