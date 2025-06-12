@@ -22,6 +22,11 @@ import Dashboard from "./Pages/admin/Dashboard";
 import Products from "./Pages/admin/Products";
 import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
+import AnalyticsDashboard from "./Pages/admin/AnalyticsDashboard";
+import SellerAnalytics from "./Pages/admin/SellerAnalytics";
+import UserSubscriptions from "./Pages/admin/UserSubscriptions";
+import DeliveryPartnerConfig from "./Pages/admin/DeliveryPartnerConfig";
+import PaymentGatewayConfig from "./Pages/admin/PaymentGatewayConfig";
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
 import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
@@ -43,12 +48,17 @@ function LayoutWrapper() {
     "/admin/products",
     "/admin/orders",
     "/admin/users",
+    "/admin/analytics",
+    "/admin/seller-analytics",
+    "/admin/user-subscriptions",
+    "/admin/delivery-config",
+    "/admin/payment-config",
     "/seller",
     "/seller/dashboard",
     "/seller/products/all",
     "/seller/products/add",
     "/seller/orders",
-    "/seller/customers"
+    "/seller/customers",
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
@@ -83,6 +93,11 @@ function LayoutWrapper() {
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
+          <Route path="analytics" element={<AnalyticsDashboard />} />
+          <Route path="seller-analytics" element={<SellerAnalytics />} />
+          <Route path="user-subscriptions" element={<UserSubscriptions />} />
+          <Route path="delivery-config" element={<DeliveryPartnerConfig />} />
+          <Route path="payment-config" element={<PaymentGatewayConfig />} />
         </Route>
 
         <Route

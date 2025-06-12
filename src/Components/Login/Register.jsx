@@ -54,7 +54,7 @@ const Register = () => {
     <div className="register-container">
       <div className="register-card">
         <div className="register-header">
-          <FaStore className="register-icon" />
+          {/* <FaStore className="register-icon" /> */}
           <h2>Create Account</h2>
           <p>Please fill in your information to register</p>
         </div>
@@ -84,7 +84,7 @@ const Register = () => {
           {formData.role === 'Client' || formData.role === 'admin' ? (
             <div className="form-group">
               <div className="input-group">
-                <FaUser className="input-icon" />
+                {/* <FaUser className="input-icon" /> */}
                 <input
                   type="text"
                   name="names"
@@ -99,7 +99,7 @@ const Register = () => {
           ) : (
             <div className="form-group">
               <div className="input-group">
-                <FaStore className="input-icon" />
+                {/* <FaStore className="input-icon" /> */}
                 <input
                   type="text"
                   name="shopownerName"
@@ -115,7 +115,7 @@ const Register = () => {
 
           <div className="form-group">
             <div className="input-group">
-              <FaEnvelope className="input-icon" />
+              {/* <FaEnvelope className="input-icon" /> */}
               <input
                 type="email"
                 name="email"
@@ -130,7 +130,7 @@ const Register = () => {
 
           <div className="form-group">
             <div className="input-group">
-              <FaLock className="input-icon" />
+              {/* <FaLock className="input-icon" /> */}
               <input
                 type="password"
                 name="password"
@@ -146,7 +146,7 @@ const Register = () => {
 
           <div className="form-group">
             <div className="input-group">
-              <FaPhone className="input-icon" />
+              {/* <FaPhone className="input-icon" /> */}
               <input
                 type="tel"
                 name="phone"
@@ -162,7 +162,7 @@ const Register = () => {
 
           <div className="form-group">
             <div className="input-group">
-              <FaMapMarkerAlt className="input-icon" />
+              {/* <FaMapMarkerAlt className="input-icon" /> */}
               <input
                 type="text"
                 name="address"

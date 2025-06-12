@@ -7,6 +7,7 @@ import './Users.css';
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
 
@@ -17,17 +18,21 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      setError(null);
       const token = localStorage.getItem('token');
-      console.log('Fetching users with token:', token); // Debug log
       
       const response = await axios.get('/api/v1/admin/users', {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      console.log('Users response:', response.data); // Debug log
-      setUsers(response.data.users || []);
+      if (response.data.success) {
+        setUsers(response.data.users || []);
+      } else {
+        throw new Error(response.data.message || 'Failed to fetch users');
+      }
     } catch (error) {
-      console.error('Error fetching users:', error); // Debug log
+      console.error('Error fetching users:', error);
+      setError(error.response?.data?.message || 'Failed to fetch users');
       toast.error(error.response?.data?.message || 'Failed to fetch users');
     } finally {
       setLoading(false);
@@ -38,13 +43,18 @@ const Users = () => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`/api/v1/admin/users/${userId}`, {
+        const response = await axios.delete(`/api/v1/admin/users/${userId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        toast.success('User deleted successfully');
-        fetchUsers();
+        
+        if (response.data.success) {
+          toast.success('User deleted successfully');
+          fetchUsers();
+        } else {
+          throw new Error(response.data.message || 'Failed to delete user');
+        }
       } catch (error) {
-        toast.error('Error deleting user');
+        toast.error(error.response?.data?.message || 'Error deleting user');
       }
     }
   };
@@ -52,21 +62,27 @@ const Users = () => {
   const handleUpdateRole = async (userId, newRole) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`/api/v1/admin/users/${userId}/role`, 
+      const response = await axios.patch(
+        `/api/v1/admin/users/${userId}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` }}
       );
-      toast.success('User role updated successfully');
-      fetchUsers();
+      
+      if (response.data.success) {
+        toast.success('User role updated successfully');
+        fetchUsers();
+      } else {
+        throw new Error(response.data.message || 'Failed to update role');
+      }
     } catch (error) {
-      toast.error('Error updating user role');
+      toast.error(error.response?.data?.message || 'Error updating user role');
     }
   };
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
     return matchesSearch && matchesRole;
   });
@@ -107,11 +123,43 @@ const Users = () => {
     );
   }
 
+  if (error) {
+    return (
+      <div className="admin-users">
+        <div className="error-container">
+          <p className="error-message">{error}</p>
+          <button onClick={fetchUsers} className="retry-button">
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="admin-users">
       <div className="admin-header">
         <h1>User Management</h1>
-        <p className="admin-subtitle">Manage all users and their roles</p>
+        <p className="admin-subtitle">Manage user accounts and roles</p>
+        
+        <div className="stats-grid">
+          <div className="stat-card">
+            <h3>Total Users</h3>
+            <p>{stats.total}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Admins</h3>
+            <p>{stats.admin}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Shop Owners</h3>
+            <p>{stats.shopowner}</p>
+          </div>
+          <div className="stat-card">
+            <h3>Clients</h3>
+            <p>{stats.client}</p>
+          </div>
+        </div>
       </div>
 
       <div className="users-controls">
@@ -124,7 +172,7 @@ const Users = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
+        
         <select
           className="role-filter"
           value={filterRole}
@@ -132,8 +180,8 @@ const Users = () => {
         >
           <option value="all">All Roles</option>
           <option value="admin">Admins</option>
-          <option value="shopowner">Sellers</option>
-          <option value="Client">Customers</option>
+          <option value="shopowner">Shop Owners</option>
+          <option value="client">Clients</option>
         </select>
       </div>
 
@@ -141,46 +189,43 @@ const Users = () => {
         <table className="users-table">
           <thead>
             <tr>
-              <th>Name</th>
+              <th>User</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan="5" className="no-users">
-                  No users found
+            {filteredUsers.map((user) => (
+              <tr key={user._id}>
+                <td>
+                  <div className="user-info">
+                    {getRoleIcon(user.role)}
+                    <span>{user.name}</span>
+                  </div>
+                </td>
+                <td>{user.email}</td>
+                <td>
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleUpdateRole(user._id, e.target.value)}
+                    className="role-select"
+                  >
+                    <option value="client">Client</option>
+                    <option value="shopowner">Shop Owner</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleDeleteUser(user._id)}
+                    className="delete-button"
+                  >
+                    <FaTrash />
+                  </button>
                 </td>
               </tr>
-            ) : (
-              users.map(user => (
-                <tr key={user._id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <span className={`role-badge ${user.role.toLowerCase()}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="status-badge active">
-                      Active
-                    </span>
-                  </td>
-                  <td>
-                    <button className="action-btn edit">
-                      <FaUserCog />
-                    </button>
-                    <button className="action-btn delete">
-                      <FaTrash />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>

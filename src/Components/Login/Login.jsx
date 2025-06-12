@@ -103,44 +103,38 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <FaUserCircle className="login-icon" />
+          <FaUserCircle size={48} color="#007bff" />
           <h2>Welcome Back</h2>
           <p>Please enter your details to sign in</p>
         </div>
 
-        {error && (
-          <div className="error-message">
-            <p>{error}</p>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <div className="input-group">
-              <FaEnvelope className="input-icon" />
+              {/* <FaEnvelope className="input-icon" /> */}
               <input
                 type="email"
                 name="email"
+                className="form-input"
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="form-input"
               />
             </div>
           </div>
 
           <div className="form-group">
             <div className="input-group">
-              <FaLock className="input-icon" />
+              {/* <FaLock className="input-icon" /> */}
               <input
                 type="password"
                 name="password"
+                className="form-input"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="form-input"
               />
             </div>
           </div>
@@ -149,34 +143,33 @@ const Login = () => {
             <div className="input-group">
               <select
                 name="role"
+                className="form-input"
                 value={formData.role}
                 onChange={handleChange}
-                className="form-input role-select"
+                required
               >
-                <option value="Client">Client</option>
-                <option value="shopowner">Shop Owner</option>
+                <option value="client">Client</option>
                 <option value="admin">Admin</option>
+                <option value="shopowner">Shop Owner</option>
               </select>
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            className={`login-button ${isLoading ? 'loading' : ''}`}
+          {error && <div className="error-message">{error}</div>}
+
+          <button
+            type="submit"
+            className="login-button"
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
-
-          <div className="login-footer">
-            <p>
-              Don't have an account? {' '}
-              <Link to="/register" className="register-link">
-                Register here
-              </Link>
-            </p>
-          </div>
         </form>
+
+        <div className="register-link">
+          Don't have an account?
+          <Link to="/register">Register here</Link>
+        </div>
       </div>
     </div>
   );

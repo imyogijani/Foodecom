@@ -1,7 +1,8 @@
 .admin-users {
   padding: 2rem;
-  background: var(--bg-color);
+  background: var(--background);
   min-height: 100vh;
+  color: var(--text);
 }
 
 .loading-container {
@@ -10,14 +11,30 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: var(--bg-color);
+  background: var(--background);
+  color: var(--text);
 }
 
 .spinner {
   animation: spin 1s linear infinite;
   font-size: 2rem;
-  color: var(--yellow);
+  color: var(--accent);
   margin-bottom: 1rem;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.error-message {
+  color: var(--error);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
 }
 
 @keyframes spin {
@@ -164,6 +181,92 @@
   opacity: 0.7;
 }
 
+.retry-button {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.retry-button:hover {
+  background: var(--accent-dark);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.stat-card h3 {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.role-icon {
+  font-size: 1.2rem;
+}
+
+.role-icon.admin {
+  color: var(--accent);
+}
+
+.role-icon.seller {
+  color: var(--success);
+}
+
+.role-icon.user {
+  color: var(--text);
+}
+
+.role-select {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--background-light);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.delete-button {
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--error);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.delete-button:hover {
+  opacity: 1;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .admin-users {
     padding: 1rem;
@@ -183,5 +286,14 @@
 
   .admin-header h1 {
     font-size: 1.5rem;
+  }
+
+  .users-table-container {
+    margin-top: 1rem;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 0.75rem 0.5rem;
   }
 }
