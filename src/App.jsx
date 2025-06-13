@@ -2,6 +2,8 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import "./App.css";
 import Home from "./Pages/Home/index";
@@ -20,13 +22,21 @@ import Dashboard from "./Pages/admin/Dashboard";
 import Products from "./Pages/admin/Products";
 import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
+import AnalyticsDashboard from "./Pages/admin/AnalyticsDashboard";
+import SellerAnalytics from "./Pages/admin/SellerAnalytics";
+import UserSubscriptions from "./Pages/admin/UserSubscriptions";
+import DeliveryPartnerConfig from "./Pages/admin/DeliveryPartnerConfig";
+import PaymentGatewayConfig from "./Pages/admin/PaymentGatewayConfig";
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
 import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
 import SellerOrders from "./Pages/Seller/SellerOrders";
 import SellerCustomers from "./Pages/Seller/SellerCustomers";
+import Cart from "./Components/Cart/Cart";
+import UserProfile from "./Components/UserProfile/UserProfile";
 
 function LayoutWrapper() {
+  const [showProfile, setShowProfile] = useState(false);
   const location = useLocation();
 
   // Define paths where you DON'T want header, navbar, footer
@@ -38,19 +48,25 @@ function LayoutWrapper() {
     "/admin/products",
     "/admin/orders",
     "/admin/users",
+    "/admin/analytics",
+    "/admin/seller-analytics",
+    "/admin/user-subscriptions",
+    "/admin/delivery-config",
+    "/admin/payment-config",
     "/seller",
     "/seller/dashboard",
     "/seller/products/all",
     "/seller/products/add",
     "/seller/orders",
-    "/seller/customers"
+    "/seller/customers",
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
 
   return (
     <>
-      {!hideLayout && <Navbar />}
+      {!hideLayout && <Navbar onProfileClick={() => setShowProfile(true)} />}
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="menu" element={<Menu />} />
@@ -59,6 +75,11 @@ function LayoutWrapper() {
         <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="cart" element={
+          <ProtectedRoute allowedRoles={["Client"]}>
+            <Cart />
+          </ProtectedRoute>
+        } />
         <Route
           path="admin"
           element={
@@ -72,6 +93,11 @@ function LayoutWrapper() {
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
+          <Route path="analytics" element={<AnalyticsDashboard />} />
+          <Route path="seller-analytics" element={<SellerAnalytics />} />
+          <Route path="user-subscriptions" element={<UserSubscriptions />} />
+          <Route path="delivery-config" element={<DeliveryPartnerConfig />} />
+          <Route path="payment-config" element={<PaymentGatewayConfig />} />
         </Route>
 
         <Route
@@ -99,6 +125,18 @@ function LayoutWrapper() {
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <LayoutWrapper />
     </BrowserRouter>
   );

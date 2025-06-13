@@ -1,14 +1,18 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   FaHome,
   FaBox,
   FaShoppingCart,
   FaUsers,
+  FaSignOutAlt,
+  FaSun,
+  FaMoon,
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
 import { useTheme } from "./../ThemeContext";
+import { toast } from "react-toastify";
 import "./SellerSidebar.css";
 
 const sellerLinks = [
@@ -27,12 +31,22 @@ const sellerLinks = [
 ];
 
 const SellerSidebar = () => {
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   const [expandedMenu, setExpandedMenu] = useState(null);
 
   const toggleSubmenu = (index) => {
     setExpandedMenu(expandedMenu === index ? null : index);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    document.cookie =
+      "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    toast.success("Logged out successfully");
+    navigate("/login");
   };
 
   return (
@@ -97,6 +111,26 @@ const SellerSidebar = () => {
             ))}
           </ul>
         </nav>
+
+        <div className="sidebar-footer">
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={
+              theme === "light"
+                ? "Switch to Dark Mode"
+                : "Switch to Light Mode"
+            }
+          >
+            {theme === "light" ? <FaMoon /> : <FaSun />}
+            <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
+          </button>
+
+          <button className="logout-btn" onClick={handleLogout}>
+            <FaSignOutAlt />
+            <span>Logout</span>
+          </button>
+        </div>
       </div>
     </aside>
   );

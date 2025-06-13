@@ -1,6 +1,7 @@
-import jwt from "jsonwebtoken"; //import jwt in ES Modules
+import jwt from "jsonwebtoken";
+import User from '../models/userModel.js';
 
-const authMiddleware = async (req, res, next) => {
+export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers["authorization"];
 
@@ -34,4 +35,31 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-export default authMiddleware; // ES Module style
+export const authorizeAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== 'admin') {
+      return res.status(403).send({
+        success: false,
+        message: "Access denied. Admin only.",
+      });
+    }
+
+    next();
+  } catch (error) {
+    console.error("Admin Authorization Error:", error);
+    return res.status(500).send({
+      success: false,
+      error,
+      message: "Admin authorization failed",
+    });
+  }
+};
