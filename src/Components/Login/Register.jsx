@@ -54,7 +54,7 @@ const Register = () => {
     <div className="register-container">
       <div className="register-card">
         <div className="register-header">
-          {/* <FaStore className="register-icon" /> */}
+          <FaStore className="register-icon" />
           <h2>Create Account</h2>
           <p>Please fill in your information to register</p>
         </div>

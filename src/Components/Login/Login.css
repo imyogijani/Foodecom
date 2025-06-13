@@ -4,16 +4,18 @@
   align-items: center;
   min-height: 100vh;
   padding: 2rem;
-  background: #3a3a3a;
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-gradient) 100%);
 }
 
 .login-card {
-  background: #4a4a4a;
+  background: var(--card-bg);
   padding: 2.5rem;
   border-radius: 16px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   animation: slideUp 0.5s ease-out;
 }
 
@@ -31,58 +33,52 @@
 .login-header {
   text-align: center;
   margin-bottom: 2rem;
-  color: white;
+}
+
+.login-icon {
+  font-size: 4rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
 }
 
 .login-header h2 {
-  font-size: 2rem;
+  font-size: 1.8rem;
+  color: var(--text-color);
   margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .login-header p {
-  color: #bbb;
-  font-size: 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .input-group {
   position: relative;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
 }
 
 .input-icon {
   position: absolute;
-  left: 12px;
-  color: #666;
+  left: 1rem;
+  color: var(--text-muted);
   font-size: 1.1rem;
-  z-index: 1;
-  pointer-events: none;
 }
 
 .form-input {
   width: 100%;
-  padding: 12px 12px 12px 40px;
-  border: 1px solid #555;
+  padding: 0.8rem 1rem 0.8rem 3rem;
+  border: 1.5px solid var(--border-color);
   border-radius: 8px;
-  font-size: 1rem;
-  background: white;
-  color: #333;
+  font-size: 0.95rem;
+  background: var(--input-bg);
+  color: var(--text-color);
   transition: all 0.3s ease;
-}
-
-.form-input::placeholder {
-  color: #888;
-}
-
-.form-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-  outline: none;
 }
 
 .form-input:focus {
@@ -91,47 +87,18 @@
   outline: none;
 }
 
-select.form-input {
-  padding-left: 12px;
-  -webkit-appearance: none;
-  -moz-appearance: none;
+.role-select {
+  padding-left: 1rem;
+  cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
-  background-position: right 12px center;
+  background-position: right 1rem center;
   background-size: 1em;
-  padding-right: 40px;
 }
 
 .login-button {
   width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  background: #007bff;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 1rem;
-}
-
-.login-button:hover {
-  background: #0056b3;
-  transform: translateY(-1px);
-}
-
-.login-button:active {
-  transform: translateY(0);
-}
-
-.login-button:disabled {
-  background: #666;
-  cursor: not-allowed;
-}
-
-.login-button {
   padding: 1rem;
   border: none;
   border-radius: 8px;
@@ -182,8 +149,12 @@ select.form-input {
 }
 
 .error-message {
-  color: #ff4444;
-  margin-top: 0.5rem;
+  background: rgba(255, 59, 48, 0.1);
+  border-left: 4px solid #ff3b30;
+  color: #ff3b30;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
   font-size: 0.9rem;
 }
 
@@ -199,18 +170,14 @@ select.form-input {
 }
 
 .register-link {
-  text-align: center;
-  margin-top: 1rem;
-  color: #bbb;
-}
-
-.register-link a {
-  color: #007bff;
+  color: var(--primary-color);
   text-decoration: none;
-  margin-left: 0.5rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
-.register-link a:hover {
+.register-link:hover {
+  color: #d67e00;
   text-decoration: underline;
 }
 

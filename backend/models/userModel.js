@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema(
       required: [true, "Role is required"],
       enum: ["admin", "shopowner", "Client"],
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
     names: {
       type: String,
       required: function () {
@@ -45,6 +49,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Phone Number is required"],
     },
+    avatar: {
+      type: String,
+      default: null
+    }
   },
   { timestamps: true }
 );

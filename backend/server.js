@@ -27,20 +27,29 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: 'http://localhost:5173',
-  credentials: true
+  credentials: true,
+  exposedHeaders: ['Content-Disposition']
 }));
 app.use(morgan("dev"));
 
-// File Upload Middleware
-app.use(fileUpload({
-  useTempFiles: true,
-  tempFileDir: '/tmp/',
-  createParentPath: true,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max file size
+// Configure static file serving with proper headers and caching
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
+  maxAge: '1d', // Cache for 1 day
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png') || path.endsWith('.gif')) {
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+      res.setHeader('Content-Type', 'image/' + path.split('.').pop());
+    }
+  }
 }));
 
-// Static Files
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+// Serve other static files
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1h',
+  etag: true
+}));
 
 //routs
 //1 test route
