@@ -1,0 +1,46 @@
+.stats-banner {
+  background-color: #ff8c00;
+  color: white;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 12px;
+  padding: 30px 10px;
+  font-family: 'Poppins', sans-serif;
+  margin: 30px 0;
+  cursor: pointer;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat h2 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.stat p {
+  font-size: 14px;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.divider {
+  width: 1px;
+  height: 50px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 700px) {
+  .stats-banner {
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px 4px;
+  }
+  .divider {
+    width: 60%;
+    height: 1px;
+    margin: 10px 0;
+  }
+} 

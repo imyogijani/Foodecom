@@ -17,6 +17,11 @@ import kfc from "../../images/KFC.png";
 import texasChicken from "../../images/Tex.png";
 import burgerKing from "../../images/Bking.png";
 import shaurma from "../../images/shaurma.png";
+import promo from "../../images/promo.png";
+import partnerBanner from "../../images/partner-banner.png";
+import availperks from "../../images/availperks.png";
+import BottomCard from "./BottomCard";
+import StatsBanner from "./StatsBanner";
 
 const deals = [
   {
@@ -153,6 +158,28 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* Promo Image Section */}
+      <div className="promo-image-section" style={{ display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
+        <img src={promo} alt="Promo" style={{ maxWidth: '100%', height: 'auto', borderRadius: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
+      </div>
+
+      {/* Partner Banner Section */}
+      <div className="partner-banner-row">
+        <section className="partner-banner">
+          <img src={partnerBanner} alt="Partner with us" className="banner-bg" />
+          <div className="banner-content">
+            <button className="cta-button">Get Started</button>
+          </div>
+        </section>
+        <div className="availperks-img-wrap">
+          <img src={availperks} alt="Avail exclusive perks" className="availperks-img" />
+          
+        </div>
+      </div>
+      
+      <BottomCard />
+      <StatsBanner />
     </>
   );
 }
