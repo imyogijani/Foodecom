@@ -9,7 +9,7 @@ const Register = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'Client',
+    role: 'client',
     names: '',
     shopownerName: '',
     phone: '',
@@ -74,17 +74,16 @@ const Register = () => {
                 onChange={handleChange}
                 className="form-input role-select"
               >
-                <option value="Client">Client</option>
+                <option value="client">Client</option>
                 <option value="shopowner">Shop Owner</option>
                 <option value="admin">Admin</option>
               </select>
             </div>
           </div>
 
-          {formData.role === 'Client' || formData.role === 'admin' ? (
+          {formData.role === 'client' || formData.role === 'admin' ? (
             <div className="form-group">
               <div className="input-group">
-                {/* <FaUser className="input-icon" /> */}
                 <input
                   type="text"
                   name="names"
@@ -99,7 +98,6 @@ const Register = () => {
           ) : (
             <div className="form-group">
               <div className="input-group">
-                {/* <FaStore className="input-icon" /> */}
                 <input
                   type="text"
                   name="shopownerName"

@@ -46,7 +46,7 @@ export const authorizeAdmin = async (req, res, next) => {
       });
     }
 
-    if (user.role !== 'admin') {
+    if (user.role.toLowerCase() !== 'admin') {
       return res.status(403).send({
         success: false,
         message: "Access denied. Admin only.",

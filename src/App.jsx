@@ -66,7 +66,7 @@ function LayoutWrapper() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="cart" element={
-          <ProtectedRoute allowedRoles={["Client"]}>
+          <ProtectedRoute allowedRoles={["client"]}>
             <Cart />
           </ProtectedRoute>
         } />

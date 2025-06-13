@@ -9,8 +9,15 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    role: 'Client'
+    role: 'client'
   });
+
+  // Available roles matching the backend enum
+  const roles = [
+    { value: 'client', label: 'Client' },
+    { value: 'shopowner', label: 'Shop Owner' },
+    { value: 'admin', label: 'Admin' }
+  ];
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -44,6 +51,7 @@ const Login = () => {
       case 'shopowner':
         navigate('/seller/dashboard');
         break;
+      case 'client':
       default:
         navigate('/');
         break;
@@ -168,9 +176,9 @@ const Login = () => {
                 onChange={handleChange}
                 className="form-input role-select"
               >
-                <option value="Client">Client</option>
-                <option value="ShopOwner">Shop Owner</option>
-                <option value="Admin">Admin</option>
+                <option value="client">Client</option>
+                <option value="shopowner">Shop Owner</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
           </div>

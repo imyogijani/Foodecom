@@ -65,9 +65,9 @@ const Users = () => {
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.names || user.shopownerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role === filterRole;
+    const matchesRole = filterRole === 'all' || user.role.toLowerCase() === filterRole.toLowerCase();
     return matchesSearch && matchesRole;
   });
 
@@ -84,7 +84,7 @@ const Users = () => {
 
   const getUserStats = () => {
     const stats = users.reduce((acc, user) => {
-      acc[user.role] = (acc[user.role] || 0) + 1;
+      acc[user.role.toLowerCase()] = (acc[user.role.toLowerCase()] || 0) + 1;
       return acc;
     }, {});
 
@@ -92,7 +92,7 @@ const Users = () => {
       total: users.length,
       admin: stats.admin || 0,
       shopowner: stats.shopowner || 0,
-      client: stats.Client || 0
+      client: stats.client || 0
     };
   };
 
@@ -125,15 +125,15 @@ const Users = () => {
           />
         </div>
 
-        <select
-          className="role-filter"
-          value={filterRole}
+        <select 
+          value={filterRole} 
           onChange={(e) => setFilterRole(e.target.value)}
+          className="role-filter"
         >
-          <option value="all">All Roles</option>
+          <option value="all">All Users</option>
           <option value="admin">Admins</option>
-          <option value="shopowner">Sellers</option>
-          <option value="Client">Customers</option>
+          <option value="shopowner">Shop Owners</option>
+          <option value="client">Customers</option>
         </select>
       </div>
 
@@ -158,11 +158,11 @@ const Users = () => {
             ) : (
               users.map(user => (
                 <tr key={user._id}>
-                  <td>{user.name}</td>
+                  <td>{user.names || user.shopownerName}</td>
                   <td>{user.email}</td>
                   <td>
                     <span className={`role-badge ${user.role.toLowerCase()}`}>
-                      {user.role}
+                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                     </span>
                   </td>
                   <td>

@@ -51,11 +51,11 @@ const loginController = async (req, res) => {
         message: "Invalid credential🥲",
       });
     }
-    //check role
-    if (user.role !== req.body.role) {
-      return res.status(500).send({
+    //check role case-insensitively
+    if (user.role.toLowerCase() !== req.body.role.toLowerCase()) {
+      return res.status(401).send({
         success: false,
-        message: "role doesn't match🥲",
+        message: "Invalid credentials. Please check your role selection.",
       });
     }
     //compare password
@@ -124,7 +124,7 @@ const updateProfileController = async (req, res) => {
     // Update user fields based on role
     if (user.role === 'shopowner') {
       user.shopownerName = shopownerName || user.shopownerName;
-    } else {
+    } else if (user.role === 'client' || user.role === 'admin') {
       user.names = names || user.names;
     }
     

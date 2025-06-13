@@ -134,7 +134,7 @@ export default function Navbar() {
                           onError={handleAvatarError}
                         />
                         <div className="user-details">
-                          <p className="user-name">{user?.name || "User"}</p>
+                          <p className="user-name">{user?.names || user?.shopownerName || "User"}</p>
                           <p className="user-email">{user?.email || "No email"}</p>
                         </div>
                       </div>
