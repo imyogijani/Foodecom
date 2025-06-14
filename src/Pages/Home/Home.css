@@ -195,8 +195,8 @@
 
 .banner-content {
   position: absolute;
-  bottom: 40px;
-  left: 40px;
+  bottom: 35px;
+  left: 90px;
   z-index: 2;
   color: white;
 }
@@ -243,7 +243,7 @@
 
 .partner-banner-row .partner-banner {
   flex: 1 1 0;
-  min-width: 320px;
+  min-width: 340px;
   max-width: 768px;
 }
 
@@ -256,8 +256,10 @@
   max-width: 768px;
   border-radius: 12px;
   overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
 }
 
 .availperks-img {
@@ -285,3 +287,31 @@
     max-height: 340px;
   }
 }
+
+/* Avail Perks Banner (right card) */
+.availperks-banner {
+  position: relative;
+  width: 100%;
+  max-width: 768px;
+  height: 425px;
+  margin: 40px auto;
+  border-radius: 12px;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+.availperks-banner .banner-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.availperks-banner .banner-content {
+  position: absolute;
+  bottom: 35px;  /* was 40px */
+  left: 90px;    /* was 40px */
+  z-index: 2;
+  color: white;
+}
+

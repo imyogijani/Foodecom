@@ -82,23 +82,7 @@
   cursor: pointer;
   position: relative;
 }
-.faq-list li.faq-highlight {
-  background: #fc8a06;
-  color: #fff;
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.08);
-}
-.faq-list li.faq-highlight::before {
-  content: '';
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  border-radius: 50%;
-}
+
 .faq-empty {
   color: #aaa;
   font-weight: 400;
@@ -178,3 +162,21 @@
     width: 98%;
   }
 } 
+
+/* Add to the end of: c:\AksharRaj\Foodecom\src\Pages\Home\BottomCard.css */
+.faq-answer {
+  margin-top: 8px;
+  background: #fff7ea;
+  color: #181818;
+  font-size: 0.98rem;
+  border-radius: 12px;
+  padding: 10px 18px;
+  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.06);
+  font-weight: 500;
+  animation: fadeInFaq 0.2s;
+}
+
+@keyframes fadeInFaq {
+  from { opacity: 0; transform: translateY(-8px);}
+  to { opacity: 1; transform: translateY(0);}
+}

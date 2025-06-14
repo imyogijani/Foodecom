@@ -79,6 +79,12 @@ const restaurants = [
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("Pizza & Fast food");
 
+  // Handler for both Get Started buttons
+  const handleGetStarted = () => {
+    // TODO: Replace with navigation or modal as needed
+    alert("Get Started clicked!");
+  };
+
   return (
     <>
       <div className="Home">
@@ -169,13 +175,15 @@ export default function Home() {
         <section className="partner-banner">
           <img src={partnerBanner} alt="Partner with us" className="banner-bg" />
           <div className="banner-content">
-            <button className="cta-button">Get Started</button>
+            <button className="cta-button" onClick={handleGetStarted}>Get Started</button>
           </div>
         </section>
-        <div className="availperks-img-wrap">
-          <img src={availperks} alt="Avail exclusive perks" className="availperks-img" />
-          
-        </div>
+        <section className="availperks-banner">
+          <img src={availperks} alt="Avail exclusive perks" className="banner-bg" />
+          <div className="banner-content">
+            <button className="cta-button" onClick={handleGetStarted}>Get Started</button>
+          </div>
+        </section>
       </div>
       
       <BottomCard />
