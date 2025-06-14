@@ -2,22 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
-import { FaEnvelope, FaLock, FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 import './Login.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: 'client'
+    password: ''
   });
 
-  // Available roles matching the backend enum
-  const roles = [
-    { value: 'client', label: 'Client' },
-    { value: 'shopowner', label: 'Shop Owner' },
-    { value: 'admin', label: 'Admin' }
-  ];
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -44,17 +37,12 @@ const Login = () => {
   }, []);
 
   const redirectBasedOnRole = (role) => {
-    switch(role.toLowerCase()) {
-      case 'admin':
-        navigate('/admin/dashboard');
-        break;
-      case 'shopowner':
-        navigate('/seller/dashboard');
-        break;
-      case 'client':
-      default:
-        navigate('/');
-        break;
+    if (role.toLowerCase() === 'admin') {
+      navigate('/admin/dashboard');
+    } else if (role.toLowerCase() === 'shopowner') {
+      navigate('/seller/dashboard');
+    } else {
+      navigate('/');
     }
   };
 
@@ -107,7 +95,6 @@ const Login = () => {
         setError(errorMsg);
       }
     } catch (err) {
-      console.error('Login error:', err);
       const errorMsg = err.response?.data?.message || 'Login failed. Please check your credentials.';
       toast.error(errorMsg);
       setError(errorMsg);
@@ -140,7 +127,6 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <div className="input-group">
-              {/* <FaEnvelope className="input-icon" /> */}
               <input
                 type="email"
                 name="email"
@@ -155,7 +141,6 @@ const Login = () => {
 
           <div className="form-group">
             <div className="input-group">
-              {/* <FaLock className="input-icon" /> */}
               <input
                 type="password"
                 name="password"
@@ -165,21 +150,6 @@ const Login = () => {
                 required
                 className="form-input"
               />
-            </div>
-          </div>
-
-          <div className="form-group">
-            <div className="input-group">
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="form-input role-select"
-              >
-                <option value="client">Client</option>
-                <option value="shopowner">Shop Owner</option>
-                <option value="admin">Admin</option>
-              </select>
             </div>
           </div>
 

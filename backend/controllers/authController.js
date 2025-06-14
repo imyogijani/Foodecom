@@ -48,25 +48,19 @@ const loginController = async (req, res) => {
     if (!user) {
       return res.status(404).send({
         success: false,
-        message: "Invalid credential🥲",
+        message: "Invalid credentials",
       });
     }
-    //check role case-insensitively
-    if (user.role.toLowerCase() !== req.body.role.toLowerCase()) {
-      return res.status(401).send({
-        success: false,
-        message: "Invalid credentials. Please check your role selection.",
-      });
-    }
+
     //compare password
     const comparePassword = await bcrypt.compare(
       req.body.password,
       user.password
     );
     if (!comparePassword) {
-      return res.status(500).send({
+      return res.status(401).send({
         success: false,
-        message: "Invalid credential🥲",
+        message: "Invalid credentials",
       });
     }
 

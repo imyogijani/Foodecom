@@ -76,7 +76,6 @@ const Register = () => {
               >
                 <option value="client">Client</option>
                 <option value="shopowner">Shop Owner</option>
-                <option value="admin">Admin</option>
               </select>
             </div>
           </div>
