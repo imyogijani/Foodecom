@@ -72,65 +72,140 @@
   text-decoration: none;
   transition: all 0.2s;
   border: none;
-  outline: none;
-  box-shadow: none;
-  display: inline-block;
+  padding: 0;
+  cursor: pointer;
   position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: transform 0.3s ease;
 }
 
-.nav-pill-link.active {
-  background: transparent;
-  color: var(--logo-color);
-  box-shadow: none;
+.user-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--primary-color);
+}
+
+.profile-button:hover {
+  transform: scale(1.05);
+}
+
+.user-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  background: var(--bg-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 260px;
+  z-index: 1000;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.animate-dropdown {
+  animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-info {
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(228, 138, 0, 0.05);
+}
+
+.menu-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.user-details {
+  overflow: hidden;
+}
+
+.user-name {
   font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.nav-pill-link:hover {
-  background: #fc8a06;
-  color: #fff;
+.user-email {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.login-pill {
+.menu-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 0.25rem 0;
+}
+
+.menu-item {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  background: var(--nav-bg);
-  color: #fc8a06;
-  border-radius: 2rem;
-  padding: 0.7rem 2.2rem;
-  font-weight: 500;
-  font-size: 1.1rem;
-  text-decoration: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
   border: none;
-  transition: background 0.2s, color 0.2s;
+  background: none;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.login-pill:hover {
-  background: var(--primary-color);
-  color: #fff;
+.menu-item:hover {
+  background: rgba(228, 138, 0, 0.1);
+  color: var(--primary-color);
 }
 
-.login-icon {
-  font-size: 1.3rem;
+.menu-item svg {
+  font-size: 1.1rem;
+  color: var(--text-muted);
 }
 
-.theme-toggle {
-  margin-right: 0.5rem;
-  margin-left: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.menu-item:hover svg {
+  color: var(--primary-color);
 }
 
-.nav-links, .nav-item, .nav-buttons, .cart-button, .profile-button, .user-avatar, .user-menu, .user-info, .menu-avatar, .user-details, .user-name, .user-email, .menu-divider, .menu-item, .menu-item.logout, .menu-item svg, .menu-item.logout svg, .cart-count, .login-button, .login-button svg, .login-button span, .profile-button:hover, .user-menu-container, .animate-dropdown {
-  display: none !important;
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: inherit !important;
-  padding: 0 !important;
-  margin: 0 !important;
+.menu-item.logout {
+  color: #dc3545;
+}
+
+.menu-item.logout:hover {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.menu-item.logout svg {
+  color: #dc3545;
 }
 
 .nav-home-link { display: none !important; }

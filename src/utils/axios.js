@@ -2,11 +2,25 @@ import axios from 'axios';
 
 const instance = axios.create({
   baseURL: 'http://localhost:8080',
-  timeout: 5000,
+  timeout: 15000, // Increased timeout for file uploads
   headers: {
     'Content-Type': 'application/json'
   }
 });
+
+// Method to handle file uploads
+instance.uploadFile = async (url, file, config = {}) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return instance.post(url, formData, {
+    ...config,
+    headers: {
+      ...config.headers,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
 
 // Add a request interceptor
 instance.interceptors.request.use(

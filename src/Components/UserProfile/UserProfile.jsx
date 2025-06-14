@@ -3,19 +3,22 @@ import { toast } from 'react-toastify';
 import './UserProfile.css';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../utils/axios';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaCamera } from 'react-icons/fa';
 import MaleUser from '../../images/MaleUser.png';
 
 const UserProfile = ({ onClose }) => {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Add isLoading state for avatar upload
   const [formData, setFormData] = useState({
-    name: '',
+    names: '',
+    shopownerName: '',
     email: '',
     phone: '',
     address: '',
-    avatar: ''
+    avatar: '',
+    role: ''
   });
 
   const navigate = useNavigate();
@@ -31,9 +34,20 @@ const UserProfile = ({ onClose }) => {
       const response = await axios.get('/api/v1/auth/current-user', {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setUser(response.data.user);
-      setFormData(response.data.user);
+      
+      const userData = response.data.user;
+      setUser(userData);
+      setFormData({
+        names: userData.names || '',
+        shopownerName: userData.shopownerName || '',
+        email: userData.email || '',
+        phone: userData.phone || '',
+        address: userData.address || '',
+        avatar: userData.avatar || '',
+        role: userData.role || ''
+      });
     } catch (error) {
+      console.error('Fetch error:', error);
       toast.error('Error fetching user data');
     } finally {
       setLoading(false);
@@ -51,17 +65,37 @@ const UserProfile = ({ onClose }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put('/api/v1/auth/update-profile', formData, {
+      const updateData = {
+        ...formData,
+        // Send only the appropriate name field based on role
+        names: formData.role === 'shopowner' ? undefined : formData.names,
+        shopownerName: formData.role === 'shopowner' ? formData.shopownerName : undefined
+      };
+
+      const response = await axios.put('/api/v1/auth/update-profile', updateData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       if (response.data.success) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        setUser(response.data.user);
+        const updatedUser = response.data.user;
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
         setIsEditing(false);
         toast.success('Profile updated successfully');
+        
+        // Update formData with the new values
+        setFormData(prev => ({
+          ...prev,
+          names: updatedUser.names || prev.names,
+          shopownerName: updatedUser.shopownerName || prev.shopownerName,
+          email: updatedUser.email,
+          phone: updatedUser.phone,
+          address: updatedUser.address,
+          avatar: updatedUser.avatar
+        }));
       }
     } catch (error) {
+      console.error('Update error:', error);
       toast.error(error.response?.data?.message || 'Error updating profile');
     }
   };
@@ -69,139 +103,204 @@ const UserProfile = ({ onClose }) => {
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+
       try {
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('avatar', file);
+        
+        // Create a local preview URL
+        const previewUrl = URL.createObjectURL(file);
+        setFormData(prev => ({ ...prev, avatar: previewUrl }));
+        
         const token = localStorage.getItem('token');
         const response = await axios.post('/api/v1/auth/upload-avatar', formData, {
           headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data'
+            Authorization: `Bearer ${token}`
           }
         });
         
         if (response.data.success) {
-          setFormData(prev => ({ ...prev, avatar: response.data.avatarUrl }));
-          toast.success('Avatar uploaded successfully');
+          // Create a local URL for immediate display
+          const localUrl = URL.createObjectURL(file);
+          setFormData(prev => ({ ...prev, avatar: localUrl }));
+          
+          // Update the form data with the server URL after it's saved
+          if (response.data.avatarUrl) {
+            setFormData(prev => ({ ...prev, avatar: response.data.avatarUrl }));
+          }
+          toast.success('Profile picture updated successfully');
+          
+          // Update the user state and localStorage
+          const updatedUser = { ...user, avatar: response.data.avatarUrl };
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
         }
       } catch (error) {
-        toast.error('Error uploading avatar');
+        console.error('Upload error:', error);
+        toast.error('Failed to upload image. Please try again.');
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   if (loading) {
     return (
-      <div className="profile-modal loading">
-        <div className="loader"></div>
+      <div className="profile-modal">
+        <div className="profile-content loading">
+          <div className="loader">
+            <div className="loading-spinner"></div>
+            <p>Loading profile...</p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="profile-modal">
+    <div className="profile-modal" onClick={(e) => e.target.className === 'profile-modal' && onClose()}>
       <div className="profile-content">
         <button className="close-button" onClick={onClose}>
           <FaTimes />
         </button>
 
         <div className="profile-header">
-          <div className="avatar-container">
-            <img 
-              src={formData.avatar || MaleUser} 
-              alt={formData.name} 
-              className="profile-avatar"
-            />
-            {isEditing && (
-              <label className="avatar-upload">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  hidden
-                />
-                <FaEdit />
-              </label>
-            )}
+          <div className="profile-cover">
+            <div className="cover-overlay"></div>
           </div>
-          <h2>{formData.name}</h2>
-          <p className="user-role">{user?.role || 'User'}</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="profile-form">
-          <div className="form-group">
-            <FaUser className="field-icon" />
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              disabled={!isEditing}
-              placeholder="Your Name"
-            />
-          </div>
-
-          <div className="form-group">
-            <FaEnvelope className="field-icon" />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              disabled={!isEditing}
-              placeholder="Email Address"
-            />
-          </div>
-
-          <div className="form-group">
-            <FaPhone className="field-icon" />
-            <input
-              type="tel"
-              name="phone"
-              value={formData.phone || ''}
-              onChange={handleChange}
-              disabled={!isEditing}
-              placeholder="Phone Number"
-            />
-          </div>
-
-          <div className="form-group">
-            <FaMapMarkerAlt className="field-icon" />
-            <textarea
-              name="address"
-              value={formData.address || ''}
-              onChange={handleChange}
-              disabled={!isEditing}
-              placeholder="Delivery Address"
-            />
-          </div>
-
-          <div className="profile-actions">
-            {isEditing ? (
-              <>
-                <button type="submit" className="save-btn">
-                  <FaSave /> Save Changes
-                </button>
-                <button 
-                  type="button" 
-                  className="cancel-btn"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setFormData(user);
-                  }}
-                >
-                  <FaTimes /> Cancel
-                </button>
-              </>
-            ) : (
+          <div className="avatar-section">
+            <div className="avatar-container">
+              <img
+                src={formData.avatar ? `http://localhost:8080${formData.avatar}` : MaleUser}
+                alt="Profile"
+                className={`profile-avatar ${isLoading ? 'loading' : ''}`}
+              />
+              {isEditing && (
+                <label className="avatar-upload-label">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    style={{ display: 'none' }}
+                  />
+                  <div className="avatar-upload">
+                    <FaCamera />
+                  </div>
+                </label>
+              )}
+            </div>
+            {!isEditing ? (
               <button 
-                type="button" 
-                className="edit-btn"
+                className="edit-button"
                 onClick={() => setIsEditing(true)}
               >
                 <FaEdit /> Edit Profile
               </button>
+            ) : (
+              <div className="edit-actions">
+                <button 
+                  className="save-button"
+                  onClick={handleSubmit}
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Saving...' : <><FaSave /> Save Changes</>}
+                </button>
+                <button 
+                  className="cancel-button"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setFormData(user);
+                  }}
+                  disabled={isLoading}
+                >
+                  <FaTimes /> Cancel
+                </button>
+              </div>
             )}
+          </div>
+        </div>
+
+        <form className="profile-form" onSubmit={handleSubmit}>
+          <div className="form-section">
+            <h3>Personal Information</h3>
+            <div className="form-group">
+              <div className="input-group">
+                {/* <FaUser className="input-icon" /> */}
+                <label htmlFor="">Name:</label>
+                <input
+                  type="text"
+                  name={formData.role === 'shopowner' ? 'shopownerName' : 'names'}
+                  value={formData.role === 'shopowner' ? formData.shopownerName : formData.names}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder={formData.role === 'shopowner' ? 'Shop Owner Name' : 'Your Name'}
+                  className="form-input"
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-group">
+                {/* <FaEnvelope className="input-icon" /> */}
+                <label htmlFor="">Email:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Email Address"
+                  className="form-input"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h3>Contact Details</h3>
+            <div className="form-group">
+              <div className="input-group">
+                {/* <FaPhone className="input-icon" /> */}
+                <label htmlFor="">Phone:</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Phone Number"
+                  className="form-input"
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <div className="input-group">
+                {/* <FaMapMarkerAlt className="input-icon" /> */}
+                <label htmlFor="">Address:</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  placeholder="Address"
+                  className="form-input"
+                />
+              </div>
+            </div>
           </div>
         </form>
       </div>

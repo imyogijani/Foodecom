@@ -1,6 +1,14 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaHome, FaBox, FaShoppingCart, FaUsers, FaSignOutAlt, FaSun, FaMoon } from "react-icons/fa";
+import {
+  FaHome,
+  FaBox,
+  FaShoppingCart,
+  FaUsers,
+  FaSignOutAlt,
+  FaSun,
+  FaMoon,
+} from "react-icons/fa";
 import { useTheme } from "../ThemeContext";
 import { toast } from "react-toastify";
 import "./AdminSidebar.css";
@@ -18,11 +26,11 @@ const AdminSidebar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    toast.success('Logged out successfully');
-    navigate('/login');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    toast.success("Logged out successfully");
+    navigate("/login");
   };
 
   return (
@@ -46,17 +54,19 @@ const AdminSidebar = () => {
             ))}
           </ul>
         </nav>
-        
+
         <div className="sidebar-footer">
           <button
             className="theme-toggle-btn"
             onClick={toggleTheme}
-            title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            title={
+              theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"
+            }
           >
-            {theme === 'light' ? <FaMoon /> : <FaSun />}
-            <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+            {theme === "light" ? <FaMoon /> : <FaSun />}
+            <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
           </button>
-          
+
           <button className="logout-btn" onClick={handleLogout}>
             <FaSignOutAlt />
             <span>Logout</span>

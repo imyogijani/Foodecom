@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from '../../utils/axios';
-import { FaEnvelope, FaLock, FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle } from 'react-icons/fa';
 import './Login.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    role: 'Client'  // Default role with correct case
+    password: ''
   });
+
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -37,16 +37,12 @@ const Login = () => {
   }, []);
 
   const redirectBasedOnRole = (role) => {
-    switch(role.toLowerCase()) {
-      case 'admin':
-        navigate('/admin/dashboard');
-        break;
-      case 'shopowner':
-        navigate('/seller/dashboard');
-        break;
-      default:
-        navigate('/');
-        break;
+    if (role.toLowerCase() === 'admin') {
+      navigate('/admin/dashboard');
+    } else if (role.toLowerCase() === 'shopowner') {
+      navigate('/seller/dashboard');
+    } else {
+      navigate('/');
     }
   };
 
@@ -72,6 +68,11 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     setIsLoading(true);
     setError('');
     
@@ -79,10 +80,14 @@ const Login = () => {
       const response = await axios.post('/api/v1/auth/login', formData);
       
       if (response.data.success) {
+        // Store token and user data
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
-        toast.success('Login successful! 🎉');
+        // Set httpOnly cookie for additional security
+        document.cookie = `token=${response.data.token}; path=/; max-age=86400; secure; samesite=strict`;
+        
+        toast.success('Welcome back! 👋');
         redirectBasedOnRole(response.data.user.role);
       } else {
         const errorMsg = response.data.message || 'Login failed';
@@ -90,10 +95,15 @@ const Login = () => {
         setError(errorMsg);
       }
     } catch (err) {
-      console.error('Login error:', err.response?.data);
       const errorMsg = err.response?.data?.message || 'Login failed. Please check your credentials.';
       toast.error(errorMsg);
       setError(errorMsg);
+
+      // Clear password on error for security
+      setFormData(prev => ({
+        ...prev,
+        password: ''
+      }));
     } finally {
       setIsLoading(false);
     }
@@ -103,73 +113,63 @@ const Login = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <FaUserCircle size={48} color="#007bff" />
+          <FaUserCircle className="login-icon" />
           <h2>Welcome Back</h2>
           <p>Please enter your details to sign in</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        {error && (
+          <div className="error-message">
+            <p>{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <div className="input-group">
-              {/* <FaEnvelope className="input-icon" /> */}
               <input
                 type="email"
                 name="email"
-                className="form-input"
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
                 required
+                className="form-input"
               />
             </div>
           </div>
 
           <div className="form-group">
             <div className="input-group">
-              {/* <FaLock className="input-icon" /> */}
               <input
                 type="password"
                 name="password"
-                className="form-input"
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
                 required
+                className="form-input"
               />
             </div>
           </div>
 
-          <div className="form-group">
-            <div className="input-group">
-              <select
-                name="role"
-                className="form-input"
-                value={formData.role}
-                onChange={handleChange}
-                required
-              >
-                <option value="client">Client</option>
-                <option value="admin">Admin</option>
-                <option value="shopowner">Shop Owner</option>
-              </select>
-            </div>
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-
-          <button
-            type="submit"
-            className="login-button"
+          <button 
+            type="submit" 
+            className={`login-button ${isLoading ? 'loading' : ''}`}
             disabled={isLoading}
           >
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
-        </form>
 
-        <div className="register-link">
-          Don't have an account?
-          <Link to="/register">Register here</Link>
-        </div>
+          <div className="login-footer">
+            <p>
+              Don't have an account? {' '}
+              <Link to="/register" className="register-link">
+                Register here
+              </Link>
+            </p>
+          </div>
+        </form>
       </div>
     </div>
   );

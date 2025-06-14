@@ -5,7 +5,7 @@ import Order from '../models/orderModel.js';
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments({ role: 'Client' });
+    const totalUsers = await User.countDocuments({ role: 'client' });
     const totalSellers = await User.countDocuments({ role: 'shopowner' });
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
@@ -131,9 +131,9 @@ export const getAllUsers = async (req, res) => {
       success: true,
       users: users.map(user => ({
         _id: user._id,
-        name: user.name,
+        name: user.names || user.shopownerName, // Use appropriate name field
         email: user.email,
-        role: user.role,
+        role: user.role.toLowerCase(), // Ensure consistent lowercase role
         status: user.status || 'active',
         createdAt: user.createdAt
       }))

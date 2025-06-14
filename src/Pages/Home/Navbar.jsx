@@ -22,30 +22,90 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar custom-navbar">
-      <div className="navbar-section logo-section">
-        <Link to="/" className="custom-logo">
-          <span className="logo-main">Order</span>
-          <span className="logo-uk">.UK</span>
-        </Link>
-      </div>
-      <div className="navbar-section nav-center">
-        {navLinks.map((link) => (
-          <Link
-            key={link.path}
-            to={link.path}
-            className={`nav-pill-link${isActiveLink(link.path) ? " active" : ""}`}
-          >
-            {link.name}
+    <>
+      <nav className="navbar">
+        <div className="nav-container">
+          <Link to="/" className="nav-logo">
+            <FaStore className="logo-icon" />
+            <span>E-Mall World</span>
           </Link>
-        ))}
-      </div>
-      <div className="navbar-section nav-right">
-        <Link to="/login" className="login-pill">
-          <FaUserCircle className="login-icon" />
-          <span>Login/Signup</span>
-        </Link>
-      </div>
-    </nav>
+
+          <div className="nav-links">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`nav-item ${location.pathname === link.path ? "active" : ""}`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
+          <div className="nav-buttons">
+            {isLoggedIn ? (
+              <>
+                <Link to="/cart" className="cart-button" title="Shopping Cart">
+                  <FaShoppingCart />
+                  <span className="cart-count">0</span>
+                </Link>
+                <div className="user-menu-container">
+                  <button
+                    className="profile-button"
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    title={user?.name || "User profile"}
+                  >
+                    <img
+                      src={avatarError ? usr : (user?.avatar || usr)}
+                      alt={user?.name || "User avatar"}
+                      className="user-avatar"
+                      onError={handleAvatarError}
+                    />
+                  </button>
+                  {showUserMenu && (
+                    <div className="user-menu animate-dropdown">
+                      <div className="user-info">
+                        <img
+                          src={avatarError ? usr : (user?.avatar || usr)}
+                          alt={user?.name || "User avatar"}
+                          className="menu-avatar"
+                          onError={handleAvatarError}
+                        />
+                        <div className="user-details">
+                          <p className="user-name">{user?.name || "User"}</p>
+                          <p className="user-email">{user?.email || "No email"}</p>
+                        </div>
+                      </div>
+                      <div className="menu-divider"></div>
+                      <button
+                        className="menu-item"
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          setShowProfile(true);
+                        }}
+                      >
+                        <FaCog /> Profile Settings
+                      </button>
+                      <button className="menu-item logout" onClick={handleLogout}>
+                        <FaSignOutAlt /> Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <Link to="/login" className="login-button">
+                <FaSignInAlt />
+                <span>Sign In</span>
+              </Link>
+            )}
+            <ThemeToggle />
+          </div>
+        </div>
+      </nav>
+      {showProfile && (
+        <UserProfile user={user} onClose={() => setShowProfile(false)} />
+      )}
+    </>
   );
 }
