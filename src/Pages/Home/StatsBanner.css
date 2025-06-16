@@ -32,15 +32,55 @@
   background-color: rgba(255, 255, 255, 0.4);
 }
 
-@media (max-width: 700px) {
+@media (max-width: 992px) {
   .stats-banner {
-    flex-direction: column;
-    gap: 18px;
-    padding: 20px 4px;
+    padding: 40px 20px;
   }
+
+  .stat h2 {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-banner {
+    padding: 32px 16px;
+  }
+
+  .stat h2 {
+    font-size: 1.75rem;
+  }
+
+  .stat p {
+    font-size: 0.9rem;
+  }
+
   .divider {
-    width: 60%;
-    height: 1px;
-    margin: 10px 0;
+    height: 40px;
+    margin: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-banner {
+    padding: 24px 12px;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .stat {
+    text-align: center;
+  }
+
+  .stat h2 {
+    font-size: 1.5rem;
+  }
+
+  .stat p {
+    font-size: 0.85rem;
+  }
+
+  .divider {
+    display: none;
   }
 } 

@@ -175,13 +175,6 @@ export default function Menu() {
             />
           </div>
         </div>
-        <div className="rating-badge">
-          <span className="rating-number">{restaurantInfo.rating}</span>
-          <div className="rating-stars">
-            {renderStars(Math.floor(restaurantInfo.rating))}
-          </div>
-          <span className="rating-count">Browse All Items</span>
-        </div>
       </div>
 
       {/* Menu Section */}

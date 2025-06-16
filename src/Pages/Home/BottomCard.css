@@ -144,24 +144,115 @@
   max-width: 600px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1200px) {
+  .bottom-card-container {
+    width: 95%;
+  }
+  
+  .bottom-card-title,
+  .bottom-card-tabs {
+    width: 95%;
+  }
+}
+
+@media (max-width: 992px) {
   .bottom-card-container {
     flex-direction: column;
-    gap: 32px;
-    padding: 32px 10px 24px 10px;
+    gap: 24px;
   }
-  .steps-row {
-    flex-direction: column;
-    gap: 18px;
-  }
-  .step-card {
+
+  .bottom-card-faqs {
     width: 100%;
+    margin-right: 0;
+  }
+
+  .steps-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .step-card {
+    flex: 1 1 calc(50% - 24px);
+    min-width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .bottom-card-outer {
+    padding: 24px 0;
+    margin: 32px 0;
+  }
+
+  .bottom-card-title {
+    font-size: 1.75rem;
+    margin-bottom: 20px;
+  }
+
+  .bottom-card-tabs {
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bottom-card-tab {
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .step-card {
+    flex: 1 1 100%;
     min-width: 0;
   }
-  .bottom-card-title, .bottom-card-tabs {
-    width: 98%;
+
+  .bottom-card-desc {
+    font-size: 0.95rem;
+    padding: 0 16px;
   }
-} 
+}
+
+@media (max-width: 480px) {
+  .bottom-card-outer {
+    padding: 20px 0;
+    margin: 24px 0;
+  }
+
+  .bottom-card-title {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+
+  .bottom-card-tabs {
+    gap: 8px;
+  }
+
+  .bottom-card-tab {
+    padding: 6px 16px;
+    font-size: 0.85rem;
+  }
+
+  .bottom-card-container {
+    padding: 24px 16px;
+  }
+
+  .faq-list li {
+    font-size: 1rem;
+    padding: 8px 0 8px 24px;
+  }
+
+  .step-card {
+    padding: 16px 12px;
+  }
+
+  .step-title {
+    font-size: 1rem;
+  }
+
+  .step-desc {
+    font-size: 0.9rem;
+  }
+}
 
 /* Add to the end of: c:\AksharRaj\Foodecom\src\Pages\Home\BottomCard.css */
 .faq-answer {
