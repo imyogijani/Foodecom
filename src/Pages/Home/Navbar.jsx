@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaStore, FaShoppingCart, FaCog, FaSignOutAlt, FaSignInAlt } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaStore,
+  FaShoppingCart,
+  FaCog,
+  FaSignOutAlt,
+  FaSignInAlt,
+} from "react-icons/fa";
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
 import "./Navbar.css";
@@ -25,13 +32,13 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get('/api/v1/auth/current-user');
+          const response = await axios.get("/api/v1/auth/current-user");
           setUser(response.data.user);
         } catch (error) {
-          console.error('Error fetching user data:', error);
+          console.error("Error fetching user data:", error);
         }
       }
     };
@@ -40,12 +47,12 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     setUser(null);
-    toast.success('Logged out successfully');
-    navigate('/login');
+    toast.success("Logged out successfully");
+    navigate("/login");
   };
 
   const handleAvatarError = () => {
@@ -63,7 +70,11 @@ const Navbar = () => {
     <>
       <nav className="custom-navbar">
         <div className="nav-container">
-          <Link to="/" className="custom-logo">
+          <Link
+            to="/"
+            className="custom-logo"
+            style={{ textDecoration: "none" }}
+          >
             <FaStore className="logo-icon" />
             <span className="logo-main">E-Mall</span>
             <span className="logo-uk">World</span>
@@ -74,7 +85,9 @@ const Navbar = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`nav-pill-link ${isActiveLink(link.path) ? "active" : ""}`}
+                className={`nav-pill-link ${
+                  isActiveLink(link.path) ? "active" : ""
+                }`}
               >
                 {link.name}
               </Link>
@@ -82,7 +95,7 @@ const Navbar = () => {
           </div>
 
           <div className="nav-right">
-            {localStorage.getItem('token') ? (
+            {localStorage.getItem("token") ? (
               <>
                 <Link to="/cart" className="cart-button" title="Shopping Cart">
                   <FaShoppingCart />
@@ -95,7 +108,7 @@ const Navbar = () => {
                     title={user?.name || "User profile"}
                   >
                     <img
-                      src={avatarError ? MaleUser : (user?.avatar || MaleUser)}
+                      src={avatarError ? MaleUser : user?.avatar || MaleUser}
                       alt={user?.name || "User avatar"}
                       className="user-avatar"
                       onError={handleAvatarError}
@@ -105,14 +118,20 @@ const Navbar = () => {
                     <div className="user-menu animate-dropdown">
                       <div className="user-info">
                         <img
-                          src={avatarError ? MaleUser : (user?.avatar || MaleUser)}
+                          src={
+                            avatarError ? MaleUser : user?.avatar || MaleUser
+                          }
                           alt={user?.name || "User avatar"}
                           className="menu-avatar"
                           onError={handleAvatarError}
                         />
                         <div className="user-details">
-                          <p className="user-name">{user?.names || user?.shopownerName || "User"}</p>
-                          <p className="user-email">{user?.email || "No email"}</p>
+                          <p className="user-name">
+                            {user?.names || user?.shopownerName || "User"}
+                          </p>
+                          <p className="user-email">
+                            {user?.email || "No email"}
+                          </p>
                         </div>
                       </div>
                       <div className="menu-divider"></div>
@@ -125,7 +144,10 @@ const Navbar = () => {
                       >
                         <FaCog /> Profile Settings
                       </button>
-                      <button className="menu-item logout" onClick={handleLogout}>
+                      <button
+                        className="menu-item logout"
+                        onClick={handleLogout}
+                      >
                         <FaSignOutAlt /> Logout
                       </button>
                     </div>
@@ -141,9 +163,7 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-      {showProfile && (
-        <UserProfile onClose={() => setShowProfile(false)} />
-      )}
+      {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
     </>
   );
 };

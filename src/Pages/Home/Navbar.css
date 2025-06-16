@@ -3,7 +3,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.7rem 2.5rem;
-  background: var(--bg-color);
+  /* background: var(--bg-color); */
+  background: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -69,6 +70,7 @@
 .nav-pill-link.active {
   background-color: var(--primary-color);
   color: white;
+  text-decoration: none;
 }
 
 .custom-logo {

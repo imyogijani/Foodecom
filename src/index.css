@@ -2,7 +2,8 @@
   --background-color: #f4f7f6;
   --text-color: #000000;
   --text-color-dark: #333333;
-  --primary-color: #007bff;
+  --primary-color: #e48a00;
+  --hover-color: #d67e00;
   --secondary-color: #6c757d;
   --accent-color: #28a745;
   --border-color: #e0e0e0;
@@ -32,7 +33,7 @@ a {
 
 a:hover {
   color: var(--primary-color);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 button {

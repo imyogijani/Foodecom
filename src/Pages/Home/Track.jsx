@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
 import "./Track.css";
@@ -27,7 +28,7 @@ export default function Track() {
     return items.filter(
       (item) =>
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.desc.toLowerCase().includes(searchQuery.toLowerCase()),
+        item.desc.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
@@ -189,7 +190,7 @@ export default function Track() {
 
   const subtotal = basketItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
-    0,
+    0
   );
   const discount = 3.0;
   const deliveryFee = 2.5;
@@ -265,7 +266,9 @@ export default function Track() {
               {menuCategories.map((category) => (
                 <button
                   key={category}
-                  className={`menu-category ${activeTab === category ? "active" : ""}`}
+                  className={`menu-category ${
+                    activeTab === category ? "active" : ""
+                  }`}
                   onClick={() => setActiveTab(category)}
                 >
                   {category}
