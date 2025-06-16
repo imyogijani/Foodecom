@@ -155,7 +155,11 @@ const Navbar = () => {
                 </div>
               </>
             ) : (
-              <Link to="/login" className="login-button">
+              <Link
+                to="/login"
+                className="login-button"
+                style={{ textDecoration: "none" }}
+              >
                 <FaSignInAlt />
                 <span>Sign In</span>
               </Link>
