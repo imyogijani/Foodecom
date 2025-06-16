@@ -53,11 +53,6 @@ export default function Offers() {
             />
           </div>
         </div>
-        <div className="rating-badge">
-          <span className="rating-number">🎉</span>
-          <div className="rating-stars">{renderStars(5)}</div>
-          <span className="rating-count">Special Deals</span>
-        </div>
       </div>
 
       {/* Offers Section */}

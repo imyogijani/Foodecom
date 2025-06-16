@@ -27,6 +27,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [user, setUser] = useState(null);
   const [avatarError, setAvatarError] = useState(false);
 
@@ -46,13 +47,55 @@ const Navbar = () => {
     fetchUserData();
   }, []);
 
+  // Handle mobile menu and body scroll lock
+  useEffect(() => {
+    if (showMobileMenu) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showMobileMenu]);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMobileMenu && !event.target.closest(".mobile-menu")) {
+        setShowMobileMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMobileMenu]);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     setUser(null);
+    setShowMobileMenu(false);
     toast.success("Logged out successfully");
     navigate("/login");
+  };
+
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(!showMobileMenu);
+    setShowUserMenu(false); // Close user menu when opening mobile menu
+  };
+
+  const closeMobileMenu = () => {
+    setShowMobileMenu(false);
+  };
+
+  const handleMobileNavClick = (path) => {
+    setShowMobileMenu(false);
+    navigate(path);
   };
 
   const handleAvatarError = () => {
@@ -160,9 +203,90 @@ const Navbar = () => {
                 <span>Sign In</span>
               </Link>
             )}
+
+            <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
           </div>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={`mobile-menu-overlay ${showMobileMenu ? "active" : ""}`}
+        onClick={closeMobileMenu}
+      ></div>
+
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${showMobileMenu ? "active" : ""}`}>
+        <div className="mobile-menu-header">
+          <Link
+            to="/"
+            className="custom-logo"
+            style={{ textDecoration: "none" }}
+            onClick={closeMobileMenu}
+          >
+            <FaStore className="logo-icon" />
+            <span className="logo-main">E-Mall</span>
+            <span className="logo-uk">World</span>
+          </Link>
+          <button className="mobile-menu-close" onClick={closeMobileMenu}>
+            ×
+          </button>
+        </div>
+
+        <div className="mobile-nav-links">
+          {navLinks.map((link) => (
+            <button
+              key={link.path}
+              className={`nav-pill-link ${
+                isActiveLink(link.path) ? "active" : ""
+              }`}
+              onClick={() => handleMobileNavClick(link.path)}
+            >
+              {link.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="mobile-nav-actions">
+          {localStorage.getItem("token") ? (
+            <>
+              <Link
+                to="/cart"
+                className="nav-pill-link"
+                onClick={closeMobileMenu}
+              >
+                <FaShoppingCart /> Shopping Cart (0)
+              </Link>
+              <button
+                className="nav-pill-link"
+                onClick={() => {
+                  closeMobileMenu();
+                  setShowProfile(true);
+                }}
+              >
+                <FaCog /> Profile Settings
+              </button>
+              <button className="nav-pill-link logout" onClick={handleLogout}>
+                <FaSignOutAlt /> Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="login-button"
+              onClick={closeMobileMenu}
+            >
+              <FaSignInAlt />
+              <span>Sign In</span>
+            </Link>
+          )}
+        </div>
+      </div>
+
       {showProfile && <UserProfile onClose={() => setShowProfile(false)} />}
     </>
   );
