@@ -158,7 +158,7 @@ const Users = () => {
             ) : (
               users.map(user => (
                 <tr key={user._id}>
-                  <td>{user.names || user.shopownerName}</td>
+                  <td>{user.name || user.shopownerName}</td>
                   <td>{user.email}</td>
                   <td>
                     <span className={`role-badge ${user.role.toLowerCase()}`}>
