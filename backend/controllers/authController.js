@@ -1,9 +1,11 @@
+/* eslint-disable no-undef */
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import userModel from "../models/userModel.js";
+import Subscription from "../models/subscriptionModel.js"; // Changed to default import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,24 +13,44 @@ const __dirname = path.dirname(__filename);
 //registration
 const registerController = async (req, res) => {
   try {
-    const existingUser = await userModel.findOne({ email: req.body.email });
-    //validation
+    const { email, password, role, subscriptionId, ...rest } = req.body;
+
+    const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res.status(409).send({
         success: false,
-        message: "User is already exists",
+        message: "User already exists",
       });
     }
-    //hash Password
+
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
-    req.body.password = hashedPassword;
-    //rest data
-    const user = new userModel(req.body);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    let userData = {
+      email,
+      password: hashedPassword,
+      role,
+      ...rest,
+    };
+
+    if (role === "shopowner" && subscriptionId) {
+      const subscription = await Subscription.findById(subscriptionId);
+      if (!subscription) {
+        return res.status(400).send({
+          success: false,
+          message: "Invalid subscription plan provided",
+        });
+      }
+      userData.subscription = subscriptionId;
+      userData.subscriptionStartDate = new Date();
+    }
+
+    const user = new userModel(userData);
     await user.save();
+
     return res.status(201).send({
       success: true,
-      message: "User Register Successfully🎉",
+      message: "User registered successfully 🎉",
       user,
     });
   } catch (error) {
@@ -44,7 +66,9 @@ const registerController = async (req, res) => {
 //login call back
 const loginController = async (req, res) => {
   try {
-    const user = await userModel.findOne({ email: req.body.email });
+    const user = await userModel
+      .findOne({ email: req.body.email })
+      .populate("subscription");
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -52,7 +76,6 @@ const loginController = async (req, res) => {
       });
     }
 
-    //compare password
     const comparePassword = await bcrypt.compare(
       req.body.password,
       user.password
@@ -64,12 +87,28 @@ const loginController = async (req, res) => {
       });
     }
 
+    // Check subscription status for shopowners
+    if (user.role === "shopowner" && user.subscription) {
+      const oneMonth = 30 * 24 * 60 * 60 * 1000; // milliseconds in a month
+      const now = new Date();
+      const subscriptionEndDate = new Date(
+        user.subscriptionStartDate.getTime() + oneMonth
+      );
+
+      if (now > subscriptionEndDate) {
+        return res.status(403).send({
+          success: false,
+          message: "Your subscription has expired. Please renew to continue.",
+        });
+      }
+    }
+
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
     return res.status(200).send({
       success: true,
-      message: "Login successful🎉",
+      message: "Login successful 🎉",
       token,
       user,
     });
@@ -77,7 +116,7 @@ const loginController = async (req, res) => {
     console.log(error);
     res.status(500).send({
       success: false,
-      message: "Error in login🥲",
+      message: "Error in login 🥲",
       error,
     });
   }

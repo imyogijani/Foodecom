@@ -1,15 +1,18 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { FaSearch, FaStore, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import "./Products.css";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [shops, setShops] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedShop, setSelectedShop] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedShop, setSelectedShop] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate(); // Call useNavigate at the top level
 
   useEffect(() => {
     fetchProducts();
@@ -18,13 +21,13 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/admin/all-products', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/admin/all-products", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setProducts(response.data.products);
     } catch (error) {
-      toast.error('Error fetching products');
+      toast.error("Error fetching products");
     } finally {
       setLoading(false);
     }
@@ -32,38 +35,39 @@ const Products = () => {
 
   const fetchShops = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/admin/shops', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/admin/shops", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setShops(response.data.shops);
     } catch (error) {
-      toast.error('Error fetching shops');
+      toast.error("Error fetching shops");
     }
   };
 
   const handleDeleteProduct = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         await axios.delete(`/api/v1/admin/products/${productId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Product deleted successfully');
+        toast.success("Product deleted successfully");
         fetchProducts();
       } catch (error) {
-        toast.error('Error deleting product');
+        toast.error("Error deleting product");
       }
     }
   };
 
-  const filteredProducts = products
-    .filter(product => {
-      const matchesShop = selectedShop === 'all' || product.shopId === selectedShop;
-      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          product.description.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesShop && matchesSearch;
-    });
+  const filteredProducts = products.filter((product) => {
+    const matchesShop =
+      selectedShop === "all" || product.shopId === selectedShop;
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesShop && matchesSearch;
+  });
 
   return (
     <div className="admin-products">
@@ -89,7 +93,7 @@ const Products = () => {
           onChange={(e) => setSelectedShop(e.target.value)}
         >
           <option value="all">All Shops</option>
-          {shops.map(shop => (
+          {shops.map((shop) => (
             <option key={shop._id} value={shop._id}>
               {shop.name}
             </option>
@@ -108,7 +112,7 @@ const Products = () => {
         </div>
         <div className="stat-card">
           <h3>Categories</h3>
-          <p>{new Set(products.map(p => p.category)).size}</p>
+          <p>{new Set(products.map((p) => p.category)).size}</p>
         </div>
       </div>
 
@@ -130,12 +134,12 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map(product => (
+              {filteredProducts.map((product) => (
                 <tr key={product._id}>
                   <td>
-                    <img 
-                      src={product.image} 
-                      alt={product.name} 
+                    <img
+                      src={product.image}
+                      alt={product.name}
                       className="product-thumbnail"
                     />
                   </td>
@@ -156,13 +160,16 @@ const Products = () => {
                   </td>
                   <td>
                     <div className="action-buttons">
-                      <button 
+                      <button
                         className="edit-btn"
-                        onClick={() => handleEditProduct(product._id)}
+                        onClick={() => {
+                          // Navigate to edit product page
+                          navigate(`/admin/products/edit/${product._id}`);
+                        }}
                       >
                         <FaEdit />
                       </button>
-                      <button 
+                      <button
                         className="delete-btn"
                         onClick={() => handleDeleteProduct(product._id)}
                       >

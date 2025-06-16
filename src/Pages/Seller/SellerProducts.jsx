@@ -7,22 +7,22 @@ import "../../App.css";
 import "./SellerProducts.css";
 
 const categories = [
-  'All',
-  'Burgers',
-  'Fries',
-  'Snacks',
-  'Salads',
-  'Cold drinks',
-  'Happy Meal',
-  'Desserts',
-  'Hot drinks',
-  'Sauces'
+  "All",
+  "Burgers",
+  "Fries",
+  "Snacks",
+  "Salads",
+  "Cold drinks",
+  "Happy Meal",
+  "Desserts",
+  "Hot drinks",
+  "Sauces",
 ];
 
 const SellerProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
     fetchProducts();
@@ -30,40 +30,42 @@ const SellerProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/products/seller-products', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/products/seller-products", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
         setProducts(response.data.products);
       }
     } catch (error) {
-      toast.error('Error fetching products');
+      toast.error("Error fetching products");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (productId) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm("Are you sure you want to delete this product?")) {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.delete(`/api/v1/products/${productId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const token = localStorage.getItem("token");
+        const response = await axios.delete(`/api/products/${productId}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         if (response.data.success) {
-          toast.success('Product deleted successfully');
+          toast.success("Product deleted successfully");
           fetchProducts();
         }
       } catch (error) {
-        toast.error('Error deleting product');
+        toast.error("Error deleting product");
+        console.log(error);
       }
     }
   };
 
-  const filteredProducts = selectedCategory === 'All' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
+  const filteredProducts =
+    selectedCategory === "All"
+      ? products
+      : products.filter((product) => product.category === selectedCategory);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -75,7 +77,7 @@ const SellerProducts = () => {
         <h1>Products</h1>
         <p className="admin-subtitle">Manage your products and inventory</p>
         <Link to="/seller/products/add" className="add-product-btn">
-          <FaPlus style={{ marginRight: '0.5rem' }} />
+          <FaPlus style={{ marginRight: "0.5rem" }} />
           Add New Product
         </Link>
       </div>
@@ -84,7 +86,9 @@ const SellerProducts = () => {
         {categories.map((category) => (
           <button
             key={category}
-            className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
+            className={`category-btn ${
+              selectedCategory === category ? "active" : ""
+            }`}
             onClick={() => setSelectedCategory(category)}
           >
             {category}
@@ -115,15 +119,25 @@ const SellerProducts = () => {
                   <td>${product.price.toFixed(2)}</td>
                   <td>{product.stock}</td>
                   <td>
-                    <span className={`status ${product.status.toLowerCase().replace(' ', '-')}`}>
+                    <span
+                      className={`status ${product.status
+                        .toLowerCase()
+                        .replace(" ", "-")}`}
+                    >
                       {product.status}
                     </span>
                   </td>
                   <td>
-                    <Link to={`/seller/edit-product/${product.id}`} className="edit-btn">
+                    <Link
+                      to={`/seller/edit-product/${product.id}`}
+                      className="edit-btn"
+                    >
                       Edit
                     </Link>
-                    <button onClick={() => handleDelete(product.id)} className="delete-btn">
+                    <button
+                      onClick={() => handleDelete(product.id)}
+                      className="delete-btn"
+                    >
                       Delete
                     </button>
                   </td>

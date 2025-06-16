@@ -1,48 +1,79 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import axios from '../../utils/axios';
-import { FaEnvelope, FaLock, FaUser, FaPhone, FaMapMarkerAlt, FaStore } from 'react-icons/fa';
-import './Register.css';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import axios from "../../utils/axios";
+import {
+  FaEnvelope,
+  FaLock,
+  FaUser,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaStore,
+} from "react-icons/fa";
+import "./Register.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    role: 'client',
-    names: '',
-    shopownerName: '',
-    phone: '',
-    address: ''
+    email: "",
+    password: "",
+    role: "client",
+    names: "",
+    shopownerName: "",
+    phone: "",
+    address: "",
+    subscriptionId: "", // Add subscriptionId to form data
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [subscriptions, setSubscriptions] = useState(false); // State to store subscription plans
+  const [loadingSubscriptions, setLoadingSubscriptions] = useState(true); // State for loading subscriptions
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        const response = await axios.get("/api/subscriptions");
+        if (response.data.success) {
+          setSubscriptions(response.data.subscriptions);
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (err) {
+        toast.error("Failed to fetch subscription plans.");
+      } finally {
+        setLoadingSubscriptions(false);
+      }
+    };
+
+    fetchSubscriptions();
+  }, []);
+
   const handleChange = (e) => {
-    setError('');
+    setError("");
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await axios.post('/api/v1/auth/register', formData);
+      const response = await axios.post("/api/auth/register", formData);
       if (response.data.success) {
-        toast.success('Registration successful! Please login.');
-        navigate('/login');
+        toast.success("Registration successful! Please login.");
+        navigate("/login");
       } else {
         setError(response.data.message);
         toast.error(response.data.message);
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      const errorMessage =
+        err.response?.data?.message || "Registration failed. Please try again.";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -80,7 +111,7 @@ const Register = () => {
             </div>
           </div>
 
-          {formData.role === 'client' || formData.role === 'admin' ? (
+          {formData.role === "client" || formData.role === "admin" ? (
             <div className="form-group">
               <div className="input-group">
                 <input
@@ -95,19 +126,43 @@ const Register = () => {
               </div>
             </div>
           ) : (
-            <div className="form-group">
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="shopownerName"
-                  placeholder="Shop Owner Name"
-                  value={formData.shopownerName}
-                  onChange={handleChange}
-                  required
-                  className="form-input"
-                />
+            <>
+              <div className="form-group">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    name="shopownerName"
+                    placeholder="Shop Owner Name"
+                    value={formData.shopownerName}
+                    onChange={handleChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
               </div>
-            </div>
+              {loadingSubscriptions ? (
+                <p>Loading subscription plans...</p>
+              ) : (
+                <div className="form-group">
+                  <div className="input-group">
+                    <select
+                      name="subscriptionId"
+                      value={formData.subscriptionId}
+                      onChange={handleChange}
+                      required={formData.role === "shopowner"}
+                      className="form-input"
+                    >
+                      <option value="">Select a Subscription Plan</option>
+                      {subscriptions.map((plan) => (
+                        <option key={plan._id} value={plan._id}>
+                          {plan.planName} - ₹{plan.monthlyPrice} / month
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <div className="form-group">
@@ -172,17 +227,17 @@ const Register = () => {
             </div>
           </div>
 
-          <button 
-            type="submit" 
-            className={`register-button ${isLoading ? 'loading' : ''}`}
+          <button
+            type="submit"
+            className={`register-button ${isLoading ? "loading" : ""}`}
             disabled={isLoading}
           >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
+            {isLoading ? "Creating Account..." : "Create Account"}
           </button>
 
           <div className="register-footer">
             <p>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link to="/login" className="login-link">
                 Sign in here
               </Link>

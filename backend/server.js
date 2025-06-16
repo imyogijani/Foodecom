@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import express from "express";
 import dotenv from "dotenv";
 import colors from "colors";
@@ -11,10 +13,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configure dotenv with absolute path
-dotenv.config({ path: path.join(__dirname, '../.env') });
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 // Debug logging
-console.log('MONGO_URL:', process.env.MONGO_URL);
+console.log("MONGO_URL:", process.env.MONGO_URL);
 
 import connectDB from "./config/db.js";
 //mongodb Connection
@@ -25,31 +27,43 @@ const app = express();
 
 //middlewares
 app.use(express.json());
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-  exposedHeaders: ['Content-Disposition']
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    exposedHeaders: ["Content-Disposition"],
+  })
+);
 app.use(morgan("dev"));
 
 // Configure static file serving with proper headers and caching
-app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
-  maxAge: '1d', // Cache for 1 day
-  etag: true,
-  lastModified: true,
-  setHeaders: (res, path) => {
-    if (path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.png') || path.endsWith('.gif')) {
-      res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
-      res.setHeader('Content-Type', 'image/' + path.split('.').pop());
-    }
-  }
-}));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "public/uploads"), {
+    maxAge: "1d", // Cache for 1 day
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, path) => {
+      if (
+        path.endsWith(".jpg") ||
+        path.endsWith(".jpeg") ||
+        path.endsWith(".png") ||
+        path.endsWith(".gif")
+      ) {
+        res.setHeader("Cache-Control", "public, max-age=86400"); // 1 day
+        res.setHeader("Content-Type", "image/" + path.split(".").pop());
+      }
+    },
+  })
+);
 
 // Serve other static files
-app.use(express.static(path.join(__dirname, 'public'), {
-  maxAge: '1h',
-  etag: true
-}));
+app.use(
+  express.static(path.join(__dirname, "public"), {
+    maxAge: "1h",
+    etag: true,
+  })
+);
 
 //routs
 //1 test route
@@ -61,14 +75,16 @@ app.use(express.static(path.join(__dirname, 'public'), {
 import testRoutes from "./routes/testRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 
 app.use("/api/v1/test", testRoutes);
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/orders", orderRoutes);
-app.use("/api/v1/products", productRoutes);
-app.use("/api/v1/admin", adminRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api", subscriptionRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 

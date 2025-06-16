@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-keys */
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -37,7 +38,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
-
     },
     address: {
       type: String,
@@ -51,8 +51,17 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
+    subscription: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subscription",
+      default: null,
+    },
+    subscriptionStartDate: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
