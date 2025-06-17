@@ -166,26 +166,168 @@ export default function Home() {
       </div>
 
       {/* Promo Image Section */}
-      <div className="promo-image-section" style={{ display: 'flex', justifyContent: 'center', margin: '2rem 0' }}>
-        <img src={promo} alt="Promo" style={{ maxWidth: '100%', height: 'auto', borderRadius: '16px', boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }} />
+      <div
+        className="promo-image-section"
+        style={{ display: "flex", justifyContent: "center", margin: "2rem 0" }}
+      >
+        <img
+          src={promo}
+          alt="Promo"
+          style={{
+            maxWidth: "70%",
+            height: "auto",
+            borderRadius: "16px",
+            // boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+          }}
+        />
       </div>
 
       {/* Partner Banner Section */}
       <div className="partner-banner-row">
-        <section className="partner-banner">
-          <img src={partnerBanner} alt="Partner with us" className="banner-bg" />
-          <div className="banner-content">
-            <button className="cta-button" onClick={handleGetStarted}>Get Started</button>
+        <section
+          className="partner-banner"
+          style={{
+            backgroundImage: `url(${partnerBanner})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            borderRadius: "16px",
+            overflow: "hidden",
+            position: "relative",
+            display: "flex",
+            alignItems: "flex-end",
+            padding: "2rem",
+            color: "white",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            minHeight: "300px",
+          }}
+        >
+          <div
+            className="banner-content"
+            style={{
+              position: "relative",
+              zIndex: 1,
+              textAlign: "left",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--primary-color)",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Earn more with lower fees
+            </p>
+            <h4
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Signup as a business
+            </h4>
+            <h3
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: "bold",
+                lineHeight: "1.2",
+              }}
+            >
+              Partner with us
+            </h3>
+            <button
+              className="cta-button"
+              onClick={handleGetStarted}
+              style={{
+                backgroundColor: "var(--primary-color)",
+                color: "white",
+                padding: "0.8rem 1.5rem",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                marginTop: "1.5rem",
+                fontSize: "1rem",
+                fontWeight: "bold",
+              }}
+            >
+              Get Started
+            </button>
           </div>
         </section>
-        <section className="availperks-banner">
-          <img src={availperks} alt="Avail exclusive perks" className="banner-bg" />
-          <div className="banner-content">
-            <button className="cta-button" onClick={handleGetStarted}>Get Started</button>
+        <section
+          className="availperks-banner"
+          style={{
+            backgroundImage: `url(${availperks})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            borderRadius: "16px",
+            overflow: "hidden",
+            position: "relative",
+            display: "flex",
+            alignItems: "flex-end",
+            padding: "2rem",
+            color: "white",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+            minHeight: "300px",
+          }}
+        >
+          <div
+            className="banner-content"
+            style={{
+              position: "relative",
+              zIndex: 1,
+              textAlign: "left",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.9rem",
+                color: "var(--primary-color)",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Avail exclusive perks
+            </p>
+            <h4
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: "bold",
+                marginBottom: "0.5rem",
+              }}
+            >
+              Signup as a rider
+            </h4>
+            <h3
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: "bold",
+                lineHeight: "1.2",
+              }}
+            >
+              Ride with us
+            </h3>
+            <button
+              className="cta-button"
+              onClick={handleGetStarted}
+              style={{
+                backgroundColor: "var(--primary-color)",
+                color: "white",
+                padding: "0.8rem 1.5rem",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer",
+                marginTop: "1.5rem",
+                fontSize: "1rem",
+                fontWeight: "bold",
+              }}
+            >
+              Get Started
+            </button>
           </div>
         </section>
       </div>
-      
+
       <BottomCard />
       <StatsBanner />
     </>

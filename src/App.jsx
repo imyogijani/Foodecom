@@ -22,6 +22,7 @@ import Dashboard from "./Pages/admin/Dashboard";
 import Products from "./Pages/admin/Products";
 import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
+import Subscriptions from "./Pages/admin/Subscriptions"; // Import the new Subscriptions component
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
 import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
@@ -43,12 +44,13 @@ function LayoutWrapper() {
     "/admin/products",
     "/admin/orders",
     "/admin/users",
+    "/admin/subscriptions", // Add the new subscriptions path
     "/seller",
     "/seller/dashboard",
     "/seller/products/all",
     "/seller/products/add",
     "/seller/orders",
-    "/seller/customers"
+    "/seller/customers",
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
@@ -65,11 +67,14 @@ function LayoutWrapper() {
         <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="cart" element={
-          <ProtectedRoute allowedRoles={["client"]}>
-            <Cart />
-          </ProtectedRoute>
-        } />
+        <Route
+          path="cart"
+          element={
+            <ProtectedRoute allowedRoles={["client"]}>
+              <Cart />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="admin"
           element={
@@ -83,6 +88,8 @@ function LayoutWrapper() {
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
+          <Route path="subscriptions" element={<Subscriptions />} />{" "}
+          {/* Add the new route for Subscriptions */}
         </Route>
 
         <Route

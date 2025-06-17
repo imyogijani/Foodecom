@@ -18,6 +18,7 @@ const adminLinks = [
   { name: "Products", path: "/admin/products", icon: <FaBox /> },
   { name: "Orders", path: "/admin/orders", icon: <FaShoppingCart /> },
   { name: "Users", path: "/admin/users", icon: <FaUsers /> },
+  { name: "Subscriptions", path: "/admin/subscriptions", icon: <FaBox /> }, // Added Subscriptions link
 ];
 
 const AdminSidebar = () => {

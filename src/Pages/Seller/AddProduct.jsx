@@ -13,7 +13,7 @@ const AddProduct = () => {
     category: "",
     stock: "",
     image: null,
-    status: "In Stock"
+    status: "In Stock",
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
@@ -23,9 +23,9 @@ const AddProduct = () => {
     const { name, value, files } = e.target;
     if (name === "image") {
       const file = files[0];
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        image: file
+        image: file,
       }));
       // Create image preview
       const reader = new FileReader();
@@ -39,42 +39,42 @@ const AddProduct = () => {
       // Ensure only positive numbers
       const numberValue = parseFloat(value);
       if (!isNaN(numberValue) && numberValue >= 0) {
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
-          [name]: value
+          [name]: value,
         }));
       }
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
   const validateForm = () => {
     if (!formData.name.trim()) {
-      toast.error('Product name is required');
+      toast.error("Product name is required");
       return false;
     }
     if (!formData.category) {
-      toast.error('Please select a category');
+      toast.error("Please select a category");
       return false;
     }
     if (!formData.price || parseFloat(formData.price) <= 0) {
-      toast.error('Please enter a valid price');
+      toast.error("Please enter a valid price");
       return false;
     }
     if (!formData.stock || parseInt(formData.stock) < 0) {
-      toast.error('Please enter a valid stock quantity');
+      toast.error("Please enter a valid stock quantity");
       return false;
     }
     if (!formData.description.trim()) {
-      toast.error('Product description is required');
+      toast.error("Product description is required");
       return false;
     }
     if (!formData.image) {
-      toast.error('Product image is required');
+      toast.error("Product image is required");
       return false;
     }
     return true;
@@ -86,32 +86,33 @@ const AddProduct = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      
+      const token = localStorage.getItem("token");
+
       const productData = new FormData();
-      Object.keys(formData).forEach(key => {
-        if (key === 'image') {
-          productData.append('image', formData.image);
+      Object.keys(formData).forEach((key) => {
+        if (key === "image") {
+          productData.append("image", formData.image);
         } else {
           productData.append(key, formData[key]);
         }
       });
 
-      const response = await axios.post('/api/v1/products/add', productData, {
-        headers: { 
+      const response = await axios.post("/api/products/add", productData, {
+        headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       if (response.data.success) {
-        toast.success('Product added successfully!');
-        navigate('/seller/products');
+        toast.success("Product added successfully!");
+        navigate("/seller/products");
       }
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error adding product';
+      const errorMessage =
+        error.response?.data?.message || "Error adding product";
       toast.error(errorMessage);
-      console.error('Error adding product:', error);
+      console.error("Error adding product:", error);
     } finally {
       setLoading(false);
     }
@@ -119,7 +120,7 @@ const AddProduct = () => {
 
   const handleCancel = () => {
     if (loading) return;
-    navigate('/seller/products');
+    navigate("/seller/products");
   };
 
   return (
@@ -227,16 +228,12 @@ const AddProduct = () => {
           </div>
 
           <div className="form-actions">
-            <button 
-              type="submit" 
-              className="submit-btn" 
-              disabled={loading}
-            >
-              {loading ? 'Adding...' : 'Add Product'}
+            <button type="submit" className="submit-btn" disabled={loading}>
+              {loading ? "Adding..." : "Add Product"}
             </button>
-            <button 
-              type="button" 
-              className="cancel-btn" 
+            <button
+              type="button"
+              className="cancel-btn"
               onClick={handleCancel}
               disabled={loading}
             >

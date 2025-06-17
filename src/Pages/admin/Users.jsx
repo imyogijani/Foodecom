@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { FaSearch, FaUserCog, FaStore, FaUser, FaTrash, FaSpinner } from 'react-icons/fa';
-import axios from '../../utils/axios';
-import { toast } from 'react-toastify';
-import './Users.css';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
+import {
+  FaSearch,
+  FaUserCog,
+  FaStore,
+  FaUser,
+  FaTrash,
+  FaSpinner,
+} from "react-icons/fa";
+import axios from "../../utils/axios";
+import { toast } from "react-toastify";
+import "./Users.css";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterRole, setFilterRole] = useState("all");
 
   useEffect(() => {
     fetchUsers();
@@ -17,65 +25,70 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      console.log('Fetching users with token:', token); // Debug log
-      
-      const response = await axios.get('/api/v1/admin/users', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem("token");
+      console.log("Fetching users with token:", token); // Debug log
+
+      const response = await axios.get("/api/admin/users", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
-      console.log('Users response:', response.data); // Debug log
+
+      console.log("Users response:", response.data); // Debug log
       setUsers(response.data.users || []);
     } catch (error) {
-      console.error('Error fetching users:', error); // Debug log
-      toast.error(error.response?.data?.message || 'Failed to fetch users');
+      console.error("Error fetching users:", error); // Debug log
+      toast.error(error.response?.data?.message || "Failed to fetch users");
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         await axios.delete(`/api/v1/admin/users/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('User deleted successfully');
+        toast.success("User deleted successfully");
         fetchUsers();
       } catch (error) {
-        toast.error('Error deleting user');
+        toast.error("Error deleting user");
       }
     }
   };
 
   const handleUpdateRole = async (userId, newRole) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.patch(`/api/v1/admin/users/${userId}/role`, 
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `/api/v1/admin/users/${userId}/role`,
         { role: newRole },
-        { headers: { Authorization: `Bearer ${token}` }}
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success('User role updated successfully');
+      toast.success("User role updated successfully");
       fetchUsers();
     } catch (error) {
-      toast.error('Error updating user role');
+      toast.error("Error updating user role");
     }
   };
 
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = 
-      (user.names || user.shopownerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      (user.names || user.shopownerName || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === 'all' || user.role.toLowerCase() === filterRole.toLowerCase();
+    const matchesRole =
+      filterRole === "all" ||
+      user.role.toLowerCase() === filterRole.toLowerCase();
     return matchesSearch && matchesRole;
   });
 
   const getRoleIcon = (role) => {
     switch (role) {
-      case 'admin':
+      case "admin":
         return <FaUserCog className="role-icon admin" />;
-      case 'shopowner':
+      case "shopowner":
         return <FaStore className="role-icon seller" />;
       default:
         return <FaUser className="role-icon user" />;
@@ -92,7 +105,7 @@ const Users = () => {
       total: users.length,
       admin: stats.admin || 0,
       shopowner: stats.shopowner || 0,
-      client: stats.client || 0
+      client: stats.client || 0,
     };
   };
 
@@ -125,8 +138,8 @@ const Users = () => {
           />
         </div>
 
-        <select 
-          value={filterRole} 
+        <select
+          value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
           className="role-filter"
         >
@@ -156,7 +169,7 @@ const Users = () => {
                 </td>
               </tr>
             ) : (
-              users.map(user => (
+              users.map((user) => (
                 <tr key={user._id}>
                   <td>{user.name || user.shopownerName}</td>
                   <td>{user.email}</td>
@@ -166,9 +179,7 @@ const Users = () => {
                     </span>
                   </td>
                   <td>
-                    <span className="status-badge active">
-                      Active
-                    </span>
+                    <span className="status-badge active">Active</span>
                   </td>
                   <td>
                     <button className="action-btn edit">
