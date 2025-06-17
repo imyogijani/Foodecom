@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import './Categories.css'; // Assuming you'll create this CSS file
+import { FaPlus } from 'react-icons/fa';
+import './Categories.css';
 
 const Categories = () => {
   const [categoryName, setCategoryName] = useState('');
@@ -43,7 +44,10 @@ const Categories = () => {
 
   return (
     <div className="categories-container">
-      <h1>Manage Categories & Subcategories</h1>
+      <div className="admin-header">
+        <h1>Categories Management</h1>
+        <p className="admin-subtitle">Manage product categories and subcategories</p>
+      </div>
 
       <div className="category-section">
         <h2>Add New Category</h2>
@@ -55,7 +59,9 @@ const Categories = () => {
             onChange={(e) => setCategoryName(e.target.value)}
             className="form-input"
           />
-          <button type="submit" className="btn btn-primary">Add Category</button>
+          <button type="submit" className="btn btn-primary">
+            <FaPlus /> Add Category
+          </button>
         </form>
       </div>
 
@@ -79,7 +85,9 @@ const Categories = () => {
             onChange={(e) => setSubCategoryName(e.target.value)}
             className="form-input"
           />
-          <button type="submit" className="btn btn-primary">Add Subcategory</button>
+          <button type="submit" className="btn btn-primary">
+            <FaPlus /> Add Subcategory
+          </button>
         </form>
       </div>
 
