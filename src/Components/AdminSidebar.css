@@ -200,7 +200,7 @@ aside button {
 }
 
 .admin-sub-nav-link:hover {
-  background-color: #495057;
+  /* background-color: #495057; */
   color: #fff;
   text-decoration: none;
 }
