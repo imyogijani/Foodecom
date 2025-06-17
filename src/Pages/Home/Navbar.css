@@ -68,6 +68,7 @@
   cursor: pointer;
   padding: 0.5rem;
   margin-left: 1rem;
+  z-index: 1001;
 }
 
 .mobile-menu-toggle span {
@@ -89,10 +90,13 @@
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .mobile-menu-overlay.active {
   display: block;
+  opacity: 1;
 }
 
 /* Mobile menu content */
@@ -101,7 +105,8 @@
   position: fixed;
   top: 0;
   right: -100%;
-  width: 280px;
+  width: 85%;
+  max-width: 320px;
   height: 100%;
   background: #fff;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
@@ -109,6 +114,7 @@
   z-index: 1000;
   padding: 1rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mobile-menu.active {
@@ -131,6 +137,17 @@
   cursor: pointer;
   padding: 0.5rem;
   color: var(--text-color);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.mobile-menu-close:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .mobile-nav-links {
@@ -145,12 +162,20 @@
   border-radius: 8px;
   text-align: left;
   border-bottom: 1px solid #f0f0f0;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.mobile-nav-links .nav-pill-link:active {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .mobile-nav-actions {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid #eee;
 }
 
 .nav-pill-link {
@@ -338,48 +363,6 @@
   }
 
   .nav-center {
-    gap: 1.5rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .custom-navbar {
-    padding: 0.7rem 1rem;
-  }
-
-  .nav-center {
-    gap: 1rem;
-  }
-
-  .custom-logo {
-    font-size: 1.8rem;
-  }
-
-  .nav-pill-link {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.9rem;
-  }
-}
-
-/* Enhanced responsive breakpoints */
-@media (max-width: 1024px) and (min-width: 769px) {
-  /* iPad-specific adjustments */
-  .custom-navbar {
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem 0.5rem;
-  }
-  .navbar-section {
-    justify-content: center;
-    margin-top: 0.5rem;
-  }
-  .logo-section {
-    justify-content: center;
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-  }
-
-  .nav-center {
     display: none;
   }
 
@@ -390,57 +373,19 @@
   .mobile-menu {
     display: block;
   }
+}
 
-  .nav-right {
-    gap: 0.8rem;
+@media (max-width: 768px) {
+  .custom-navbar {
+    padding: 0.7rem 1rem;
   }
 
   .custom-logo {
     font-size: 1.5rem;
   }
 
-  .logo-uk {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .custom-navbar {
-    padding: 0.5rem 0.8rem;
-  }
-
-  .nav-right {
-    gap: 0.5rem;
-  }
-  .nav-pill-link,
-  .login-pill {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  .user-menu {
-    width: 90vw;
-    max-width: 300px;
-    right: -100px;
-  }
-}
-
-@media (max-width: 480px) {
-  .custom-navbar {
-    padding: 0.7rem 0.5rem;
-  }
-
   .nav-right {
     gap: 0.8rem;
-  }
-
-  .custom-logo {
-    font-size: 1.5rem;
-  }
-
-  .nav-pill-link {
-    padding: 0.3rem 0.7rem;
-    font-size: 0.85rem;
   }
 
   .profile-button,
@@ -452,5 +397,70 @@
   .cart-count {
     font-size: 0.7rem;
     padding: 1px 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-navbar {
+    padding: 0.7rem 0.8rem;
+  }
+
+  .custom-logo {
+    font-size: 1.3rem;
+  }
+
+  .logo-uk {
+    font-size: 0.9rem;
+  }
+
+  .nav-right {
+    gap: 0.6rem;
+  }
+
+  .mobile-menu {
+    width: 100%;
+    max-width: none;
+  }
+
+  .mobile-nav-links .nav-pill-link {
+    padding: 1.2rem 1rem;
+    font-size: 1rem;
+  }
+
+  .mobile-nav-actions {
+    padding: 1.2rem 0;
+  }
+
+  .login-button {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem;
+  }
+}
+
+/* Add touch-friendly styles */
+@media (hover: none) {
+  .nav-pill-link:active,
+  .menu-item:active,
+  .mobile-menu-close:active {
+    opacity: 0.7;
+  }
+
+  .mobile-nav-links .nav-pill-link {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Add safe area insets for modern mobile browsers */
+@supports (padding: max(0px)) {
+  .custom-navbar {
+    padding-left: max(0.7rem, env(safe-area-inset-left));
+    padding-right: max(0.7rem, env(safe-area-inset-right));
+  }
+
+  .mobile-menu {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
