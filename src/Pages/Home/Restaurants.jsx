@@ -6,14 +6,28 @@ import {
   getItemsByCategory,
   defaultBasketItems,
   reviews,
-  similarRestaurants,
 } from "../../data/menuData";
+import McD from "../../images/McD.png";
+import papajohn from "../../images/Papajohns.png";
+import kfc from "../../images/KFC.png";
+import texasChicken from "../../images/Tex.png";
+import burgerKing from "../../images/Bking.png";
+import shaurma from "../../images/shaurma.png";
 
 export default function Restaurants() {
   const [activeTab, setActiveTab] = useState("Offers");
   const [cartItems, setCartItems] = useState(defaultBasketItems);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const similarRestaurants = [
+    { name: "McDonald's London", img: McD },
+    { name: "Papa Johns", img: papajohn },
+    { name: "KFC West London", img: kfc },
+    { name: "Texas Chicken", img: texasChicken },
+    { name: "Burger King", img: burgerKing },
+    { name: "Shaurma 1", img: shaurma },
+  ];
 
   // Simulate loading state
   useEffect(() => {
@@ -455,9 +469,9 @@ export default function Restaurants() {
         <h3>Similar Restaurants</h3>
         <div className="restaurants-grid">
           {similarRestaurants.map((restaurant) => (
-            <div key={restaurant.id} className="restaurant-brand-card">
+            <div className="restaurant-brand-card" key={restaurant.name}>
               <img
-                src={restaurant.image}
+                src={restaurant.img}
                 alt={restaurant.name}
                 loading="lazy"
               />

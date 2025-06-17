@@ -903,7 +903,6 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 3rem 2rem;
-  animation: slideUp 0.6s ease-out;
   margin-bottom: 2rem;
 }
 
@@ -919,170 +918,63 @@
 .restaurants-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .restaurant-brand-card {
-  border-radius: 12px;
-  padding: 1.25rem 0.75rem;
-  text-align: center;
-  /* background: #fff; */
-  box-shadow: var(--dark-blue);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  animation: slideUp 0.6s ease-out;
   position: relative;
-  min-height: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
+  width: 100%;
+  padding-top: 100%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  background: white;
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .restaurant-brand-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--hover-shadow);
-  background: var(--hover-color);
-  color: #fff;
-}
-
-.restaurant-brand-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.1);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.restaurant-brand-card:hover::before {
-  opacity: 1;
+  transform: scale(1.05);
 }
 
 .restaurant-brand-card img {
-  width: 60px;
-  height: 60px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  transition: transform 0.3s ease;
-  z-index: 1;
-  position: relative;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.restaurant-brand-card:hover img {
-  transform: scale(1.15);
+  padding: 1rem;
 }
 
 .restaurant-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--white);
-  text-align: center;
-  line-height: 1.3;
-  z-index: 1;
-  position: relative;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  word-wrap: break-word;
-  hyphens: auto;
-  max-width: 100%;
-  color: #e48a00;
-}
-.restaurant-brand-card:hover .restaurant-name {
-  color: #fff;
+  display: none;
 }
 
-/* Brand-specific colors */
-.mcdonalds {
-  background: linear-gradient(135deg, #da020e 0%, #ffc72c 100%);
-}
-
-.papa-johns {
-  background: linear-gradient(135deg, #00a651 0%, #228b22 100%);
-}
-
-.kfc {
-  background: linear-gradient(135deg, #e4002b 0%, #ffffff 100%);
-}
-
-.kfc .restaurant-name {
-  color: var(--dark-blue);
-  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
-}
-
-.texas-chicken {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-}
-
-.burger-king {
-  background: linear-gradient(135deg, #ec7c26 0%, #fdb462 100%);
-}
-
+/* Remove all brand-specific colors and effects */
+.mcdonalds,
+.papa-johns,
+.kfc,
+.texas-chicken,
+.burger-king,
 .shaurma {
-  background: linear-gradient(135deg, #f97316 0%, #fed7aa 100%);
+  background: none;
 }
 
-/* Additional responsive improvements */
 @media (max-width: 1024px) {
   .restaurants-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
   }
 }
 
 @media (max-width: 768px) {
   .restaurants-grid {
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.75rem;
-  }
-
-  .restaurant-brand-card {
-    min-height: 120px;
-    padding: 1rem 0.5rem;
-  }
-
-  .restaurant-brand-card img {
-    width: 50px;
-    height: 50px;
-  }
-
-  .restaurant-name {
-    font-size: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
-  .similar-restaurants {
-    padding: 2rem 1rem;
-  }
-
-  .similar-restaurants h3 {
-    font-size: 1.5rem;
-    text-align: center;
-  }
-
   .restaurants-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-  }
-
-  .restaurant-brand-card {
-    min-height: 110px;
-    padding: 0.75rem 0.5rem;
-  }
-
-  .restaurant-brand-card img {
-    width: 45px;
-    height: 45px;
-  }
-
-  .restaurant-name {
-    font-size: 0.7rem;
-    line-height: 1.2;
   }
 }
 

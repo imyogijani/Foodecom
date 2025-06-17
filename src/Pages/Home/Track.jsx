@@ -9,6 +9,12 @@ import {
   defaultBasketItems,
   reviews,
 } from "../../data/menuData";
+import McD from "../../images/McD.png";
+import papajohn from "../../images/Papajohns.png";
+import kfc from "../../images/KFC.png";
+import texasChicken from "../../images/Tex.png";
+import burgerKing from "../../images/Bking.png";
+import shaurma from "../../images/shaurma.png";
 
 export default function Track() {
   const [activeTab, setActiveTab] = useState("Pizzas");
@@ -195,6 +201,15 @@ export default function Track() {
   const discount = 3.0;
   const deliveryFee = 2.5;
   const total = subtotal - discount + deliveryFee;
+
+  const similarRestaurants = [
+    { name: "McDonald's London", img: McD },
+    { name: "Papa Johns", img: papajohn },
+    { name: "KFC West London", img: kfc },
+    { name: "Texas Chicken", img: texasChicken },
+    { name: "Burger King", img: burgerKing },
+    { name: "Shaurma 1", img: shaurma },
+  ];
 
   return (
     <div className="track-page">
@@ -567,54 +582,16 @@ export default function Track() {
       <div className="similar-restaurants">
         <h3>Similar Restaurants</h3>
         <div className="restaurants-grid">
-          <div className="restaurant-brand-card mcdonalds">
-            <img
-              src="https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg?auto=compress&cs=tinysrgb&w=100"
-              alt="McDonald's"
-              loading="lazy"
-            />
-            <span className="restaurant-name">McDonald's London</span>
-          </div>
-          <div className="restaurant-brand-card papa-johns">
-            <img
-              src="https://images.pexels.com/photos/803963/pexels-photo-803963.jpeg?auto=compress&cs=tinysrgb&w=100"
-              alt="Papa Johns"
-              loading="lazy"
-            />
-            <span className="restaurant-name">Papa Johns</span>
-          </div>
-          <div className="restaurant-brand-card kfc">
-            <img
-              src="https://images.pexels.com/photos/1435901/pexels-photo-1435901.jpeg?auto=compress&cs=tinysrgb&w=100"
-              alt="KFC"
-              loading="lazy"
-            />
-            <span className="restaurant-name">KFC West London</span>
-          </div>
-          <div className="restaurant-brand-card texas-chicken">
-            <img
-              src="https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg?auto=compress&cs=tinysrgb&w=100"
-              alt="Texas Chicken"
-              loading="lazy"
-            />
-            <span className="restaurant-name">Texas Chicken</span>
-          </div>
-          <div className="restaurant-brand-card burger-king">
-            <img
-              src="https://images.pexels.com/photos/803963/pexels-photo-803963.jpeg?auto=compress&cs=tinysrgb&w=100"
-              alt="Burger King"
-              loading="lazy"
-            />
-            <span className="restaurant-name">Burger King</span>
-          </div>
-          <div className="restaurant-brand-card shaurma">
-            <img
-              src="https://images.pexels.com/photos/1435901/pexels-photo-1435901.jpeg?auto=compress&cs=tinysrgb&w=100"
-              alt="Shaurma"
-              loading="lazy"
-            />
-            <span className="restaurant-name">Shaurma 1</span>
-          </div>
+          {similarRestaurants.map((restaurant) => (
+            <div className="restaurant-brand-card" key={restaurant.name}>
+              <img
+                src={restaurant.img}
+                alt={restaurant.name}
+                loading="lazy"
+              />
+              <span className="restaurant-name">{restaurant.name}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

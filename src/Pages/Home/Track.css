@@ -1465,3 +1465,82 @@
     transform: translateY(calc(100% - 60px));
   }
 }
+
+.similar-restaurants {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.similar-restaurants h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--dark-blue);
+  margin-bottom: 2rem;
+  font-family: "Poppins", sans-serif;
+  text-align: left;
+}
+
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+.restaurant-brand-card {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.restaurant-brand-card:hover {
+  transform: scale(1.05);
+}
+
+.restaurant-brand-card img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1rem;
+}
+
+.restaurant-name {
+  display: none;
+}
+
+/* Remove all brand-specific colors and effects */
+.mcdonalds,
+.papa-johns,
+.kfc,
+.texas-chicken,
+.burger-king,
+.shaurma {
+  background: none;
+}
+
+@media (max-width: 1024px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
