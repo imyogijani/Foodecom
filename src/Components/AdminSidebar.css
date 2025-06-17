@@ -49,7 +49,7 @@ aside ul li a {
 }
 
 aside ul li a:before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -137,7 +137,7 @@ aside button {
 }
 
 .admin-nav-link:before {
-  content: '';
+  content: "";
   position: absolute;
   left: 0;
   top: 0;
@@ -157,6 +157,7 @@ aside button {
 .admin-nav-link.active {
   color: var(--yellow);
   transform: translateX(4px);
+  text-decoration: none;
 }
 
 .admin-nav-icon {
@@ -173,6 +174,40 @@ aside button {
   font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.3px;
+}
+
+.admin-nav-list li {
+  margin-bottom: 10px;
+}
+
+.admin-sub-nav-list {
+  list-style: none;
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+.admin-sub-nav-list li {
+  margin-bottom: 5px;
+}
+
+.admin-sub-nav-link {
+  text-decoration: none;
+  display: block;
+  padding: 8px 15px;
+  border-radius: 5px;
+  color: #adb5bd;
+  transition: background-color 0.3s ease;
+}
+
+.admin-sub-nav-link:hover {
+  background-color: #495057;
+  color: #fff;
+  text-decoration: none;
+}
+
+.admin-sub-nav-link.active {
+  /* background-color: #007bff; */
+  color: var(--yellow);
 }
 
 /* Footer section with theme and logout buttons */

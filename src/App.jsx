@@ -22,7 +22,8 @@ import Dashboard from "./Pages/admin/Dashboard";
 import Products from "./Pages/admin/Products";
 import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
-import Subscriptions from "./Pages/admin/Subscriptions"; // Import the new Subscriptions component
+import Subscriptions from "./Pages/admin/Subscriptions";
+import Categories from "./Pages/admin/Categories";
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
 import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
@@ -44,7 +45,8 @@ function LayoutWrapper() {
     "/admin/products",
     "/admin/orders",
     "/admin/users",
-    "/admin/subscriptions", // Add the new subscriptions path
+    "/admin/subscriptions",
+    "/admin/categories",
     "/seller",
     "/seller/dashboard",
     "/seller/products/all",
@@ -88,8 +90,8 @@ function LayoutWrapper() {
           <Route path="products" element={<Products />} />
           <Route path="orders" element={<Orders />} />
           <Route path="users" element={<Users />} />
-          <Route path="subscriptions" element={<Subscriptions />} />{" "}
-          {/* Add the new route for Subscriptions */}
+          <Route path="subscriptions" element={<Subscriptions />} />
+          <Route path="categories" element={<Categories />} />
         </Route>
 
         <Route

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -15,10 +16,18 @@ import "./AdminSidebar.css";
 
 const adminLinks = [
   { name: "Dashboard", path: "/admin/dashboard", icon: <FaHome /> },
-  { name: "Products", path: "/admin/products", icon: <FaBox /> },
+  {
+    name: "Products",
+    path: "/admin/products",
+    icon: <FaBox />,
+    subLinks: [
+      { name: "All Products", path: "/admin/products" },
+      { name: "Categories", path: "/admin/categories" },
+    ],
+  },
   { name: "Orders", path: "/admin/orders", icon: <FaShoppingCart /> },
   { name: "Users", path: "/admin/users", icon: <FaUsers /> },
-  { name: "Subscriptions", path: "/admin/subscriptions", icon: <FaBox /> }, // Added Subscriptions link
+  { name: "Subscriptions", path: "/admin/subscriptions", icon: <FaBox /> },
 ];
 
 const AdminSidebar = () => {
@@ -49,15 +58,39 @@ const AdminSidebar = () => {
                   }`}
                 >
                   <span className="admin-nav-icon">{link.icon}</span>
-                  <span className="admin-nav-text">{link.name}</span>
+                  <span
+                    className="admin-nav-text"
+                    style={{ textDecoration: "none" }}
+                  >
+                    {link.name}
+                  </span>
                 </Link>
+                {link.subLinks && (
+                  <ul className="admin-sub-nav-list">
+                    {link.subLinks.map((subLink) => (
+                      <li key={subLink.path}>
+                        <Link
+                          to={subLink.path}
+                          style={{ textDecoration: "none" }}
+                          className={`admin-sub-nav-link ${
+                            location.pathname.includes(subLink.path)
+                              ? "active"
+                              : ""
+                          }`}
+                        >
+                          {subLink.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
         </nav>
 
         <div className="sidebar-footer">
-          <button
+          {/* <button
             className="theme-toggle-btn"
             onClick={toggleTheme}
             title={
@@ -66,7 +99,7 @@ const AdminSidebar = () => {
           >
             {theme === "light" ? <FaMoon /> : <FaSun />}
             <span>{theme === "light" ? "Dark Mode" : "Light Mode"}</span>
-          </button>
+          </button> */}
 
           <button className="logout-btn" onClick={handleLogout}>
             <FaSignOutAlt />

@@ -5,7 +5,7 @@ import Order from '../models/orderModel.js';
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments({ role: 'client' });
+    const totalUsers = await User.countDocuments();
     const totalSellers = await User.countDocuments({ role: 'shopowner' });
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();

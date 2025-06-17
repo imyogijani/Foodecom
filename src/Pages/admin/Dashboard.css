@@ -106,7 +106,7 @@
   margin-bottom: 0.25rem;
 }
 
-.stat-change {
+.stat-details .stat-change {
   font-size: 0.875rem;
   color: #22c55e;
   display: flex;
