@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaStore, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSearch, FaStore, FaEdit, FaTrash, FaBox, FaShoppingBag, FaChartLine, FaSpinner } from "react-icons/fa";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import "./Products.css";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -12,7 +12,7 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [selectedShop, setSelectedShop] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const navigate = useNavigate(); // Call useNavigate at the top level
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
@@ -61,13 +61,31 @@ const Products = () => {
   };
 
   const filteredProducts = products.filter((product) => {
-    const matchesShop =
-      selectedShop === "all" || product.shopId === selectedShop;
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesShop = selectedShop === "all" || product.shopId === selectedShop;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesShop && matchesSearch;
   });
+
+  const getProductStats = () => {
+    return {
+      totalProducts: products.length,
+      activeShops: shops.length,
+      categories: new Set(products.map((p) => p.category)).size,
+      totalStock: products.reduce((sum, p) => sum + p.stock, 0),
+    };
+  };
+
+  const stats = getProductStats();
+
+  if (loading) {
+    return (
+      <div className="loading">
+        <FaSpinner className="spinner" />
+        <p>Loading products...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-products">
@@ -78,7 +96,7 @@ const Products = () => {
 
       <div className="products-controls">
         <div className="search-box">
-          <FaSearch />
+          <FaSearch className="search-icon" />
           <input
             type="text"
             placeholder="Search products..."
@@ -103,86 +121,105 @@ const Products = () => {
 
       <div className="products-stats">
         <div className="stat-card">
-          <h3>Total Products</h3>
-          <p>{products.length}</p>
+          <div className="stat-icon">
+            <FaBox />
+          </div>
+          <div className="stat-details">
+            <h3>Total Products</h3>
+            <p>{stats.totalProducts}</p>
+          </div>
         </div>
         <div className="stat-card">
-          <h3>Active Shops</h3>
-          <p>{shops.length}</p>
+          <div className="stat-icon">
+            <FaStore />
+          </div>
+          <div className="stat-details">
+            <h3>Active Shops</h3>
+            <p>{stats.activeShops}</p>
+          </div>
         </div>
         <div className="stat-card">
-          <h3>Categories</h3>
-          <p>{new Set(products.map((p) => p.category)).size}</p>
+          <div className="stat-icon">
+            <FaShoppingBag />
+          </div>
+          <div className="stat-details">
+            <h3>Categories</h3>
+            <p>{stats.categories}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <FaChartLine />
+          </div>
+          <div className="stat-details">
+            <h3>Total Stock</h3>
+            <p>{stats.totalStock}</p>
+          </div>
         </div>
       </div>
 
-      {loading ? (
-        <div className="loading">Loading...</div>
-      ) : (
-        <div className="products-table-container">
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Shop</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
+      <div className="products-table-container">
+        <table className="products-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Shop</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredProducts.map((product) => (
+              <tr key={product._id}>
+                <td>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="product-thumbnail"
+                  />
+                </td>
+                <td>{product.name}</td>
+                <td>
+                  <div className="shop-info">
+                    <FaStore className="shop-icon" />
+                    <span>{product.shopName}</span>
+                  </div>
+                </td>
+                <td>{product.category}</td>
+                <td>${product.price}</td>
+                <td>{product.stock}</td>
+                <td>
+                  <span className={`status ${product.status.toLowerCase()}`}>
+                    {product.status}
+                  </span>
+                </td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      className="edit-btn"
+                      onClick={() => navigate(`/admin/products/edit/${product._id}`)}
+                      title="Edit Product"
+                    >
+                      <FaEdit />
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDeleteProduct(product._id)}
+                      title="Delete Product"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((product) => (
-                <tr key={product._id}>
-                  <td>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="product-thumbnail"
-                    />
-                  </td>
-                  <td>{product.name}</td>
-                  <td>
-                    <div className="shop-info">
-                      <FaStore className="shop-icon" />
-                      <span>{product.shopName}</span>
-                    </div>
-                  </td>
-                  <td>{product.category}</td>
-                  <td>${product.price}</td>
-                  <td>{product.stock}</td>
-                  <td>
-                    <span className={`status ${product.status.toLowerCase()}`}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="edit-btn"
-                        onClick={() => {
-                          // Navigate to edit product page
-                          navigate(`/admin/products/edit/${product._id}`);
-                        }}
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteProduct(product._id)}
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
