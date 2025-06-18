@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaUsers, FaCheckCircle, FaClock, FaTimesCircle } from "react-icons/fa";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
-import "./Products.css"; // Reusing Products.css for basic styling
+import "./Subscriptions.css";
 
 const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -27,7 +27,6 @@ const Subscriptions = () => {
     } catch (error) {
       toast.error("Error fetching subscriptions.");
       console.log(error);
-
       setLoading(false);
     }
   };
@@ -41,14 +40,9 @@ const Subscriptions = () => {
     e.preventDefault();
     try {
       if (currentSubscription) {
-        // Update existing subscription
-        await axios.put(
-          `/api/subscriptions/${currentSubscription._id}`,
-          formData
-        );
+        await axios.put(`/api/subscriptions/${currentSubscription._id}`, formData);
         toast.success("Subscription updated successfully!");
       } else {
-        // Create new subscription
         await axios.post("/api/subscriptions", formData);
         toast.success("Subscription created successfully!");
       }
@@ -104,16 +98,36 @@ const Subscriptions = () => {
   }
 
   return (
-    <div className="products-container">
-      <div className="products-header">
-        <h2>Subscriptions Management</h2>
-        <button className="add-new-btn" onClick={handleAddClick}>
-          <FaPlus /> Add New Subscription
-        </button>
+    <div className="subscriptions-container">
+      <div className="admin-header">
+        <h1>Subscription Plans</h1>
+        <p className="admin-subtitle">Manage your subscription plans and pricing</p>
       </div>
 
-      <div className="products-list">
-        <table>
+      <div className="subscription-stats">
+        <div className="stat-card">
+          <h3>Total Plans</h3>
+          <p>{subscriptions.length}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Active Plans</h3>
+          <p>{subscriptions.filter(sub => sub.status === 'active').length}</p>
+        </div>
+        <div className="stat-card">
+          <h3>Total Revenue</h3>
+          <p>${subscriptions.reduce((sum, sub) => sum + Number(sub.monthlyPrice), 0)}</p>
+        </div>
+      </div>
+
+      <div className="subscriptions-table-container">
+        <div className="table-header">
+          <h2>Subscription Plans</h2>
+          <button className="add-new-btn" onClick={handleAddClick}>
+            <FaPlus /> Add New Plan
+          </button>
+        </div>
+
+        <table className="subscriptions-table">
           <thead>
             <tr>
               <th>Plan Name</th>
@@ -125,20 +139,19 @@ const Subscriptions = () => {
           <tbody>
             {subscriptions.map((subscription) => (
               <tr key={subscription._id}>
-                <td>{subscription.planName}</td>
+                <td>
+                  <div className="user-info">
+                    <i className="fas fa-crown"></i>
+                    {subscription.planName}
+                  </div>
+                </td>
                 <td>${subscription.monthlyPrice}</td>
                 <td>{subscription.includedFeatures.join(", ")}</td>
                 <td>
-                  <button
-                    className="edit-btn"
-                    onClick={() => handleEdit(subscription)}
-                  >
+                  <button className="edit-btn" onClick={() => handleEdit(subscription)}>
                     <FaEdit />
                   </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(subscription._id)}
-                  >
+                  <button className="delete-btn" onClick={() => handleDelete(subscription._id)}>
                     <FaTrash />
                   </button>
                 </td>
@@ -151,11 +164,7 @@ const Subscriptions = () => {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>
-              {currentSubscription
-                ? "Edit Subscription"
-                : "Add New Subscription"}
-            </h3>
+            <h3>{currentSubscription ? "Edit Subscription" : "Add New Subscription"}</h3>
             <form onSubmit={handleFormSubmit}>
               <div className="form-group">
                 <label>Plan Name:</label>
@@ -191,11 +200,7 @@ const Subscriptions = () => {
                 <button type="submit" className="save-btn">
                   Save
                 </button>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => setShowModal(false)}
-                >
+                <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>
                   Cancel
                 </button>
               </div>

@@ -1,8 +1,6 @@
-// import React, { useState } from 'react';
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
-import axios from "axios";
-import "./Categories.css";
+import "./Categories.css"; // Assuming you'll create this CSS file
 
 const Categories = () => {
   const [categoryName, setCategoryName] = useState("");
@@ -87,7 +85,12 @@ const Categories = () => {
 
   return (
     <div className="categories-container">
-      <h1>Manage Categories & Subcategories</h1>
+      <div className="admin-header">
+        <h1>Categories Management</h1>
+        <p className="admin-subtitle">
+          Manage product categories and subcategories
+        </p>
+      </div>
 
       <div className="category-section">
         <h2>Add New Category</h2>

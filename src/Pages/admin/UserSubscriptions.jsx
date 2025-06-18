@@ -1,4 +1,6 @@
 import React from "react";
+import { FaUser, FaCalendarAlt, FaCheckCircle, FaClock, FaTimesCircle } from "react-icons/fa";
+import "./UserSubscriptions.css";
 
 const UserSubscriptions = () => {
   const subscriptions = [
@@ -40,32 +42,116 @@ const UserSubscriptions = () => {
     },
   ];
 
+  const getStatusIcon = (status) => {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return <FaCheckCircle className="status-icon active" />;
+      case 'pending':
+        return <FaClock className="status-icon pending" />;
+      case 'expired':
+        return <FaTimesCircle className="status-icon expired" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusClass = (status) => {
+    return `status-badge ${status.toLowerCase()}`;
+  };
+
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">User Subscriptions</h1>
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Subscription Details</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white table-auto">
+    <div className="subscriptions-container">
+      <div className="admin-header">
+        <h1>User Subscriptions</h1>
+        <p className="admin-subtitle">Manage and monitor user subscription status</p>
+      </div>
+
+      <div className="subscription-stats">
+        <div className="stat-card">
+          <div className="stat-icon">
+            <FaUser />
+          </div>
+          <div className="stat-details">
+            <h3>Total Subscribers</h3>
+            <p>{subscriptions.length}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <FaCheckCircle />
+          </div>
+          <div className="stat-details">
+            <h3>Active Subscriptions</h3>
+            <p>{subscriptions.filter(sub => sub.status === 'Active').length}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <FaClock />
+          </div>
+          <div className="stat-details">
+            <h3>Pending Subscriptions</h3>
+            <p>{subscriptions.filter(sub => sub.status === 'Pending').length}</p>
+          </div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-icon">
+            <FaTimesCircle />
+          </div>
+          <div className="stat-details">
+            <h3>Expired Subscriptions</h3>
+            <p>{subscriptions.filter(sub => sub.status === 'Expired').length}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="subscriptions-table-container">
+        <div className="table-header">
+          <h2>Subscription Details</h2>
+        </div>
+        <div className="table-responsive">
+          <table className="subscriptions-table">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b text-left">Name</th>
-                <th className="py-2 px-4 border-b text-left">Email</th>
-                <th className="py-2 px-4 border-b text-left">Plan</th>
-                <th className="py-2 px-4 border-b text-left">Start Date</th>
-                <th className="py-2 px-4 border-b text-left">End Date</th>
-                <th className="py-2 px-4 border-b text-left">Status</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {subscriptions.map((sub) => (
-                <tr key={sub.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border-b">{sub.name}</td>
-                  <td className="py-2 px-4 border-b">{sub.email}</td>
-                  <td className="py-2 px-4 border-b">{sub.plan}</td>
-                  <td className="py-2 px-4 border-b">{sub.startDate}</td>
-                  <td className="py-2 px-4 border-b">{sub.endDate}</td>
-                  <td className="py-2 px-4 border-b">{sub.status}</td>
+                <tr key={sub.id}>
+                  <td>
+                    <div className="user-info">
+                      <FaUser className="user-icon" />
+                      <span>{sub.name}</span>
+                    </div>
+                  </td>
+                  <td>{sub.email}</td>
+                  <td>{sub.plan}</td>
+                  <td>
+                    <div className="date-info">
+                      <FaCalendarAlt className="date-icon" />
+                      <span>{sub.startDate}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="date-info">
+                      <FaCalendarAlt className="date-icon" />
+                      <span>{sub.endDate}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="status-cell">
+                      {getStatusIcon(sub.status)}
+                      <span className={getStatusClass(sub.status)}>
+                        {sub.status}
+                      </span>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
