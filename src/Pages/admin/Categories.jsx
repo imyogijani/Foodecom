@@ -1,44 +1,88 @@
-import React, { useState } from 'react';
-import { toast } from 'react-toastify';
-import './Categories.css'; // Assuming you'll create this CSS file
+// import React, { useState } from 'react';
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import "./Categories.css";
 
 const Categories = () => {
-  const [categoryName, setCategoryName] = useState('');
-  const [subCategoryName, setSubCategoryName] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categoryName, setCategoryName] = useState("");
+  const [subCategoryName, setSubCategoryName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Dummy data for categories for frontend display
-  const [categories, setCategories] = useState([
-    { id: '1', name: 'Electronics', subcategories: ['Phones', 'Laptops'] },
-    { id: '2', name: 'Fashion', subcategories: ['Men', 'Women', 'Kids'] },
-  ]);
-
-  const handleAddCategory = (e) => {
-    e.preventDefault();
-    if (categoryName.trim() === '') {
-      toast.error('Category name cannot be empty.');
-      return;
+  const initialLoad = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/category");
+      if (Array.isArray(response.data)) {
+        setCategories(response.data);
+      } else {
+        setCategories([]); // Ensure categories is always an array
+        console.warn(
+          "API response for categories was not an array:",
+          response.data
+        );
+      }
+    } catch (err) {
+      setError(err);
+      toast.error("Failed to load categories.");
+    } finally {
+      setLoading(false);
     }
-    const newCategory = { id: Date.now().toString(), name: categoryName, subcategories: [] };
-    setCategories([...categories, newCategory]);
-    setCategoryName('');
-    toast.success(`Category '${categoryName}' added.`);
   };
 
-  const handleAddSubCategory = (e) => {
+  useEffect(() => {
+    initialLoad();
+  }, []);
+
+  const handleAddCategory = async (e) => {
     e.preventDefault();
-    if (subCategoryName.trim() === '' || selectedCategory === '') {
-      toast.error('Subcategory name and category selection cannot be empty.');
+    if (categoryName.trim() === "") {
+      toast.error("Category name cannot be empty.");
       return;
     }
-    setCategories(categories.map(cat =>
-      cat.id === selectedCategory
-        ? { ...cat, subcategories: [...cat.subcategories, subCategoryName] }
-        : cat
-    ));
-    setSubCategoryName('');
-    setSelectedCategory('');
-    toast.success(`Subcategory '${subCategoryName}' added to selected category.`);
+    try {
+      const { data } = await axios.post("/api/v1/category/", {
+        name: categoryName,
+      });
+      setCategories([...categories, data]);
+      setCategoryName("");
+      toast.success(`Category '${categoryName}' added.`);
+    } catch (err) {
+      toast.error("Failed to add category.");
+      console.error(err);
+    }
+  };
+
+  const handleAddSubCategory = async (e) => {
+    e.preventDefault();
+    if (subCategoryName.trim() === "" || selectedCategory === "") {
+      toast.error("Subcategory name and category selection cannot be empty.");
+      return;
+    }
+    try {
+      const response = await axios.post("/api/category/subcategory", {
+        name: subCategoryName,
+        parent: selectedCategory,
+      });
+      setCategories(
+        categories.map((cat) =>
+          cat._id === selectedCategory
+            ? { ...cat, children: [...cat.children, response.data] }
+            : cat
+        )
+      );
+      setSubCategoryName("");
+      setSelectedCategory("");
+      toast.success(
+        `Subcategory '${subCategoryName}' added to selected category.`
+      );
+    } catch (err) {
+      toast.error("Failed to add subcategory.");
+      console.error(err);
+    }
   };
 
   return (
@@ -55,7 +99,9 @@ const Categories = () => {
             onChange={(e) => setCategoryName(e.target.value)}
             className="form-input"
           />
-          <button type="submit" className="btn btn-primary">Add Category</button>
+          <button type="submit" className="btn btn-primary">
+            Add Category
+          </button>
         </form>
       </div>
 
@@ -68,8 +114,10 @@ const Categories = () => {
             className="form-input"
           >
             <option value="">Select a Category</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
             ))}
           </select>
           <input
@@ -79,23 +127,29 @@ const Categories = () => {
             onChange={(e) => setSubCategoryName(e.target.value)}
             className="form-input"
           />
-          <button type="submit" className="btn btn-primary">Add Subcategory</button>
+          <button type="submit" className="btn btn-primary">
+            Add Subcategory
+          </button>
         </form>
       </div>
 
       <div className="current-categories-section">
         <h2>Current Categories & Subcategories</h2>
-        {categories.length === 0 ? (
+        {loading ? (
+          <p>Loading categories...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : categories.length === 0 ? (
           <p>No categories added yet.</p>
         ) : (
           <ul className="category-list">
-            {categories.map(cat => (
-              <li key={cat.id} className="category-item">
+            {categories.map((cat) => (
+              <li key={cat._id} className="category-item">
                 <h3>{cat.name}</h3>
-                {cat.subcategories.length > 0 ? (
+                {cat.children && cat.children.length > 0 ? (
                   <ul className="subcategory-list">
-                    {cat.subcategories.map((sub, index) => (
-                      <li key={index}>{sub}</li>
+                    {cat.children.map((sub) => (
+                      <li key={sub._id}>{sub.name}</li>
                     ))}
                   </ul>
                 ) : (

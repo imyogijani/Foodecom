@@ -78,6 +78,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 
 app.use("/api/v1/test", testRoutes);
 app.use("/api/v1/auth", authRoutes);
@@ -85,6 +86,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", subscriptionRoutes);
+app.use("/api/v1/category", categoryRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 
