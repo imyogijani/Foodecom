@@ -30,7 +30,7 @@ const adminLinks = [
   { name: "Subscriptions", path: "/admin/subscriptions", icon: <FaBox /> },
 ];
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ onClose }) => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();

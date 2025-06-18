@@ -199,6 +199,22 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .subscription-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .subscriptions-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .subscriptions-table {
+    min-width: 700px;
+  }
+}
+
 @media (max-width: 768px) {
   .subscriptions-container {
     padding: 1rem;
@@ -206,18 +222,75 @@
 
   .admin-header {
     padding: 1.5rem;
+    margin-bottom: 1.5rem;
   }
 
   .admin-header h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
+    line-height: 1.2;
   }
 
   .subscription-stats {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .stat-card {
     padding: 1rem;
+  }
+
+  .subscriptions-table-container {
+    padding: 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .subscriptions-table {
+    min-width: 600px;
+  }
+
+  .subscriptions-table th,
+  .subscriptions-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .status-badge {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .user-info,
+  .date-info {
+    gap: 0.4rem;
+  }
+
+  .user-icon,
+  .date-icon {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .subscriptions-container {
+    padding: 0.75rem;
+  }
+
+  .admin-header {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .admin-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .stat-card {
+    padding: 0.75rem;
   }
 
   .stat-icon {
@@ -226,13 +299,121 @@
     font-size: 1.25rem;
   }
 
+  .stat-details h3 {
+    font-size: 0.8rem;
+  }
+
   .stat-details p {
     font-size: 1.25rem;
   }
 
+  .subscriptions-table-container {
+    padding: 0.75rem;
+  }
+
+  .table-header h2 {
+    font-size: 1rem;
+  }
+
+  .subscriptions-table {
+    min-width: 500px;
+  }
+
   .subscriptions-table th,
   .subscriptions-table td {
-    padding: 0.75rem;
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+
+  .status-badge {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.7rem;
+  }
+
+  .user-info,
+  .date-info {
+    gap: 0.3rem;
+  }
+
+  .user-icon,
+  .date-icon {
     font-size: 0.9rem;
+  }
+
+  .status-icon {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .stat-card {
+    padding: 0.5rem;
+  }
+
+  .stat-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+
+  .stat-details h3 {
+    font-size: 0.75rem;
+  }
+
+  .stat-details p {
+    font-size: 1.1rem;
+  }
+
+  .subscriptions-table {
+    min-width: 450px;
+  }
+
+  .subscriptions-table th,
+  .subscriptions-table td {
+    padding: 0.4rem 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .status-badge {
+    padding: 0.1rem 0.3rem;
+    font-size: 0.65rem;
+  }
+
+  .user-info,
+  .date-info {
+    gap: 0.25rem;
+  }
+
+  .user-icon,
+  .date-icon {
+    font-size: 0.8rem;
+  }
+
+  .status-icon {
+    font-size: 0.9rem;
+  }
+}
+
+/* Touch-friendly improvements for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .stat-card:hover {
+    transform: none;
+  }
+  
+  .status-badge {
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  .user-info,
+  .date-info {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 } 

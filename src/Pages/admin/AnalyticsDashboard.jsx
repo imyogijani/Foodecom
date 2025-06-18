@@ -84,93 +84,118 @@ const AnalyticsDashboard = () => {
 
   const revenueChartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top",
+        labels: {
+          font: {
+            size: window.innerWidth < 768 ? 10 : 12,
+          },
+        },
       },
       title: {
         display: true,
         text: "Revenue Over Time",
+        font: {
+          size: window.innerWidth < 768 ? 14 : 16,
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          font: {
+            size: window.innerWidth < 768 ? 8 : 10,
+          },
+        },
+      },
+      y: {
+        ticks: {
+          font: {
+            size: window.innerWidth < 768 ? 8 : 10,
+          },
+        },
       },
     },
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6">Analytics Dashboard</h1>
+    <div className="p-4 sm:p-6">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Analytics Dashboard</h1>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Total Revenue</h2>
-          <p className="text-3xl font-bold text-green-600">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Revenue</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-green-600">
             ${salesData.totalRevenue.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Monthly: ${salesData.monthlyRevenue.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Daily: ${salesData.dailyRevenue.toLocaleString()}
           </p>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Total Orders</h2>
-          <p className="text-3xl font-bold text-blue-600">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Orders</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-blue-600">
             {orderData.totalOrders.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Pending: {orderData.pendingOrders}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Completed: {orderData.completedOrders}
           </p>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Total Users</h2>
-          <p className="text-3xl font-bold text-purple-600">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Users</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-purple-600">
             {userData.totalUsers.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             New Today: {userData.newUsersToday}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Active: {userData.activeUsers}
           </p>
         </div>
 
-        <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-2">Total Products</h2>
-          <p className="text-3xl font-bold text-yellow-600">
+        <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Products</h2>
+          <p className="text-2xl sm:text-3xl font-bold text-yellow-600">
             {productData.totalProducts.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs sm:text-sm text-gray-500">
             Out of Stock: {productData.outOfStock}
           </p>
         </div>
       </div>
 
       {/* Top Selling Products Table */}
-      <div className="bg-white p-4 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-semibold mb-4">Top Selling Products</h2>
+      <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md mb-6 sm:mb-8">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Top Selling Products</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white table-auto">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b text-left">Product Name</th>
-                <th className="py-2 px-4 border-b text-left">Sales Count</th>
-                <th className="py-2 px-4 border-b text-left">Revenue</th>
+                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">Product Name</th>
+                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">Sales Count</th>
+                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">Revenue</th>
               </tr>
             </thead>
             <tbody>
               {productData.topSellingProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border-b">{product.name}</td>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">{product.name}</td>
+                  <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">
                     {product.sales.toLocaleString()}
                   </td>
-                  <td className="py-2 px-4 border-b">
+                  <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">
                     ${product.revenue.toLocaleString()}
                   </td>
                 </tr>
@@ -181,9 +206,9 @@ const AnalyticsDashboard = () => {
       </div>
 
       {/* Revenue Chart */}
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Revenue Over Time</h2>
-        <div className="h-80">
+      <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Revenue Over Time</h2>
+        <div className="h-64 sm:h-80">
           <Line data={revenueChartData} options={revenueChartOptions} />
         </div>
       </div>
