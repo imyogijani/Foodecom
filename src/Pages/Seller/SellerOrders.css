@@ -119,15 +119,37 @@
   color: #155724;
 }
 
+/* Action Buttons Container */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  align-items: center;
+  min-width: 80px;
+}
+
 /* Action Buttons */
 .action-btn {
-  padding: 6px 12px;
+  padding: 8px;
   border: none;
-  border-radius: 4px;
-  font-size: 0.85em;
-  margin-right: 8px;
+  border-radius: 6px;
+  font-size: 1rem;
   cursor: pointer;
-  font-weight: 500;
+  white-space: nowrap;
+  min-width: 36px;
+  height: 36px;
+  text-align: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.action-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .action-btn.view {
@@ -138,10 +160,66 @@
 .action-btn.update {
   background-color: #28a745;
   color: white;
+  gap: 4px;
 }
 
 .action-btn:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dropdown Styles */
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-arrow {
+  width: 12px !important;
+  height: 12px !important;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-container.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.status-dropdown {
+  position: fixed;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: white;
+  color: #333;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9em;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.active {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+.dropdown-item:not(:last-child) {
+  border-bottom: 1px solid #eee;
 }
 
 /* Modal Styles */
@@ -258,6 +336,32 @@
     width: 100%;
   }
 
+  .orders-table {
+    font-size: 0.9em;
+  }
+
+  .orders-table th,
+  .orders-table td {
+    padding: 8px 10px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    gap: 6px;
+    min-width: 70px;
+  }
+
+  .action-btn {
+    padding: 6px;
+    min-width: 32px;
+    height: 32px;
+  }
+
+  .action-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
   .modal-content {
     width: 95%;
     margin: 10px;
@@ -265,5 +369,23 @@
 
   .items-table {
     font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons {
+    min-width: 60px;
+    gap: 4px;
+  }
+  
+  .action-btn {
+    padding: 5px;
+    min-width: 28px;
+    height: 28px;
+  }
+
+  .action-btn svg {
+    width: 12px;
+    height: 12px;
   }
 }

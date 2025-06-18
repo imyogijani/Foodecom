@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { FaEye, FaEdit, FaChevronDown } from "react-icons/fa";
 import "../../App.css";
 import "./SellerOrders.css";
 
@@ -29,49 +30,8 @@ const tempOrders = [
     ],
     status: "Preparing",
     total: 25.97 // Sum of all items: 15.99 + 9.98
-  },
-  {
-    id: "ORD003",
-    customer: "Mike Johnson",
-    city: "Chicago",
-    date: "2024-03-13",
-    items: 4,
-    orderDetails: [
-      { name: "Chicken Wings", quantity: 2, rate: 12.99, total: 25.98 },
-      { name: "Caesar Salad", quantity: 1, rate: 8.99, total: 8.99 },
-      { name: "Chocolate Cake", quantity: 1, rate: 6.99, total: 6.99 },
-      { name: "Soft Drinks", quantity: 3, rate: 2.99, total: 8.97 }
-    ],
-    status: "Out for Delivery",
-    total: 50.93 // Sum of all items: 25.98 + 8.99 + 6.99 + 8.97
-  },
-  {
-    id: "ORD004",
-    customer: "Sarah Wilson",
-    city: "Miami",
-    date: "2024-03-12",
-    items: 2,
-    orderDetails: [
-      { name: "Veggie Pizza", quantity: 1, rate: 14.99, total: 14.99 },
-      { name: "Pasta Alfredo", quantity: 1, rate: 12.99, total: 12.99 }
-    ],
-    status: "Delivered",
-    total: 27.98 // Sum of all items: 14.99 + 12.99
-  },
-  {
-    id: "ORD005",
-    customer: "David Brown",
-    city: "Seattle",
-    date: "2024-03-11",
-    items: 3,
-    orderDetails: [
-      { name: "Grilled Chicken", quantity: 2, rate: 16.99, total: 33.98 },
-      { name: "Mashed Potatoes", quantity: 1, rate: 5.99, total: 5.99 },
-      { name: "Garden Salad", quantity: 1, rate: 7.99, total: 7.99 }
-    ],
-    status: "Preparing",
-    total: 47.96 // Sum of all items: 33.98 + 5.99 + 7.99
   }
+  
 ];
 
 const SellerOrders = () => {
@@ -84,6 +44,25 @@ const SellerOrders = () => {
   const [filteredOrders, setFilteredOrders] = useState(tempOrders);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(null);
+  const dropdownRef = useRef(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
+  const orderStatuses = ["Preparing", "Out for Delivery", "Delivered"];
+
+  // Handle clicking outside dropdown to close it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -130,6 +109,40 @@ const SellerOrders = () => {
   const closeModal = () => {
     setShowModal(false);
     setSelectedOrder(null);
+  };
+
+  const toggleDropdown = (orderId, event) => {
+    if (dropdownOpen === orderId) {
+      setDropdownOpen(null);
+    } else {
+      // Calculate position for the dropdown
+      const button = event.currentTarget;
+      const rect = button.getBoundingClientRect();
+      const dropdownTop = rect.bottom + 5;
+      const dropdownLeft = rect.right - 150; // Align to right edge of button
+      
+      setDropdownPosition({ top: dropdownTop, left: dropdownLeft });
+      setDropdownOpen(orderId);
+    }
+  };
+
+  const handleStatusUpdate = (orderId, newStatus) => {
+    // Update the order status in the filtered orders
+    setFilteredOrders(prevOrders => 
+      prevOrders.map(order => 
+        order.id === orderId 
+          ? { ...order, status: newStatus }
+          : order
+      )
+    );
+    
+    // Also update in the original tempOrders array
+    const orderIndex = tempOrders.findIndex(order => order.id === orderId);
+    if (orderIndex !== -1) {
+      tempOrders[orderIndex].status = newStatus;
+    }
+    
+    setDropdownOpen(null);
   };
 
   return (
@@ -211,8 +224,38 @@ const SellerOrders = () => {
                     </span>
                   </td>
                   <td>
-                    <button className="action-btn view" onClick={() => handleViewOrder(order)}>View</button>
-                    <button className="action-btn update">Update</button>
+                    <div className="action-buttons">
+                      <button 
+                        className="action-btn view" 
+                        onClick={() => handleViewOrder(order)}
+                        title="View Order Details"
+                      >
+                        <FaEye />
+                      </button>
+                      <div className="dropdown-container" ref={dropdownRef}>
+                        <button 
+                          className="action-btn update"
+                          onClick={(event) => toggleDropdown(order.id, event)}
+                          title="Update Order Status"
+                        >
+                          <FaEdit />
+                          <FaChevronDown className="dropdown-arrow" />
+                        </button>
+                        {dropdownOpen === order.id && (
+                          <div className="status-dropdown" style={dropdownPosition}>
+                            {orderStatuses.map((status) => (
+                              <button
+                                key={status}
+                                className={`dropdown-item ${order.status === status ? 'active' : ''}`}
+                                onClick={() => handleStatusUpdate(order.id, status)}
+                              >
+                                {status}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </td>
                 </tr>
               ))}
