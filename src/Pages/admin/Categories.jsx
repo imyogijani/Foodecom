@@ -17,6 +17,7 @@ const Categories = () => {
       const response = await axios.get("/api/category/get-category");
       if (Array.isArray(response.data)) {
         setCategories(response.data);
+        console.log("Categories fetched:", response.data);
       } else {
         setCategories([]); // Ensure categories is always an array
         console.warn(
@@ -26,6 +27,7 @@ const Categories = () => {
       }
     } catch (err) {
       setError(err);
+      console.error("Error loading categories:", err);
       toast.error("Failed to load categories.");
     } finally {
       setLoading(false);

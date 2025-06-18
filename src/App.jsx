@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
@@ -72,7 +71,7 @@ function LayoutWrapper() {
         <Route
           path="cart"
           element={
-            <ProtectedRoute allowedRoles={["client"]}>
+            <ProtectedRoute allowedRoles={["client, admin, shopowner"]}>
               <Cart />
             </ProtectedRoute>
           }
