@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "./Categories.css"; // Assuming you'll create this CSS file
+import axios from "axios";
 
 const Categories = () => {
   const [categoryName, setCategoryName] = useState("");
