@@ -79,7 +79,7 @@ const Login = () => {
     setError("");
 
     try {
-      const response = await axios.post("/api/v1/auth/login", formData);
+      const response = await axios.post("/api/auth/login", formData);
 
       if (response.data.success) {
         // Store token and user data

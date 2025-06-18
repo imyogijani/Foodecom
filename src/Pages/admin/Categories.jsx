@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import "./Categories.css"; // Assuming you'll create this CSS file
-import axios from "axios";
+import axios from "../../utils/axios";
 
 const Categories = () => {
   const [categoryName, setCategoryName] = useState("");
@@ -14,7 +14,7 @@ const Categories = () => {
   const initialLoad = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/category");
+      const response = await axios.get("/api/category/get-category");
       if (Array.isArray(response.data)) {
         setCategories(response.data);
       } else {
@@ -43,7 +43,7 @@ const Categories = () => {
       return;
     }
     try {
-      const { data } = await axios.post("/api/v1/category/", {
+      const { data } = await axios.post("/api/category", {
         name: categoryName,
       });
       setCategories([...categories, data]);
@@ -62,14 +62,15 @@ const Categories = () => {
       return;
     }
     try {
-      const response = await axios.post("/api/category/subcategory", {
+      const { data } = await axios.post(`/api/category/create-subcategory`, {
         name: subCategoryName,
         parent: selectedCategory,
       });
+
       setCategories(
         categories.map((cat) =>
           cat._id === selectedCategory
-            ? { ...cat, children: [...cat.children, response.data] }
+            ? { ...cat, children: [...cat.children, data] }
             : cat
         )
       );

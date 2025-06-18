@@ -35,6 +35,7 @@ app.use(
   })
 );
 app.use(morgan("dev"));
+app.use(fileUpload());
 
 // Configure static file serving with proper headers and caching
 app.use(
@@ -80,13 +81,13 @@ import productRoutes from "./routes/productRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 
-app.use("/api/v1/test", testRoutes);
-app.use("/api/v1/auth", authRoutes);
+app.use("/api/test", testRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api", subscriptionRoutes);
-app.use("/api/v1/category", categoryRoutes);
+app.use("/api/category", categoryRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import express from "express";
 import {
   registerController,
@@ -7,7 +8,7 @@ import {
   uploadAvatarController,
   verifyToken,
 } from "../controllers/authController.js";
-import upload from '../middlewares/uploadMiddleware.js';
+import upload from "../middlewares/uploadMiddleware.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -29,12 +30,17 @@ router.put("/update-profile", authenticateToken, updateProfileController);
 router.get("/verify-token", authenticateToken, verifyToken);
 
 // Upload avatar || POST
-router.post('/upload-avatar', authenticateToken, upload.single('avatar'), uploadAvatarController);
+router.post(
+  "/upload-avatar",
+  authenticateToken,
+  upload.single("avatar"),
+  uploadAvatarController
+);
 
 // Serve avatar images
-router.get('/uploads/avatars/:filename', (req, res) => {
+router.get("/uploads/avatars/:filename", (req, res) => {
   const { filename } = req.params;
-  res.sendFile(path.join(__dirname, '../public/uploads/avatars/', filename));
+  res.sendFile(path.join(__dirname, "../public/uploads/avatars/", filename));
 });
 
 export default router;

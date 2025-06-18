@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import axios from '../utils/axios';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import axios from "../utils/axios";
+import { toast } from "react-toastify";
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         setIsAuthenticated(false);
         setIsLoading(false);
@@ -18,23 +18,24 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
       }
 
       try {
-        const response = await axios.get('/api/v1/auth/verify-token', {
-          headers: { Authorization: `Bearer ${token}` }
+        const response = await axios.get("/api/auth/verify-token", {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.data.success) {
           setIsAuthenticated(true);
           setUserRole(response.data.user.role.toLowerCase());
         } else {
-          throw new Error('Invalid token');
+          throw new Error("Invalid token");
         }
       } catch (error) {
-        console.error('Auth error:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        console.error("Auth error:", error);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        document.cookie =
+          "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         setIsAuthenticated(false);
-        toast.error('Session expired. Please login again.');
+        toast.error("Session expired. Please login again.");
       } finally {
         setIsLoading(false);
       }
@@ -52,7 +53,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
-    toast.error('You do not have permission to access this page');
+    toast.error("You do not have permission to access this page");
     return <Navigate to="/" />;
   }
 

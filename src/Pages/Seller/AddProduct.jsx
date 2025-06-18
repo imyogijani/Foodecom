@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
@@ -17,6 +18,7 @@ const AddProduct = () => {
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const imageInputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -106,7 +108,19 @@ const AddProduct = () => {
 
       if (response.data.success) {
         toast.success("Product added successfully!");
-        navigate("/seller/products");
+        setFormData({
+          name: "",
+          description: "",
+          price: "",
+          category: "",
+          stock: "",
+          image: null,
+          status: "In Stock",
+        });
+        setImagePreview(null);
+        if (imageInputRef.current) {
+          imageInputRef.current.value = "";
+        }
       }
     } catch (error) {
       const errorMessage =
@@ -219,6 +233,7 @@ const AddProduct = () => {
               onChange={handleChange}
               accept="image/*"
               required
+              ref={imageInputRef}
             />
             {imagePreview && (
               <div className="image-preview">

@@ -39,6 +39,7 @@ const SellerProducts = () => {
       }
     } catch (error) {
       toast.error("Error fetching products");
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -112,8 +113,8 @@ const SellerProducts = () => {
             </thead>
             <tbody>
               {filteredProducts.map((product) => (
-                <tr key={product.id}>
-                  <td>{product.id}</td>
+                <tr key={product._id}>
+                  <td>{product._id}</td>
                   <td>{product.name}</td>
                   <td>{product.category}</td>
                   <td>${product.price.toFixed(2)}</td>
@@ -129,13 +130,13 @@ const SellerProducts = () => {
                   </td>
                   <td>
                     <Link
-                      to={`/seller/edit-product/${product.id}`}
+                      to={`/seller/edit-product/${product._id}`}
                       className="edit-btn"
                     >
                       Edit
                     </Link>
                     <button
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(product._id)}
                       className="delete-btn"
                     >
                       Delete
