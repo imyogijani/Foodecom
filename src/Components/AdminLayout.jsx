@@ -40,7 +40,7 @@ const AdminLayout = () => {
         </span>
       </button>
 
-      {/* Sidebar and overlay */}
+      {/* Sidebar */}
       <div
         style={{
           position: "fixed",
@@ -50,13 +50,13 @@ const AdminLayout = () => {
           overflowY: "auto",
           backgroundColor: "var(--dark-blue)",
           zIndex: 100,
-          transition: "transform 0.3s ease",
-          transform: sidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          width: "280px",
         }}
-        className={`admin-sidebar-mobile${sidebarOpen ? " open" : ""}`}
+        className="admin-sidebar-container"
       >
         <AdminSidebar onClose={handleSidebarClose} />
       </div>
+      
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
@@ -73,6 +73,7 @@ const AdminLayout = () => {
           }}
         ></div>
       )}
+      
       {/* Main content */}
       <div
         style={{
@@ -85,6 +86,7 @@ const AdminLayout = () => {
       >
         <Outlet />
       </div>
+      
       <style>{`
         @media (max-width: 900px) {
           .admin-main-content {
@@ -96,17 +98,15 @@ const AdminLayout = () => {
           .admin-hamburger-btn {
             display: flex !important;
           }
-          .admin-sidebar-mobile {
-            width: 260px;
-            min-width: 220px;
-            max-width: 90vw;
-            box-shadow: 2px 0 8px rgba(0,0,0,0.08);
-            background: var(--dark-blue);
-            transition: transform 0.3s ease;
-            will-change: transform;
-          }
-          .admin-sidebar-mobile:not(.open) {
-            transform: translateX(-100%);
+          .admin-sidebar-container {
+            width: 260px !important;
+            min-width: 220px !important;
+            max-width: 90vw !important;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.08) !important;
+            background: var(--dark-blue) !important;
+            transition: transform 0.3s ease !important;
+            will-change: transform !important;
+            transform: ${sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'} !important;
           }
         }
         .hamburger-lines {
