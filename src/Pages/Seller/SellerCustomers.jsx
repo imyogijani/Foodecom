@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaEye, FaListAlt } from "react-icons/fa";
 import "../../App.css";
 import "./SellerCustomers.css";
 
@@ -47,78 +48,6 @@ const tempCustomers = [
         ],
         status: "Preparing",
         total: 25.97
-      }
-    ]
-  },
-  {
-    id: "CUST003",
-    name: "Mike Johnson",
-    email: "mike.johnson@example.com",
-    phone: "+1 (555) 345-6789",
-    city: "Chicago",
-    totalOrders: 1,
-    totalSpent: 50.93,
-    lastOrder: "2024-03-13",
-    orders: [
-      {
-        id: "ORD003",
-        date: "2024-03-13",
-        items: 4,
-        orderDetails: [
-          { name: "Chicken Wings", quantity: 2, rate: 12.99, total: 25.98 },
-          { name: "Caesar Salad", quantity: 1, rate: 8.99, total: 8.99 },
-          { name: "Chocolate Cake", quantity: 1, rate: 6.99, total: 6.99 },
-          { name: "Soft Drinks", quantity: 3, rate: 2.99, total: 8.97 }
-        ],
-        status: "Out for Delivery",
-        total: 50.93
-      }
-    ]
-  },
-  {
-    id: "CUST004",
-    name: "Sarah Wilson",
-    email: "sarah.wilson@example.com",
-    phone: "+1 (555) 456-7890",
-    city: "Miami",
-    totalOrders: 1,
-    totalSpent: 27.98,
-    lastOrder: "2024-03-12",
-    orders: [
-      {
-        id: "ORD004",
-        date: "2024-03-12",
-        items: 2,
-        orderDetails: [
-          { name: "Veggie Pizza", quantity: 1, rate: 14.99, total: 14.99 },
-          { name: "Pasta Alfredo", quantity: 1, rate: 12.99, total: 12.99 }
-        ],
-        status: "Delivered",
-        total: 27.98
-      }
-    ]
-  },
-  {
-    id: "CUST005",
-    name: "David Brown",
-    email: "david.brown@example.com",
-    phone: "+1 (555) 567-8901",
-    city: "Seattle",
-    totalOrders: 1,
-    totalSpent: 47.96,
-    lastOrder: "2024-03-11",
-    orders: [
-      {
-        id: "ORD005",
-        date: "2024-03-11",
-        items: 3,
-        orderDetails: [
-          { name: "Grilled Chicken", quantity: 2, rate: 16.99, total: 33.98 },
-          { name: "Mashed Potatoes", quantity: 1, rate: 5.99, total: 5.99 },
-          { name: "Garden Salad", quantity: 1, rate: 7.99, total: 7.99 }
-        ],
-        status: "Preparing",
-        total: 47.96
       }
     ]
   }
@@ -183,8 +112,22 @@ const SellerCustomers = () => {
                   <td>${customer.totalSpent.toFixed(2)}</td>
                   <td>{customer.lastOrder}</td>
                   <td>
-                    <button className="action-btn view" onClick={() => handleViewCustomer(customer)}>View</button>
-                    <button className="action-btn edit" onClick={() => handleViewOrders(customer)}>Orders</button>
+                    <div className="action-buttons">
+                      <button 
+                        className="action-btn view" 
+                        onClick={() => handleViewCustomer(customer)}
+                        title="View Customer Details"
+                      >
+                        <FaEye />
+                      </button>
+                      <button 
+                        className="action-btn edit" 
+                        onClick={() => handleViewOrders(customer)}
+                        title="View Order History"
+                      >
+                        <FaListAlt />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
