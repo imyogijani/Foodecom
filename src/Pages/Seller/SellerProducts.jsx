@@ -7,16 +7,7 @@ import "../../App.css";
 import "./SellerProducts.css";
 
 const categories = [
-  "All",
-  "Burgers",
-  "Fries",
-  "Snacks",
-  "Salads",
-  "Cold drinks",
-  "Happy Meal",
-  "Desserts",
-  "Hot drinks",
-  "Sauces",
+  
 ];
 
 const SellerProducts = () => {
