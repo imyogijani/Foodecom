@@ -11,7 +11,6 @@ import Navbar from "./Pages/Home/Navbar";
 import Menu from "./Pages/Home/Menu";
 import Offers from "./Pages/Home/Offers";
 import Restaurants from "./Pages/Home/Restaurants";
-import Track from "./Pages/Home/Track";
 import Footer from "./Components/Footer/index";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Login/Register";
@@ -30,6 +29,8 @@ import SellerOrders from "./Pages/Seller/SellerOrders";
 import SellerCustomers from "./Pages/Seller/SellerCustomers";
 import Cart from "./Components/Cart/Cart";
 import UserProfile from "./Components/UserProfile/UserProfile";
+import { CartProvider } from "./context/CartContext";
+import CartFloatingButton from "./Components/CartFloatingButton";
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
@@ -56,6 +57,13 @@ function LayoutWrapper() {
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
 
+  // Determine if we are on an admin, seller, login, or register route
+  const isAdminOrSellerOrAuth =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/seller") ||
+    location.pathname.startsWith("/login") ||
+    location.pathname.startsWith("/register");
+
   return (
     <>
       {!hideLayout && <Navbar onProfileClick={() => setShowProfile(true)} />}
@@ -65,7 +73,6 @@ function LayoutWrapper() {
         <Route path="menu" element={<Menu />} />
         <Route path="offer" element={<Offers />} />
         <Route path="restaurant" element={<Restaurants />} />
-        <Route path="trackorder" element={<Track />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route
@@ -111,27 +118,31 @@ function LayoutWrapper() {
         {/* Add more routes as needed */}
       </Routes>
       {!hideLayout && <Footer />}
+      {/* Only show CartFloatingButton if not on admin, seller, login, or register pages */}
+      {!isAdminOrSellerOrAuth && <CartFloatingButton />}
     </>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
-      <LayoutWrapper />
-    </BrowserRouter>
+    <CartProvider>
+      <BrowserRouter>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
+        <LayoutWrapper />
+      </BrowserRouter>
+    </CartProvider>
   );
 }
 

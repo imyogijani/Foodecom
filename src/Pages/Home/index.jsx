@@ -22,6 +22,7 @@ import partnerBanner from "../../images/partner-banner.png";
 import availperks from "../../images/availperks.png";
 import BottomCard from "./BottomCard";
 import StatsBanner from "./StatsBanner";
+import { useCart } from "../../context/CartContext";
 
 const deals = [
   {
@@ -77,6 +78,7 @@ const restaurants = [
 ];
 
 export default function Home() {
+  const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState("Pizza & Fast food");
 
   // Handler for both Get Started buttons
@@ -130,6 +132,7 @@ export default function Home() {
                   <span>Restaurant</span>
                   <h4>{deal.name}</h4>
                 </div>
+                <button className="plus-icon" onClick={() => addToCart({id: deal.id, name: deal.name, price: 0, image: deal.img})}>+</button>
               </div>
             ))}
           </div>
@@ -184,148 +187,22 @@ export default function Home() {
 
       {/* Partner Banner Section */}
       <div className="partner-banner-row">
-        <section
-          className="partner-banner"
-          style={{
-            backgroundImage: `url(${partnerBanner})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            borderRadius: "16px",
-            overflow: "hidden",
-            position: "relative",
-            display: "flex",
-            alignItems: "flex-end",
-            padding: "2rem",
-            color: "white",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-            minHeight: "300px",
-          }}
-        >
-          <div
-            className="banner-content"
-            style={{
-              position: "relative",
-              zIndex: 1,
-              textAlign: "left",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "0.9rem",
-                color: "var(--primary-color)",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Earn more with lower fees
-            </p>
-            <h4
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: "bold",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Signup as a business
-            </h4>
-            <h3
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: "bold",
-                lineHeight: "1.2",
-              }}
-            >
-              Partner with us
-            </h3>
-            <button
-              className="cta-button"
-              onClick={handleGetStarted}
-              style={{
-                backgroundColor: "var(--primary-color)",
-                color: "white",
-                padding: "0.8rem 1.5rem",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                marginTop: "1.5rem",
-                fontSize: "1rem",
-                fontWeight: "bold",
-              }}
-            >
-              Get Started
-            </button>
-          </div>
-        </section>
-        <section
-          className="availperks-banner"
-          style={{
-            backgroundImage: `url(${availperks})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            borderRadius: "16px",
-            overflow: "hidden",
-            position: "relative",
-            display: "flex",
-            alignItems: "flex-end",
-            padding: "2rem",
-            color: "white",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-            minHeight: "300px",
-          }}
-        >
-          <div
-            className="banner-content"
-            style={{
-              position: "relative",
-              zIndex: 1,
-              textAlign: "left",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "0.9rem",
-                color: "var(--primary-color)",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Avail exclusive perks
-            </p>
-            <h4
-              style={{
-                fontSize: "1.2rem",
-                fontWeight: "bold",
-                marginBottom: "0.5rem",
-              }}
-            >
-              Signup as a rider
-            </h4>
-            <h3
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: "bold",
-                lineHeight: "1.2",
-              }}
-            >
-              Ride with us
-            </h3>
-            <button
-              className="cta-button"
-              onClick={handleGetStarted}
-              style={{
-                backgroundColor: "var(--primary-color)",
-                color: "white",
-                padding: "0.8rem 1.5rem",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                marginTop: "1.5rem",
-                fontSize: "1rem",
-                fontWeight: "bold",
-              }}
-            >
-              Get Started
-            </button>
-          </div>
-        </section>
+        <div className="partner-banner-box">
+          <p className="top-label">Earn more with lower fees</p>
+          <h4 className="subtitle">Signup as a business</h4>
+          <h3 className="title">Partner with us</h3>
+          <button className="cta-button" onClick={handleGetStarted}>
+            Get Started
+          </button>
+        </div>
+        <div className="availperks-box">
+          <p className="availperks-label">Unlock exclusive rewards</p>
+          <h4 className="availperks-subtitle">Avail Perks</h4>
+          <h3 className="availperks-title">Get special offers & discounts</h3>
+          <button className="cta-button" onClick={handleGetStarted}>
+            Avail Now
+          </button>
+        </div>
       </div>
 
       <BottomCard />

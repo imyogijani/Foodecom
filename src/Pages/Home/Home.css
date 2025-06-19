@@ -137,97 +137,96 @@
 
 .Home_text .text h2:nth-child(1) {
   color: #03081f;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .Home_text .text h2:nth-child(2) {
   color: #03081f;
-  font-size: 58px;
+  font-size: 42px;
 }
 
 .Home_text .text h2:nth-child(3) {
   color: #fc8a06;
-  font-size: 58px;
+  font-size: 42px;
 }
 
 .partner-banner {
   position: relative;
   width: 100%;
   max-width: 768px;
-  height: 425px;
+  height: auto;
   margin: 40px auto;
   border-radius: 12px;
   overflow: hidden;
   font-family: "Poppins", sans-serif;
+  background: none;
+  box-shadow: none;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
 }
 
-.banner-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.banner-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    245.7deg,
-    rgba(255, 255, 255, 0) 0.94%,
-    rgba(3, 8, 31, 0.19) 51.68%,
-    rgba(3, 8, 31, 0.89) 87.9%
-  );
-  z-index: 1;
-}
-
-.top-label {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: white;
-  color: #03081f;
-  font-weight: 700;
-  padding: 10px 20px;
-  border-radius: 12px;
-  z-index: 2;
-  font-size: 18px;
-}
-
-.banner-content {
-  position: absolute;
-  bottom: 35px;
-  left: 90px;
-  z-index: 2;
-  color: white;
-}
-
-.subtitle {
-  font-size: 18px;
-  font-weight: 500;
-  color: #fc8a06;
+.partner-banner-box {
+  flex: 1 1 0;
+  min-width: 340px;
+  max-width: 768px;
+  min-height: 300px;
+  background: #fff;
+  border-radius: 16px;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 2px solid #eee;
 }
 
-.title {
-  font-size: 44px;
-  font-weight: 700;
-  margin: 10px 0 20px 0;
+.partner-banner-box .top-label {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  background: transparent;
 }
 
-.cta-button {
-  padding: 14px 30px;
-  background-color: #fc8a06;
+.partner-banner-box .subtitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.partner-banner-box .title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #181818;
+  margin-bottom: 1.5rem;
+}
+
+.partner-banner-box .cta-button {
+  background-color: #e57a00;
+  color: #fff;
+  font-weight: 600;
   border: none;
   border-radius: 120px;
+  padding: 14px 30px;
   font-size: 18px;
-  font-weight: 500;
-  color: white;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-.cta-button:hover {
-  background-color: #e57a00;
+.partner-banner-box .cta-button:hover {
+  background-color: #fc8a06;
+  color: #fff;
+}
+
+/* Remove image and overlay styles from .partner-banner */
+.partner-banner .banner-bg,
+.partner-banner .banner-overlay,
+.partner-banner .banner-content {
+  display: none !important;
 }
 
 .partner-banner-row {
@@ -279,6 +278,44 @@
   display: block;
 }
 
+.availperks-box {
+  flex: 1 1 0;
+  min-width: 340px;
+  max-width: 768px;
+  min-height: 300px;
+  background: #fff;
+  border-radius: 16px;
+  margin-left: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 2px solid #eee;
+}
+
+.availperks-label {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.availperks-subtitle {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.availperks-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #181818;
+  margin-bottom: 1.5rem;
+}
+
 @media (max-width: 1200px) {
   .partner-banner-row {
     flex-direction: column;
@@ -286,9 +323,8 @@
     align-items: center;
     padding: 0 15px;
   }
-
-  .partner-banner-row .partner-banner,
-  .partner-banner-row .availperks-banner {
+  .partner-banner,
+  .partner-banner-box {
     max-width: 100%;
     min-width: 0;
     width: 100%;
@@ -310,7 +346,7 @@
 
   .Home_text .text h2:nth-child(2),
   .Home_text .text h2:nth-child(3) {
-    font-size: 48px;
+    font-size: 36px;
   }
 
   .offers-grid {
@@ -331,7 +367,7 @@
 
   .Home_text .text h2:nth-child(2),
   .Home_text .text h2:nth-child(3) {
-    font-size: 42px;
+    font-size: 32px;
   }
 
   .person img {
@@ -346,12 +382,23 @@
   .category-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  .availperks-box {
+    margin-left: 0;
+    margin-top: 24px;
+  }
+
+  .partner-banner-box {
+    min-width: 240px;
+    padding: 1.2rem;
+    margin-bottom: 24px;
+  }
 }
 
 @media (max-width: 768px) {
   .Home_text .text h2:nth-child(2),
   .Home_text .text h2:nth-child(3) {
-    font-size: 36px;
+    font-size: 28px;
   }
 
   .offers-header {
@@ -389,6 +436,11 @@
   .restaurant-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .availperks-box {
+    margin-left: 0;
+    margin-top: 24px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -402,7 +454,7 @@
 
   .Home_text .text h2:nth-child(2),
   .Home_text .text h2:nth-child(3) {
-    font-size: 28px;
+    font-size: 22px;
   }
 
   .person img {
@@ -475,28 +527,27 @@
   }
 
   .partner-banner,
-  .availperks-banner {
-    height: 260px;
+  .partner-banner-box {
+    height: auto;
     width: 100%;
     margin: 0;
+    padding: 0;
   }
 
-  .banner-content {
-    left: 15px;
-    bottom: 15px;
-    right: 15px;
+  .partner-banner-box {
+    padding: 1rem;
+    border-radius: 12px;
   }
 
-  .title {
+  .partner-banner-box .title {
     font-size: 24px;
-    line-height: 1.2;
   }
 
-  .subtitle {
+  .partner-banner-box .subtitle {
     font-size: 15px;
   }
 
-  .cta-button {
+  .partner-banner-box .cta-button {
     padding: 12px 24px;
     font-size: 15px;
     width: 100%;
@@ -522,7 +573,7 @@
 
   .Home_text .text h2:nth-child(2),
   .Home_text .text h2:nth-child(3) {
-    font-size: 24px;
+    font-size: 18px;
   }
 
   .offer-tabs a {
@@ -543,28 +594,20 @@
     gap: 15px;
   }
 
-  .partner-banner,
-  .availperks-banner {
-    height: 220px;
-    width: 100%;
+  .partner-banner-box {
+    padding: 0.7rem;
+    border-radius: 10px;
   }
 
-  .banner-content {
-    left: 10px;
-    bottom: 10px;
-    right: 10px;
-  }
-
-  .title {
+  .partner-banner-box .title {
     font-size: 20px;
-    line-height: 1.1;
   }
 
-  .subtitle {
+  .partner-banner-box .subtitle {
     font-size: 13px;
   }
 
-  .cta-button {
+  .partner-banner-box .cta-button {
     padding: 10px 20px;
     font-size: 13px;
     max-width: 150px;
@@ -582,26 +625,20 @@
     gap: 12px;
   }
 
-  .partner-banner,
-  .availperks-banner {
-    height: 200px;
+  .partner-banner-box {
+    padding: 0.5rem;
+    border-radius: 8px;
   }
 
-  .banner-content {
-    left: 8px;
-    bottom: 8px;
-    right: 8px;
-  }
-
-  .title {
+  .partner-banner-box .title {
     font-size: 18px;
   }
 
-  .subtitle {
+  .partner-banner-box .subtitle {
     font-size: 12px;
   }
 
-  .cta-button {
+  .partner-banner-box .cta-button {
     padding: 8px 16px;
     font-size: 12px;
     max-width: 130px;

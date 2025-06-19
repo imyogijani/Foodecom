@@ -17,6 +17,8 @@ const Users = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterRole, setFilterRole] = useState("all");
+  const [modal, setModal] = useState(null); // { type: 'edit'|'delete', user: {...} }
+  const [roleToSet, setRoleToSet] = useState("");
 
   useEffect(() => {
     fetchUsers();
@@ -55,6 +57,7 @@ const Users = () => {
         toast.error("Error deleting user");
       }
     }
+    setModal(null);
   };
 
   const handleUpdateRole = async (userId, newRole) => {
@@ -70,6 +73,7 @@ const Users = () => {
     } catch (error) {
       toast.error("Error updating user role");
     }
+    setModal(null);
   };
 
   const filteredUsers = users.filter((user) => {
@@ -182,10 +186,19 @@ const Users = () => {
                     <span className="status-badge active">Active</span>
                   </td>
                   <td>
-                    <button className="action-btn edit">
+                    <button
+                      className="action-btn edit"
+                      onClick={() => {
+                        setRoleToSet(user.role);
+                        setModal({ type: "edit", user });
+                      }}
+                    >
                       <FaUserCog />
                     </button>
-                    <button className="action-btn delete">
+                    <button
+                      className="action-btn delete"
+                      onClick={() => setModal({ type: "delete", user })}
+                    >
                       <FaTrash />
                     </button>
                   </td>
@@ -195,6 +208,60 @@ const Users = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Popups */}
+      {modal && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            {modal.type === "edit" ? (
+              <>
+                <h3>Edit User Role</h3>
+                <p>
+                  Change role for <b>{modal.user.name || modal.user.shopownerName}</b>
+                </p>
+                <select
+                  value={roleToSet}
+                  onChange={e => setRoleToSet(e.target.value)}
+                  style={{ margin: "1rem 0", padding: "0.5rem", borderRadius: 8 }}
+                >
+                  <option value="admin">Admin</option>
+                  <option value="shopowner">Shop Owner</option>
+                  <option value="client">Customer</option>
+                </select>
+                <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                  <button
+                    className="modal-btn confirm"
+                    onClick={() => handleUpdateRole(modal.user._id, roleToSet)}
+                  >
+                    Save
+                  </button>
+                  <button className="modal-btn cancel" onClick={() => setModal(null)}>
+                    Cancel
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3>Delete User</h3>
+                <p>
+                  Are you sure you want to delete <b>{modal.user.name || modal.user.shopownerName}</b>?
+                </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
+                  <button
+                    className="modal-btn confirm"
+                    onClick={() => handleDeleteUser(modal.user._id)}
+                  >
+                    Yes, Delete
+                  </button>
+                  <button className="modal-btn cancel" onClick={() => setModal(null)}>
+                    Cancel
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

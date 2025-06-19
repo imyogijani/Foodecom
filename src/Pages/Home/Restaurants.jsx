@@ -4,7 +4,6 @@ import {
   restaurantInfo,
   menuCategories,
   getItemsByCategory,
-  defaultBasketItems,
   reviews,
 } from "../../data/menuData";
 import McD from "../../images/McD.png";
@@ -13,12 +12,13 @@ import kfc from "../../images/KFC.png";
 import texasChicken from "../../images/Tex.png";
 import burgerKing from "../../images/Bking.png";
 import shaurma from "../../images/shaurma.png";
+import { useCart } from "../../context/CartContext";
 
 export default function Restaurants() {
   const [activeTab, setActiveTab] = useState("Offers");
-  const [cartItems, setCartItems] = useState(defaultBasketItems);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { addToCart, removeFromCart, cartItems } = useCart();
 
   const similarRestaurants = [
     { name: "McDonald's London", img: McD },
@@ -35,24 +35,6 @@ export default function Restaurants() {
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [activeTab]);
-
-  const addToCart = (item, size = null) => {
-    const newItem = {
-      id: Date.now(),
-      name: item.title,
-      desc: item.desc ? item.desc.substring(0, 30) + "..." : "",
-      price: size
-        ? parseFloat(size.price.replace("£", ""))
-        : parseFloat(item.price.replace(/[£GBP\s]/g, "")),
-      quantity: 1,
-    };
-    setCartItems((prev) => [...prev, newItem]);
-    console.log(`Added ${item.title} to cart`);
-  };
-
-  const removeFromCart = (itemId) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== itemId));
-  };
 
   const filterItems = (items) => {
     if (!searchQuery) return items;
@@ -76,7 +58,12 @@ export default function Restaurants() {
               <h4>{offer.title}</h4>
               <button
                 className="plus-icon"
-                onClick={() => addToCart(offer)}
+                onClick={() => addToCart({
+                  id: offer.id,
+                  name: offer.title,
+                  price: parseFloat((offer.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                  image: offer.image
+                })}
                 aria-label="Add to cart"
               >
                 +
@@ -123,7 +110,12 @@ export default function Restaurants() {
                       <button
                         key={index}
                         className={`compact-size-btn ${size.name.toLowerCase()}`}
-                        onClick={() => addToCart(item, size)}
+                        onClick={() => addToCart({
+                          id: `${item.id}-${size.name}`,
+                          name: `${item.title} (${size.name})`,
+                          price: parseFloat(size.price.replace("£", "")),
+                          image: item.image
+                        })}
                       >
                         {size.name}{" "}
                         <span className="size-price">{size.price}</span>
@@ -140,7 +132,12 @@ export default function Restaurants() {
                   <div className="xl-option">
                     <button
                       className="xl-btn"
-                      onClick={() => addToCart(item, item.xlOption)}
+                      onClick={() => addToCart({
+                        id: `${item.id}-XL`,
+                        name: `${item.title} (XL)` ,
+                        price: parseFloat(item.xlOption.price.replace("£", "")),
+                        image: item.image
+                      })}
                     >
                       {item.xlOption.name}{" "}
                       <span className="xl-price">{item.xlOption.price}</span>
@@ -156,7 +153,12 @@ export default function Restaurants() {
                 {!item.sizes && (
                   <button
                     className="add-btn"
-                    onClick={() => addToCart(item)}
+                    onClick={() => addToCart({
+                      id: item.id,
+                      name: item.title,
+                      price: parseFloat((item.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                      image: item.image
+                    })}
                     aria-label="Add to cart"
                   >
                     +
@@ -202,13 +204,7 @@ export default function Restaurants() {
     ));
   };
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-  const discount = 3.0;
-  const deliveryFee = 2.5;
-  const total = subtotal - discount + deliveryFee;
+  // Optionally, you can show a summary using cartItems from useCart if needed
 
   return (
     <div className="restaurant-page">
@@ -481,15 +477,6 @@ export default function Restaurants() {
         </div>
       </div>
 
-      {/* Cart Summary */}
-      {cartItems.length > 0 && (
-        <div className="cart-summary">
-          <div className="cart-content">
-            <span className="cart-count">{cartItems.length} items in cart</span>
-            <button className="view-cart-btn">View Cart</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
