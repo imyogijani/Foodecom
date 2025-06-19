@@ -20,6 +20,7 @@ const Register = () => {
     role: "client",
     names: "",
     shopownerName: "",
+    shopName: "",
     phone: "",
     address: "",
     subscriptionId: "", // Add subscriptionId to form data
@@ -137,9 +138,22 @@ const Register = () => {
                     onChange={handleChange}
                     required
                     className="form-input"
-                  />
-                </div>
+                />
               </div>
+            </div>
+            <div className="form-group">
+              <div className="input-group">
+                <input
+                  type="text"
+                  name="shopName"
+                  placeholder="Shop Name"
+                  value={formData.shopName}
+                  onChange={handleChange}
+                  required={formData.role === "shopowner"}
+                  className="form-input"
+                />
+              </div>
+            </div>
               {loadingSubscriptions ? (
                 <p>Loading subscription plans...</p>
               ) : (

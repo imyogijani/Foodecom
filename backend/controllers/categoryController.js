@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import Category from "../models/categoryModel.js";
 import slugify from "slugify";
 
@@ -88,6 +89,31 @@ export const singleCategoryController = async (req, res) => {
 export const deleteCategoryController = async (req, res) => {
   try {
     const { id } = req.params;
+    const categoryToDelete = await Category.findById(id);
+
+    if (!categoryToDelete) {
+      return res.status(404).send({ message: "Category not found" });
+    }
+
+    // Remove from parent's children array if it has a parent
+    if (categoryToDelete.parent) {
+      const parentCategory = await Category.findById(categoryToDelete.parent);
+      if (parentCategory) {
+        parentCategory.children.pull(id);
+        await parentCategory.save();
+      }
+    }
+
+    // Recursively delete children categories
+    const deleteChildren = async (categoryId) => {
+      const children = await Category.find({ parent: categoryId });
+      for (const child of children) {
+        await deleteChildren(child._id);
+        await Category.findByIdAndDelete(child._id);
+      }
+    };
+
+    await deleteChildren(id);
     await Category.findByIdAndDelete(id);
     res.status(200).send({
       success: true,
@@ -106,14 +132,61 @@ export const deleteCategoryController = async (req, res) => {
 // Update category
 export const updateCategoryController = async (req, res) => {
   try {
-    const { name, parent } = req.body;
+    const { name } = req.body; // Only destructure name initially
+    const newParentFromReq = req.body.parent; // Get parent explicitly from req.body
     const { id } = req.params;
+
+    const oldCategory = await Category.findById(id);
+    if (!oldCategory) {
+      return res.status(404).send({ message: "Category not found" });
+    }
+
+    let actualNewParentId = oldCategory.parent; // Default to old parent
+
+    // Determine the actual new parent ID
+    if (req.body.hasOwnProperty("parent")) {
+      // If parent is explicitly provided in req.body
+      if (newParentFromReq === null || newParentFromReq === "") {
+        actualNewParentId = null; // Explicitly setting to root
+      } else {
+        actualNewParentId = newParentFromReq; // New parent ID provided
+      }
+    }
+
+    // Handle parent change in children arrays
+    const oldParentId = oldCategory.parent
+      ? oldCategory.parent.toString()
+      : null;
+    const currentNewParentId = actualNewParentId
+      ? actualNewParentId.toString()
+      : null;
+
+    if (oldParentId !== currentNewParentId) {
+      // Remove from old parent's children if old parent existed
+      if (oldParentId) {
+        const oldParentCategory = await Category.findById(oldParentId);
+        if (oldParentCategory) {
+          oldParentCategory.children.pull(id);
+          await oldParentCategory.save();
+        }
+      }
+
+      // Add to new parent's children if new parent exists
+      if (currentNewParentId) {
+        const newParentCategory = await Category.findById(currentNewParentId);
+        if (newParentCategory) {
+          newParentCategory.children.push(id);
+          await newParentCategory.save();
+        }
+      }
+    }
+
     const category = await Category.findByIdAndUpdate(
       id,
       {
         name,
         slug: slugify(name),
-        parent: parent || null,
+        parent: actualNewParentId, // Use the determined actualNewParentId
       },
       { new: true }
     );

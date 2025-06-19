@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
@@ -7,11 +6,15 @@ import "../../App.css";
 import "./SellerProducts.css";
 
 const AddProduct = () => {
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
+    discount: "",
     category: "",
+    subcategory: "",
     stock: "",
     image: null,
     status: "In Stock",
@@ -20,6 +23,40 @@ const AddProduct = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const imageInputRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (formData.category) {
+      const selectedCategory = categories.find(
+        (cat) => cat._id === formData.category
+      );
+      if (selectedCategory && selectedCategory.children) {
+        setSubcategories(selectedCategory.children);
+      } else {
+        setSubcategories([]);
+      }
+    } else {
+      setSubcategories([]);
+    }
+  }, [formData.category, categories]);
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/category/get-category", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data.success) {
+        setCategories(response.data.categories);
+      }
+    } catch (error) {
+      toast.error("Error fetching categories");
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -37,7 +74,7 @@ const AddProduct = () => {
       if (file) {
         reader.readAsDataURL(file);
       }
-    } else if (name === "price" || name === "stock") {
+    } else if (name === "price" || name === "stock" || name === "discount") {
       // Ensure only positive numbers
       const numberValue = parseFloat(value);
       if (!isNaN(numberValue) && numberValue >= 0) {
@@ -46,6 +83,12 @@ const AddProduct = () => {
           [name]: value,
         }));
       }
+    } else if (name === "category") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+        subcategory: "", // Reset subcategory when category changes
+      }));
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -63,8 +106,27 @@ const AddProduct = () => {
       toast.error("Please select a category");
       return false;
     }
+    const selectedCategoryObj = categories.find(
+      (cat) => cat._id === formData.category
+    );
+    if (
+      selectedCategoryObj &&
+      selectedCategoryObj.children &&
+      selectedCategoryObj.children.length > 0 &&
+      !formData.subcategory
+    ) {
+      toast.error("Please select a subcategory");
+      return false;
+    }
     if (!formData.price || parseFloat(formData.price) <= 0) {
       toast.error("Please enter a valid price");
+      return false;
+    }
+    if (
+      formData.discount &&
+      (parseFloat(formData.discount) < 0 || parseFloat(formData.discount) > 100)
+    ) {
+      toast.error("Discount must be between 0 and 100");
       return false;
     }
     if (!formData.stock || parseInt(formData.stock) < 0) {
@@ -94,6 +156,15 @@ const AddProduct = () => {
       Object.keys(formData).forEach((key) => {
         if (key === "image") {
           productData.append("image", formData.image);
+        } else if (key === "subcategory" && !formData.subcategory) {
+          // Skip appending subcategory if it's empty
+          return;
+        } else if (
+          key === "discount" &&
+          (formData.discount === "" || formData.discount === null)
+        ) {
+          // Skip appending discount if it's empty or null
+          return;
         } else {
           productData.append(key, formData[key]);
         }
@@ -112,7 +183,9 @@ const AddProduct = () => {
           name: "",
           description: "",
           price: "",
+          discount: "",
           category: "",
+          subcategory: "",
           stock: "",
           image: null,
           status: "In Stock",
@@ -169,30 +242,60 @@ const AddProduct = () => {
               required
             >
               <option value="">Select a category</option>
-              <option value="Burgers">Burgers</option>
-              <option value="Fries">Fries</option>
-              <option value="Snacks">Snacks</option>
-              <option value="Salads">Salads</option>
-              <option value="Cold drinks">Cold drinks</option>
-              <option value="Happy Meal">Happy Meal</option>
-              <option value="Desserts">Desserts</option>
-              <option value="Hot drinks">Hot drinks</option>
-              <option value="Sauces">Sauces</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
 
+          {subcategories.length > 0 && (
+            <div className="form-group">
+              <label htmlFor="subcategory">Subcategory</label>
+              <select
+                id="subcategory"
+                name="subcategory"
+                value={formData.subcategory}
+                onChange={handleChange}
+              >
+                <option value="">Select a subcategory</option>
+                {subcategories.map((subcat) => (
+                  <option key={subcat._id} value={subcat._id}>
+                    {subcat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div className="form-group">
-            <label htmlFor="price">Price ($) *</label>
+            <label htmlFor="price">Price (INR) *</label>
             <input
               type="number"
               id="price"
               name="price"
               value={formData.price}
               onChange={handleChange}
-              step="0.01"
-              min="0"
               required
-              placeholder="0.00"
+              min="0"
+              step="0.01"
+              placeholder="Enter product price in INR"
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="discount">Discount (%)</label>
+            <input
+              type="number"
+              id="discount"
+              name="discount"
+              value={formData.discount}
+              onChange={handleChange}
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="Enter discount percentage (optional)"
             />
           </div>
 

@@ -35,7 +35,7 @@ const Navbar = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("/api/v1/auth/current-user");
+          const response = await axios.get("/api/auth/current-user");
           setUser(response.data.user);
         } catch (error) {
           console.error("Error fetching user data:", error);

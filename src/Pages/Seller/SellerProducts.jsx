@@ -6,25 +6,41 @@ import axios from "../../utils/axios";
 import "../../App.css";
 import "./SellerProducts.css";
 
-const categories = [
-  
-];
-
 const SellerProducts = () => {
+  const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   useEffect(() => {
+    fetchCategories();
     fetchProducts();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/category/get-category", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data.success) {
+        setCategories(response.data.categories);
+      }
+    } catch (error) {
+      toast.error("Error fetching categories");
+      console.log(error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("/api/products/seller-products", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "/api/products/seller-products?populateCategory=true",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (response.data.success) {
         setProducts(response.data.products);
       }
@@ -57,7 +73,9 @@ const SellerProducts = () => {
   const filteredProducts =
     selectedCategory === "All"
       ? products
-      : products.filter((product) => product.category === selectedCategory);
+      : products.filter(
+          (product) => product.category.name === selectedCategory
+        );
 
   if (loading) {
     return <div>Loading...</div>;
@@ -75,15 +93,24 @@ const SellerProducts = () => {
       </div>
 
       <div className="category-filter">
+        <button
+          key="All"
+          className={`category-btn ${
+            selectedCategory === "All" ? "active" : ""
+          }`}
+          onClick={() => setSelectedCategory("All")}
+        >
+          All
+        </button>
         {categories.map((category) => (
           <button
-            key={category}
+            key={category._id}
             className={`category-btn ${
-              selectedCategory === category ? "active" : ""
+              selectedCategory === category.name ? "active" : ""
             }`}
-            onClick={() => setSelectedCategory(category)}
+            onClick={() => setSelectedCategory(category.name)}
           >
-            {category}
+            {category.name}
           </button>
         ))}
       </div>
@@ -107,8 +134,8 @@ const SellerProducts = () => {
                 <tr key={product._id}>
                   <td>{product._id}</td>
                   <td>{product.name}</td>
-                  <td>{product.category}</td>
-                  <td>${product.price.toFixed(2)}</td>
+                  <td>{product.category.name}</td>
+                  <td>₹{product.price.toFixed(2)}</td>
                   <td>{product.stock}</td>
                   <td>
                     <span
