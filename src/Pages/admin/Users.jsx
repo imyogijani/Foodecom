@@ -186,21 +186,23 @@ const Users = () => {
                     <span className="status-badge active">Active</span>
                   </td>
                   <td>
-                    <button
-                      className="action-btn edit"
-                      onClick={() => {
-                        setRoleToSet(user.role);
-                        setModal({ type: "edit", user });
-                      }}
-                    >
-                      <FaUserCog />
-                    </button>
-                    <button
-                      className="action-btn delete"
-                      onClick={() => setModal({ type: "delete", user })}
-                    >
-                      <FaTrash />
-                    </button>
+                    <div className="action-buttons">
+                      <button
+                        className="action-btn edit"
+                        onClick={() => {
+                          setRoleToSet(user.role);
+                          setModal({ type: "edit", user });
+                        }}
+                      >
+                        <FaUserCog />
+                      </button>
+                      <button
+                        className="action-btn delete"
+                        onClick={() => setModal({ type: "delete", user })}
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
