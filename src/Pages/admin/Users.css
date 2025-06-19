@@ -145,11 +145,25 @@
   background: none;
   color: var(--text-color-dark);
   cursor: pointer;
-  transition: all 0.2s;
-  margin-right: 0.5rem;
+  transition: color 0.2s, transform 0.2s;
+  margin-right: 0.3rem;
+  margin-bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.users-table td {
+  vertical-align: middle;
+}
+
+.users-table td:last-child {
+  white-space: nowrap;
 }
 
 .action-btn:hover {
+  background: none;
+  color: var(--yellow);
   transform: scale(1.1);
 }
 
@@ -455,4 +469,12 @@
     padding: 0.7rem 0.5rem;
     font-size: 0.98rem;
   }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  align-items: center;
+  justify-content: flex-start;
 }
