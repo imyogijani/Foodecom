@@ -45,17 +45,15 @@ const Users = () => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`/api/v1/admin/users/${userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success("User deleted successfully");
-        fetchUsers();
-      } catch (error) {
-        toast.error("Error deleting user");
-      }
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/api/admin/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("User deleted successfully");
+      fetchUsers();
+    } catch (error) {
+      toast.error("Error deleting user");
     }
     setModal(null);
   };
@@ -64,7 +62,7 @@ const Users = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `/api/v1/admin/users/${userId}/role`,
+        `/api/admin/users/${userId}/role`,
         { role: newRole },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -219,12 +217,17 @@ const Users = () => {
               <>
                 <h3>Edit User Role</h3>
                 <p>
-                  Change role for <b>{modal.user.name || modal.user.shopownerName}</b>
+                  Change role for{" "}
+                  <b>{modal.user.name || modal.user.shopownerName}</b>
                 </p>
                 <select
                   value={roleToSet}
-                  onChange={e => setRoleToSet(e.target.value)}
-                  style={{ margin: "1rem 0", padding: "0.5rem", borderRadius: 8 }}
+                  onChange={(e) => setRoleToSet(e.target.value)}
+                  style={{
+                    margin: "1rem 0",
+                    padding: "0.5rem",
+                    borderRadius: 8,
+                  }}
                 >
                   <option value="admin">Admin</option>
                   <option value="shopowner">Shop Owner</option>
@@ -237,7 +240,10 @@ const Users = () => {
                   >
                     Save
                   </button>
-                  <button className="modal-btn cancel" onClick={() => setModal(null)}>
+                  <button
+                    className="modal-btn cancel"
+                    onClick={() => setModal(null)}
+                  >
                     Cancel
                   </button>
                 </div>
@@ -246,7 +252,8 @@ const Users = () => {
               <>
                 <h3>Delete User</h3>
                 <p>
-                  Are you sure you want to delete <b>{modal.user.name || modal.user.shopownerName}</b>?
+                  Are you sure you want to delete{" "}
+                  <b>{modal.user.name || modal.user.shopownerName}</b>?
                 </p>
                 <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
                   <button
@@ -255,7 +262,10 @@ const Users = () => {
                   >
                     Yes, Delete
                   </button>
-                  <button className="modal-btn cancel" onClick={() => setModal(null)}>
+                  <button
+                    className="modal-btn cancel"
+                    onClick={() => setModal(null)}
+                  >
                     Cancel
                   </button>
                 </div>

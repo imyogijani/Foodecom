@@ -1,5 +1,13 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaBox, FaTruck, FaCheckCircle, FaTimesCircle, FaSpinner } from "react-icons/fa";
+import {
+  FaSearch,
+  FaBox,
+  FaTruck,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaSpinner,
+} from "react-icons/fa";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import "./Orders.css";
@@ -48,7 +56,8 @@ const Orders = () => {
       order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customerName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      filterStatus === "all" || order.status.toLowerCase() === filterStatus.toLowerCase();
+      filterStatus === "all" ||
+      order.status.toLowerCase() === filterStatus.toLowerCase();
     return matchesSearch && matchesStatus;
   });
 
@@ -168,7 +177,9 @@ const Orders = () => {
                   <td>{new Date(order.date).toLocaleDateString()}</td>
                   <td>${order.amount}</td>
                   <td>
-                    <span className={`status-badge ${order.status.toLowerCase()}`}>
+                    <span
+                      className={`status-badge ${order.status.toLowerCase()}`}
+                    >
                       {order.status}
                     </span>
                   </td>
@@ -176,21 +187,27 @@ const Orders = () => {
                     <div className="action-buttons">
                       <button
                         className="action-btn view"
-                        onClick={() => handleStatusUpdate(order._id, "processing")}
+                        onClick={() =>
+                          handleStatusUpdate(order._id, "processing")
+                        }
                         title="Process Order"
                       >
                         <FaTruck />
                       </button>
                       <button
                         className="action-btn complete"
-                        onClick={() => handleStatusUpdate(order._id, "delivered")}
+                        onClick={() =>
+                          handleStatusUpdate(order._id, "delivered")
+                        }
                         title="Mark as Delivered"
                       >
                         <FaCheckCircle />
                       </button>
                       <button
                         className="action-btn cancel"
-                        onClick={() => handleStatusUpdate(order._id, "cancelled")}
+                        onClick={() =>
+                          handleStatusUpdate(order._id, "cancelled")
+                        }
                         title="Cancel Order"
                       >
                         <FaTimesCircle />

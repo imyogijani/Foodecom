@@ -9,6 +9,7 @@ import {
   deleteUser,
   updateUserRole
 } from '../controllers/adminController.js';
+import { getAllOrdersAdmin } from '../controllers/orderController.js';
 
 const router = express.Router();
 
@@ -30,5 +31,8 @@ router.get('/shops', getAllShops);
 router.get('/users', getAllUsers);
 router.delete('/users/:id', deleteUser);
 router.patch('/users/:id/role', updateUserRole);
+
+// Orders management
+router.get('/orders', getAllOrdersAdmin);
 
 export default router;

@@ -61,7 +61,7 @@ const Products = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`/api/admin/all-products/${productId}`, {
+        await axios.delete(`/api/admin/products/${productId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Product deleted successfully");
