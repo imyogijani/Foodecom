@@ -1,5 +1,6 @@
-import Product from "../models/productModel.js";
 import path from "path";
+ import Product from "../models/productModel.js";
+import Category from "../models/categoryModel.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -8,6 +9,13 @@ const __dirname = path.dirname(__filename);
 export const addProduct = async (req, res) => {
   try {
     const { name, description, price, category, stock, status } = req.body;
+    const categoryDoc = await Category.findById(category);
+    if (!categoryDoc) {
+      return res.status(400).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
     let image = "";
 
     // Handle file upload
@@ -59,7 +67,14 @@ export const addProduct = async (req, res) => {
 
 export const getSellerProducts = async (req, res) => {
   try {
-    const products = await Product.find({ seller: req.userId }).sort({
+    const { populateCategory } = req.query;
+    let query = Product.find({ seller: req.userId });
+
+    if (populateCategory === 'true') {
+      query = query.populate('category');
+    }
+
+    const products = await query.sort({
       createdAt: -1,
     });
     res.status(200).json({
@@ -79,10 +94,21 @@ export const getSellerProducts = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    const update = req.body;
+    const { category, ...updateData } = req.body;
+
+    if (category) {
+      const categoryDoc = await Category.findById(category);
+      if (!categoryDoc) {
+        return res.status(400).json({
+          success: false,
+          message: "Category not found",
+        });
+      }
+      updateData.category = category;
+    }
     const product = await Product.findOneAndUpdate(
       { _id: productId, seller: req.userId },
-      update,
+      updateData,
       { new: true }
     );
     if (!product) {

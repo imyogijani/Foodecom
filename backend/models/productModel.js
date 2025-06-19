@@ -16,9 +16,9 @@ const productSchema = new mongoose.Schema({
     min: 0
   },
   category: {
-    type: String,
-    required: true,
-    enum: ['Burgers', 'Fries', 'Snacks', 'Salads', 'Cold drinks', 'Happy Meal', 'Desserts', 'Hot drinks', 'Sauces']
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true
   },
   image: {
     type: String,

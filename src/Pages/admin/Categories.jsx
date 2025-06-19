@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
+ import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { toast } from "react-toastify";
+
 import "./Categories.css"; // Assuming you'll create this CSS file
 import axios from "../../utils/axios";
 
@@ -10,24 +13,27 @@ const Categories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [editingSubCategory, setEditingSubCategory] = useState(null);
+  const [newSubCategoryName, setNewSubCategoryName] = useState("");
+  const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
+  const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [itemTypeToDelete, setItemTypeToDelete] = useState(null);
 
   const initialLoad = async () => {
     setLoading(true);
     try {
       const response = await axios.get("/api/category/get-category");
-      if (Array.isArray(response.data)) {
-        setCategories(response.data);
-        console.log("Categories fetched:", response.data);
+      if (response.data && Array.isArray(response.data.categories)) {
+        setCategories(response.data.categories);
       } else {
-        setCategories([]); // Ensure categories is always an array
-        console.warn(
-          "API response for categories was not an array:",
-          response.data
-        );
+        setCategories([]);
+        console.warn("Invalid API response format:", response.data);
       }
     } catch (err) {
       setError(err);
-      console.error("Error loading categories:", err);
       toast.error("Failed to load categories.");
     } finally {
       setLoading(false);
@@ -40,17 +46,17 @@ const Categories = () => {
 
   const handleAddCategory = async (e) => {
     e.preventDefault();
-    if (categoryName.trim() === "") {
+    if (!categoryName.trim()) {
       toast.error("Category name cannot be empty.");
       return;
     }
     try {
       const { data } = await axios.post("/api/category", {
-        name: categoryName,
+        name: categoryName.trim(),
       });
-      setCategories([...categories, data]);
       setCategoryName("");
       toast.success(`Category '${categoryName}' added.`);
+      await initialLoad();
     } catch (err) {
       toast.error("Failed to add category.");
       console.error(err);
@@ -59,32 +65,107 @@ const Categories = () => {
 
   const handleAddSubCategory = async (e) => {
     e.preventDefault();
-    if (subCategoryName.trim() === "" || selectedCategory === "") {
-      toast.error("Subcategory name and category selection cannot be empty.");
+    if (!subCategoryName.trim() || !selectedCategory) {
+      toast.error("Subcategory name and category selection are required.");
       return;
     }
     try {
-      const { data } = await axios.post(`/api/category/create-subcategory`, {
-        name: subCategoryName,
+      await axios.post(`/api/category/subcategory`, {
+        name: subCategoryName.trim(),
         parent: selectedCategory,
       });
-
-      setCategories(
-        categories.map((cat) =>
-          cat._id === selectedCategory
-            ? { ...cat, children: [...cat.children, data] }
-            : cat
-        )
-      );
       setSubCategoryName("");
       setSelectedCategory("");
-      toast.success(
-        `Subcategory '${subCategoryName}' added to selected category.`
-      );
+      toast.success(`Subcategory added successfully.`);
+      await initialLoad();
     } catch (err) {
       toast.error("Failed to add subcategory.");
       console.error(err);
     }
+  };
+
+  const handleDeleteCategory = (category) => {
+    setItemToDelete(category);
+    setItemTypeToDelete("category");
+    setShowConfirmDeleteModal(true);
+  };
+
+  const handleUpdateCategory = (category) => {
+    setEditingCategory(category);
+    setNewCategoryName(category.name);
+    setShowEditCategoryModal(true);
+  };
+
+  const handleDeleteSubCategory = (subcategory) => {
+    setItemToDelete(subcategory);
+    setItemTypeToDelete("subcategory");
+    setShowConfirmDeleteModal(true);
+  };
+
+  const handleUpdateSubCategory = (subcategory) => {
+    setEditingSubCategory(subcategory);
+    setNewSubCategoryName(subcategory.name);
+    setShowEditCategoryModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete?._id) return;
+
+    try {
+      await axios.delete(`/api/category/delete-category/${itemToDelete._id}`);
+      toast.success(`${itemTypeToDelete} deleted successfully.`);
+      await initialLoad();
+    } catch (err) {
+      toast.error(`Failed to delete ${itemTypeToDelete}.`);
+      console.error(err);
+    } finally {
+      setShowConfirmDeleteModal(false);
+      setItemToDelete(null);
+      setItemTypeToDelete(null);
+    }
+  };
+
+  const handleSaveCategoryUpdate = async () => {
+    if (!editingCategory?._id || !newCategoryName.trim()) return;
+
+    try {
+      await axios.put(`/api/category/update-category/${editingCategory._id}`, {
+        name: newCategoryName.trim(),
+      });
+      toast.success("Category updated successfully.");
+      await initialLoad();
+      resetEditState();
+    } catch (err) {
+      toast.error("Failed to update category.");
+      console.error(err);
+    }
+  };
+
+  const handleSaveSubCategoryUpdate = async () => {
+    if (!editingSubCategory?._id || !newSubCategoryName.trim()) return;
+
+    try {
+      await axios.put(
+        `/api/category/update-category/${editingSubCategory._id}`,
+        {
+          name: newSubCategoryName.trim(),
+        }
+      );
+      toast.success("Subcategory updated successfully.");
+      await initialLoad();
+      resetEditState();
+    } catch (err) {
+      toast.error("Failed to update subcategory.");
+      console.error(err);
+    }
+  };
+
+  const resetEditState = () => {
+    setEditingCategory(null);
+    setEditingSubCategory(null);
+    setNewCategoryName("");
+    setNewSubCategoryName("");
+    setShowEditCategoryModal(false);
   };
 
   return (
@@ -140,33 +221,114 @@ const Categories = () => {
         </form>
       </div>
 
-      <div className="current-categories-section">
-        <h2>Current Categories & Subcategories</h2>
-        {loading ? (
-          <p>Loading categories...</p>
-        ) : error ? (
-          <p>Error: {error.message}</p>
-        ) : categories.length === 0 ? (
-          <p>No categories added yet.</p>
-        ) : (
-          <ul className="category-list">
-            {categories.map((cat) => (
-              <li key={cat._id} className="category-item">
-                <h3>{cat.name}</h3>
-                {cat.children && cat.children.length > 0 ? (
-                  <ul className="subcategory-list">
-                    {cat.children.map((sub) => (
-                      <li key={sub._id}>{sub.name}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No subcategories for this category.</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="category-list">
+        <h2>Existing Categories</h2>
+        {loading && <p>Loading categories...</p>}
+        {error && <p className="error-message">Error: {error.message}</p>}
+        {!loading && categories.length === 0 && <p>No categories found.</p>}
+        <ul>
+          {categories.map((cat) => (
+            <li key={cat._id} className="category-item">
+              <div className="category-info">
+                <span>{cat.name}</span>
+                <div className="category-actions">
+                  <button
+                    className="btn btn-edit"
+                    onClick={() => handleUpdateCategory(cat)}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    className="btn btn-delete"
+                    onClick={() => handleDeleteCategory(cat)}
+                  >
+                    <FaTrashAlt />
+                  </button>
+                </div>
+              </div>
+              {cat.children?.length > 0 && (
+                <ul className="subcategory-list">
+                  {cat.children.map((subCat) => (
+                    <li key={subCat._id} className="subcategory-item">
+                      <span>{subCat.name}</span>
+                      <div className="subcategory-actions">
+                        <button
+                          className="btn btn-edit"
+                          onClick={() => handleUpdateSubCategory(subCat)}
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          className="btn btn-delete"
+                          onClick={() => handleDeleteSubCategory(subCat)}
+                        >
+                          <FaTrashAlt />
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
+
+      {showEditCategoryModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>{editingCategory ? "Edit Category" : "Edit Subcategory"}</h2>
+            <input
+              type="text"
+              value={editingCategory ? newCategoryName : newSubCategoryName}
+              onChange={(e) =>
+                editingCategory
+                  ? setNewCategoryName(e.target.value)
+                  : setNewSubCategoryName(e.target.value)
+              }
+              className="form-input"
+            />
+            <div className="modal-actions">
+              <button
+                className="btn btn-primary"
+                onClick={
+                  editingCategory
+                    ? handleSaveCategoryUpdate
+                    : handleSaveSubCategoryUpdate
+                }
+              >
+                Save
+              </button>
+              <button className="btn btn-secondary" onClick={resetEditState}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showConfirmDeleteModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Confirm Deletion</h2>
+            <p>
+              Are you sure you want to delete "{itemToDelete?.name}"? This
+              action cannot be undone.
+            </p>
+            <div className="modal-actions">
+              <button className="btn btn-danger" onClick={confirmDelete}>
+                Delete
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setShowConfirmDeleteModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
