@@ -1,12 +1,12 @@
-import User from '../models/userModel.js';
-import Product from '../models/productModel.js';
-import Order from '../models/orderModel.js';
+import User from "../models/userModel.js";
+import Product from "../models/productModel.js";
+import Order from "../models/orderModel.js";
 
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
-    const totalSellers = await User.countDocuments({ role: 'shopowner' });
+    const totalSellers = await User.countDocuments({ role: "shopowner" });
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
 
@@ -14,56 +14,60 @@ export const getDashboardStats = async (req, res) => {
     const weeklyUserStats = await User.aggregate([
       {
         $match: {
-          createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-        }
+          createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        },
       },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
 
     // Get recent orders
     const recentOrders = await Order.find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .populate('user', 'name')
-      .populate('seller', 'names' , 'shopName');
+      .populate("user", "name")
+      .populate("seller", ["names", "shopName"]);
 
     // Calculate total revenue
     const revenue = await Order.aggregate([
       {
         $group: {
           _id: null,
-          total: { $sum: "$totalAmount" }
-        }
-      }
+          total: { $sum: "$totalAmount" },
+        },
+      },
     ]);
 
     res.json({
-      totalUsers,
-      totalSellers,
-      totalProducts,
-      totalOrders,
-      revenue: revenue[0]?.total || 0,
-      userStats: weeklyUserStats,
-      recentOrders: recentOrders.map(order => ({
-        _id: order._id,
-        customerName: order.user.name,
-        shopName: order.seller?.names || order.seller?.shopName || 'Unknown Shop',
-        amount: order.totalAmount,
-        status: order.status,
-        date: order.createdAt
-      }))
+      success: true,
+      data: {
+        totalUsers,
+        totalSellers,
+        totalProducts,
+        totalOrders,
+        revenue: revenue[0]?.total || 0,
+        userStats: weeklyUserStats,
+        recentOrders: recentOrders.map((order) => ({
+          _id: order._id,
+          customerName: order.user?.name || "Unknown Customer",
+          shopName:
+            order.seller?.names || order.seller?.shopName || "Unknown Shop",
+          amount: order.totalAmount,
+          status: order.status,
+          date: order.createdAt,
+        })),
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching dashboard statistics',
-      error: error.message
+      message: "Error fetching dashboard statistics",
+      error: error.message,
     });
   }
 };
@@ -71,27 +75,22 @@ export const getDashboardStats = async (req, res) => {
 // Get all products with shop details
 export const getAllProducts = async (req, res) => {
   try {
-<<<<<<< HEAD
-    const products = await Product.find()
-      .populate('seller', 'names');
-=======
     const { populateCategory, populateSubcategory } = req.query;
-    let query = Product.find({});
+    let query = Product.find().populate("seller", ["names", "shopName"]);
 
-    if (populateCategory === 'true') {
-      query = query.populate('category');
+    if (populateCategory === "true") {
+      query = query.populate("category");
     }
 
-    if (populateSubcategory === 'true') {
-      query = query.populate('subcategory');
+    if (populateSubcategory === "true") {
+      query = query.populate("subcategory");
     }
 
-    const products = await query.populate('seller', 'shopName');
->>>>>>> 0e4cf8e28c8f6155812221f7980bffeff57201ac
+    const products = await query;
 
     res.json({
       success: true,
-      products: products.map(product => ({
+      products: products.map((product) => ({
         _id: product._id,
         name: product.name,
         description: product.description,
@@ -102,14 +101,15 @@ export const getAllProducts = async (req, res) => {
         stock: product.stock,
         status: product.status,
         shopId: product.seller?._id || null,
-        shopName: product.seller?.names || product.seller?.shopName || 'Unknown Shop',
-      }))
+        shopName:
+          product.seller?.names || product.seller?.shopName || "Unknown Shop",
+      })),
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching products',
-      error: error.message
+      message: "Error fetching products",
+      error: error.message,
     });
   }
 };
@@ -117,18 +117,25 @@ export const getAllProducts = async (req, res) => {
 // Get all shops
 export const getAllShops = async (req, res) => {
   try {
-    const shops = await User.find({ role: 'shopowner' })
-      .select('_id names email status createdAt') || ('_id shopName email status createdAt');
+    const shops = await User.find({ role: "shopowner" }).select(
+      "_id names shopName email status createdAt"
+    );
 
     res.json({
       success: true,
-      shops
+      shops: shops.map((shop) => ({
+        _id: shop._id,
+        name: shop.names || shop.shopName,
+        email: shop.email,
+        status: shop.status,
+        createdAt: shop.createdAt,
+      })),
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching shops',
-      error: error.message
+      message: "Error fetching shops",
+      error: error.message,
     });
   }
 };
@@ -136,30 +143,24 @@ export const getAllShops = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    console.log('Getting all users...'); // Debug log
-    const users = await User.find()
-      .select('-password')
-      .sort({ createdAt: -1 });
-
-    console.log(`Found ${users.length} users`); // Debug log
+    const users = await User.find().select("-password").sort({ createdAt: -1 });
 
     res.json({
       success: true,
-      users: users.map(user => ({
+      users: users.map((user) => ({
         _id: user._id,
         name: user.names || user.shopName,
         email: user.email,
-        role: user.role.toLowerCase(), // Ensure consistent lowercase role
-        status: user.status || 'active',
-        createdAt: user.createdAt
-      }))
+        role: user.role.toLowerCase(),
+        status: user.status || "active",
+        createdAt: user.createdAt,
+      })),
     });
   } catch (error) {
-    console.error('Error in getAllUsers:', error); // Debug log
     res.status(500).json({
       success: false,
-      message: 'Error fetching users',
-      error: error.message
+      message: "Error fetching users",
+      error: error.message,
     });
   }
 };
@@ -171,19 +172,19 @@ export const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'User deleted successfully'
+      message: "User deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error deleting user',
-      error: error.message
+      message: "Error deleting user",
+      error: error.message,
     });
   }
 };
@@ -195,19 +196,19 @@ export const deleteProduct = async (req, res) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Product not found'
+        message: "Product not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'Product deleted successfully'
+      message: "Product deleted successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error deleting product',
-      error: error.message
+      message: "Error deleting product",
+      error: error.message,
     });
   }
 };
@@ -216,29 +217,37 @@ export const deleteProduct = async (req, res) => {
 export const updateUserRole = async (req, res) => {
   try {
     const { role } = req.body;
+
+    if (!role) {
+      return res.status(400).json({
+        success: false,
+        message: "Role is required",
+      });
+    }
+
     const user = await User.findByIdAndUpdate(
       req.params.id,
       { role },
       { new: true }
-    ).select('-password');
+    ).select("-password");
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: "User not found",
       });
     }
 
     res.json({
       success: true,
-      message: 'User role updated successfully',
-      user
+      message: "User role updated successfully",
+      user,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error updating user role',
-      error: error.message
+      message: "Error updating user role",
+      error: error.message,
     });
   }
 };
