@@ -126,10 +126,10 @@ const Products = () => {
         >
           <option value="all">All Shops</option>
           {shops
-            .filter((shop) => shop.shopName)
+            .filter((shop) => shop.names || shop.shopName)
             .map((shop) => (
               <option key={shop._id} value={shop._id}>
-                {shop.shopName}
+                {shop.names || shop.shopName}
               </option>
             ))}
         </select>
