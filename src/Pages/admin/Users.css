@@ -80,26 +80,30 @@
 .users-table-container {
   background: var(--bg-color-light);
   border-radius: 16px;
-  padding: 1rem;
+  padding: 1.2rem 0.5rem;
   overflow-x: auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .users-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: auto;
+  min-width: unset;
 }
 
 .users-table th,
 .users-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.15rem 0.7rem;
+  font-size: 1.08rem;
+  word-break: break-word;
 }
 
 .users-table th {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-color-dark);
-  opacity: 0.8;
+  opacity: 0.9;
+  background: #f8f9fa;
 }
 
 .role-badge {
@@ -213,10 +217,7 @@
   }
 
   .users-table-container {
-    padding: 0.75rem;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 12px;
+    padding: 0.7rem 0.2rem;
   }
 
   .users-table {
@@ -225,8 +226,8 @@
 
   .users-table th,
   .users-table td {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.875rem;
+    padding: 0.85rem 0.4rem;
+    font-size: 1rem;
   }
 
   .action-btn {
@@ -305,14 +306,18 @@
     font-size: 1.25rem;
   }
 
+  .users-table-container {
+    padding: 0.4rem 0.1rem;
+  }
+
   .users-table {
-    min-width: 450px;
+    min-width: 320px;
   }
 
   .users-table th,
   .users-table td {
-    padding: 0.4rem 0.2rem;
-    font-size: 0.75rem;
+    padding: 0.7rem 0.2rem;
+    font-size: 0.98rem;
   }
 
   .action-btn {
