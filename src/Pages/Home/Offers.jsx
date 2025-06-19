@@ -5,9 +5,11 @@ import {
   offerItems,
   getAllMenuItems,
 } from "../../data/menuData";
+import { useCart } from "../../context/CartContext";
 
 export default function Offers() {
   const [searchQuery, setSearchQuery] = useState("");
+  const { addToCart } = useCart();
 
   const filterOffers = (offers) => {
     if (!searchQuery) return offers;
@@ -93,7 +95,16 @@ export default function Offers() {
                         </span>
                       )}
                     </div>
-                    <button className="plus-icon" aria-label="Add to cart">
+                    <button
+                      className="plus-icon"
+                      aria-label="Add to cart"
+                      onClick={() => addToCart({
+                        id: offer.id,
+                        name: offer.title,
+                        price: parseFloat((offer.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                        image: offer.image
+                      })}
+                    >
                       +
                     </button>
                   </div>
@@ -133,6 +144,12 @@ export default function Offers() {
                             <button
                               key={index}
                               className={`compact-size-btn ${size.name.toLowerCase()}`}
+                              onClick={() => addToCart({
+                                id: item.id,
+                                name: item.title,
+                                price: parseFloat((size.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                                image: item.image
+                              })}
                             >
                               {size.name}{" "}
                               <span className="size-price">{size.price}</span>
@@ -147,7 +164,15 @@ export default function Offers() {
 
                       {item.xlOption && (
                         <div className="xl-option">
-                          <button className="xl-btn">
+                          <button
+                            className="xl-btn"
+                            onClick={() => addToCart({
+                              id: item.id,
+                              name: item.title,
+                              price: parseFloat((item.xlOption.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                              image: item.image
+                            })}
+                          >
                             {item.xlOption.name}{" "}
                             <span className="xl-price">
                               {item.xlOption.price}
@@ -162,7 +187,16 @@ export default function Offers() {
                         <img src={item.image} alt={item.title} loading="lazy" />
                       </div>
                       {!item.sizes && (
-                        <button className="add-btn" aria-label="Add to cart">
+                        <button
+                          className="add-btn"
+                          aria-label="Add to cart"
+                          onClick={() => addToCart({
+                            id: item.id,
+                            name: item.title,
+                            price: parseFloat((item.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                            image: item.image
+                          })}
+                        >
                           +
                         </button>
                       )}

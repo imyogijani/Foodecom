@@ -22,9 +22,12 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("/api/admin/all-products", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "/api/admin/all-products?populateCategory=true&populateSubcategory=true",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setProducts(response.data.products);
     } catch (error) {
       toast.error("Error fetching products");
@@ -49,7 +52,11 @@ const Products = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const token = localStorage.getItem("token");
+<<<<<<< HEAD
         await axios.delete(`/api/admin/products/${productId}`, {
+=======
+        await axios.delete(`/api/admin/all-products/${productId}`, {
+>>>>>>> 0e4cf8e28c8f6155812221f7980bffeff57201ac
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Product deleted successfully");
@@ -111,11 +118,21 @@ const Products = () => {
           onChange={(e) => setSelectedShop(e.target.value)}
         >
           <option value="all">All Shops</option>
+<<<<<<< HEAD
           {shops.map((shop) => (
             <option key={shop._id} value={shop._id}>
               {shop.names || shop.shopName}
             </option>
           ))}
+=======
+          {shops
+            .filter((shop) => shop.shopName)
+            .map((shop) => (
+              <option key={shop._id} value={shop._id}>
+                {shop.shopName}
+              </option>
+            ))}
+>>>>>>> 0e4cf8e28c8f6155812221f7980bffeff57201ac
         </select>
       </div>
 
@@ -189,8 +206,17 @@ const Products = () => {
                     <span>{product.names || product.shopName}</span>
                   </div>
                 </td>
+<<<<<<< HEAD
                 <td>{product.category}</td>
                 <td>${product.price}</td>
+=======
+                <td>
+                  {product.category?.name}
+                  {product.subcategory?.name &&
+                    ` (${product.subcategory.name})`}
+                </td>
+                <td>₹{product.price}</td>
+>>>>>>> 0e4cf8e28c8f6155812221f7980bffeff57201ac
                 <td>{product.stock}</td>
                 <td>
                   <span className={`status ${product.status.toLowerCase()}`}>

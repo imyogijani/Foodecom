@@ -19,7 +19,6 @@ const navLinks = [
   { name: "Browse Menu", path: "/menu" },
   { name: "Special Offers", path: "/Offer" },
   { name: "Restaurants", path: "/Restaurant" },
-  { name: "Track Order", path: "/trackorder" },
 ];
 
 const Navbar = () => {

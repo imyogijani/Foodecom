@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
+
 export const addProduct = async (req, res) => {
   try {
     const { name, description, price, discount, category, subcategory, stock, status } = req.body;
@@ -163,6 +165,36 @@ export const updateProduct = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error updating product",
+      error: error.message,
+    });
+  }
+};
+
+export const getAllProducts = async (req, res) => {
+  try {
+    const { populateCategory, populateSubcategory } = req.query;
+    let query = Product.find({});
+
+    if (populateCategory === 'true') {
+      query = query.populate('category');
+    }
+
+    if (populateSubcategory === 'true') {
+      query = query.populate('subcategory');
+    }
+
+    const products = await query.sort({
+      createdAt: -1,
+    });
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.error("Error fetching all products:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching all products",
       error: error.message,
     });
   }

@@ -392,7 +392,8 @@
   }
 
   .table-header h2 {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
+    margin-bottom: 0.7rem;
   }
 
   .add-new-btn {
@@ -400,30 +401,30 @@
     font-size: 0.9rem;
   }
 
-  .subscriptions-table {
-    min-width: 500px;
-  }
-
   .subscriptions-table th,
   .subscriptions-table td {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.8rem;
+    font-size: 1rem;
+    padding: 0.9rem 0.5rem;
+  }
+
+  .subscriptions-table {
+    min-width: 400px;
   }
 
   .status-badge {
-    padding: 0.15rem 0.4rem;
-    font-size: 0.7rem;
+    padding: 0.18rem 0.6rem;
+    font-size: 0.9rem;
   }
 
   .edit-btn,
   .delete-btn {
-    padding: 0.3rem;
-    font-size: 0.9rem;
+    padding: 0.5rem;
+    font-size: 1.1rem;
   }
 
-  .user-info i,
-  .date-info i {
-    font-size: 1rem;
+  .user-info {
+    gap: 0.5rem;
+    font-size: 1.05rem;
   }
 }
 
@@ -436,30 +437,40 @@
     padding: 0.5rem;
   }
 
-  .subscriptions-table {
-    min-width: 450px;
+  .subscriptions-table-container {
+    padding: 0.5rem;
   }
 
   .subscriptions-table th,
   .subscriptions-table td {
-    padding: 0.4rem 0.2rem;
-    font-size: 0.75rem;
+    font-size: 1.08rem;
+    padding: 1.1rem 0.4rem;
+    line-height: 1.5;
+  }
+
+  .subscriptions-table th {
+    font-weight: 700;
+    letter-spacing: 0.7px;
+  }
+
+  .subscriptions-table {
+    min-width: 350px;
   }
 
   .status-badge {
-    padding: 0.1rem 0.3rem;
-    font-size: 0.65rem;
+    padding: 0.18rem 0.6rem;
+    font-size: 0.9rem;
   }
 
   .edit-btn,
   .delete-btn {
-    padding: 0.25rem;
-    font-size: 0.8rem;
+    padding: 0.5rem;
+    font-size: 1.1rem;
   }
 
-  .user-info i,
-  .date-info i {
-    font-size: 0.9rem;
+  .user-info {
+    gap: 0.5rem;
+    font-size: 1.05rem;
   }
 }
 

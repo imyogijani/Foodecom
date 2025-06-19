@@ -82,7 +82,7 @@ body,
 /* ==== HOME SECTION ==== */
 .Home {
   background-color: var(--card-background);
-  width: 98vw;
+  width: 80vw;
   margin: 20px auto;
   border-radius: 12px;
   border: 1px solid var(--border-color);

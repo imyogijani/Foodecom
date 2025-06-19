@@ -6,11 +6,13 @@ import {
   getItemsByCategory,
   getAllMenuItems,
 } from "../../data/menuData";
+import { useCart } from "../../context/CartContext";
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState("Pizzas");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { addToCart } = useCart();
 
   // Simulate loading state
   useEffect(() => {
@@ -92,6 +94,12 @@ export default function Menu() {
                       <button
                         key={index}
                         className={`compact-size-btn ${size.name.toLowerCase()}`}
+                        onClick={() => addToCart({
+                          id: `${item.id}-${size.name}`,
+                          name: `${item.title} (${size.name})`,
+                          price: parseFloat(size.price.replace("£", "")),
+                          image: item.image
+                        })}
                       >
                         {size.name}{" "}
                         <span className="size-price">{size.price}</span>
@@ -106,7 +114,15 @@ export default function Menu() {
 
                 {item.xlOption && (
                   <div className="xl-option">
-                    <button className="xl-btn">
+                    <button
+                      className="xl-btn"
+                      onClick={() => addToCart({
+                        id: `${item.id}-XL`,
+                        name: `${item.title} (XL)` ,
+                        price: parseFloat(item.xlOption.price.replace("£", "")),
+                        image: item.image
+                      })}
+                    >
                       {item.xlOption.name}{" "}
                       <span className="xl-price">{item.xlOption.price}</span>
                     </button>
@@ -119,7 +135,16 @@ export default function Menu() {
                   <img src={item.image} alt={item.title} loading="lazy" />
                 </div>
                 {!item.sizes && (
-                  <button className="add-btn" aria-label="Add to cart">
+                  <button
+                    className="add-btn"
+                    aria-label="Add to cart"
+                    onClick={() => addToCart({
+                      id: item.id,
+                      name: item.title,
+                      price: parseFloat((item.price || "0").toString().replace(/[£GBP\s]/g, "")),
+                      image: item.image
+                    })}
+                  >
                     +
                   </button>
                 )}
