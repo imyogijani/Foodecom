@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
- import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { toast } from "react-toastify";
 
 import "./Categories.css"; // Assuming you'll create this CSS file
@@ -221,14 +221,15 @@ const Categories = () => {
         </form>
       </div>
 
-      <div className="category-list">
+      {/* Existing Categories Section Redesigned as Card */}
+      <div className="current-categories-section">
         <h2>Existing Categories</h2>
         {loading && <p>Loading categories...</p>}
         {error && <p className="error-message">Error: {error.message}</p>}
         {!loading && categories.length === 0 && <p>No categories found.</p>}
-        <ul>
+        <div className="category-list">
           {categories.map((cat) => (
-            <li key={cat._id} className="category-item">
+            <div key={cat._id} className="category-item">
               <div className="category-info">
                 <span>{cat.name}</span>
                 <div className="category-actions">
@@ -247,9 +248,9 @@ const Categories = () => {
                 </div>
               </div>
               {cat.children?.length > 0 && (
-                <ul className="subcategory-list">
+                <div className="subcategory-list">
                   {cat.children.map((subCat) => (
-                    <li key={subCat._id} className="subcategory-item">
+                    <div key={subCat._id} className="subcategory-item">
                       <span>{subCat.name}</span>
                       <div className="subcategory-actions">
                         <button
@@ -265,13 +266,13 @@ const Categories = () => {
                           <FaTrashAlt />
                         </button>
                       </div>
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       {showEditCategoryModal && (
