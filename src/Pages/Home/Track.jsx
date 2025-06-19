@@ -321,7 +321,7 @@ export default function Track() {
                       <h5>{item.name}</h5>
                       {item.desc && <p>{item.desc}</p>}
                     </div>
-                    <div className="item-price">£{item.price.toFixed(2)}</div>
+                    <div className="item-price">₹{item.price.toFixed(2)}</div>
                     <div
                       className="item-remove"
                       onClick={() => removeFromBasket(item.id)}

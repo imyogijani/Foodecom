@@ -1,6 +1,15 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { FaSearch, FaStore, FaEdit, FaTrash, FaBox, FaShoppingBag, FaChartLine, FaSpinner } from "react-icons/fa";
+import {
+  FaSearch,
+  FaStore,
+  FaEdit,
+  FaTrash,
+  FaBox,
+  FaShoppingBag,
+  FaChartLine,
+  FaSpinner,
+} from "react-icons/fa";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import "./Products.css";
@@ -61,8 +70,10 @@ const Products = () => {
   };
 
   const filteredProducts = products.filter((product) => {
-    const matchesShop = selectedShop === "all" || product.shopId === selectedShop;
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesShop =
+      selectedShop === "all" || product.shopId === selectedShop;
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesShop && matchesSearch;
   });
@@ -113,7 +124,7 @@ const Products = () => {
           <option value="all">All Shops</option>
           {shops.map((shop) => (
             <option key={shop._id} value={shop._id}>
-              {shop.name}
+              {shop.names}
             </option>
           ))}
         </select>
@@ -190,7 +201,7 @@ const Products = () => {
                   </div>
                 </td>
                 <td>{product.category}</td>
-                <td>${product.price}</td>
+                <td>₹{product.price}</td>
                 <td>{product.stock}</td>
                 <td>
                   <span className={`status ${product.status.toLowerCase()}`}>
@@ -201,7 +212,9 @@ const Products = () => {
                   <div className="action-buttons">
                     <button
                       className="edit-btn"
-                      onClick={() => navigate(`/admin/products/edit/${product._id}`)}
+                      onClick={() =>
+                        navigate(`/admin/products/edit/${product._id}`)
+                      }
                       title="Edit Product"
                     >
                       <FaEdit />

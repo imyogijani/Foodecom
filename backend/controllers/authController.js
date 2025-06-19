@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 //registration
 const registerController = async (req, res) => {
   try {
-    const { email, password, role, subscriptionId, ...rest } = req.body;
+    const { email, password, role, subscriptionId, shopName, ...rest } = req.body;
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -43,6 +43,7 @@ const registerController = async (req, res) => {
       }
       userData.subscription = subscriptionId;
       userData.subscriptionStartDate = new Date();
+      userData.shopName = shopName; // Add shopName for shopowner
     }
 
     const user = new userModel(userData);

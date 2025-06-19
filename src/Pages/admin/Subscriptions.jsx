@@ -115,7 +115,7 @@ const Subscriptions = () => {
         </div>
         <div className="stat-card">
           <h3>Total Revenue</h3>
-          <p>${subscriptions.reduce((sum, sub) => sum + Number(sub.monthlyPrice), 0)}</p>
+          <p>₹{subscriptions.reduce((sum, sub) => sum + Number(sub.monthlyPrice), 0)}</p>
         </div>
       </div>
 
@@ -145,7 +145,7 @@ const Subscriptions = () => {
                     {subscription.planName}
                   </div>
                 </td>
-                <td>${subscription.monthlyPrice}</td>
+                <td>₹{subscription.monthlyPrice}</td>
                 <td>{subscription.includedFeatures.join(", ")}</td>
                 <td>
                   <button className="edit-btn" onClick={() => handleEdit(subscription)}>

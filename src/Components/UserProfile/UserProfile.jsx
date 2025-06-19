@@ -1,10 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import './UserProfile.css';
-import { useNavigate } from 'react-router-dom';
-import axios from '../../utils/axios';
-import { FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaEdit, FaSave, FaTimes, FaCamera } from 'react-icons/fa';
-import MaleUser from '../../images/MaleUser.png';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import "./UserProfile.css";
+import { useNavigate } from "react-router-dom";
+import axios from "../../utils/axios";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaMapMarkerAlt,
+  FaEdit,
+  FaSave,
+  FaTimes,
+  FaCamera,
+} from "react-icons/fa";
+import MaleUser from "../../images/MaleUser.png";
 
 const UserProfile = ({ onClose }) => {
   const [user, setUser] = useState(null);
@@ -12,13 +22,13 @@ const UserProfile = ({ onClose }) => {
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false); // Add isLoading state for avatar upload
   const [formData, setFormData] = useState({
-    names: '',
-    shopownerName: '',
-    email: '',
-    phone: '',
-    address: '',
-    avatar: '',
-    role: ''
+    names: "",
+    shopownerName: "",
+    email: "",
+    phone: "",
+    address: "",
+    avatar: "",
+    role: "",
   });
 
   const navigate = useNavigate();
@@ -30,25 +40,25 @@ const UserProfile = ({ onClose }) => {
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/auth/current-user', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/auth/current-user", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       const userData = response.data.user;
       setUser(userData);
       setFormData({
-        names: userData.names || '',
-        shopownerName: userData.shopownerName || '',
-        email: userData.email || '',
-        phone: userData.phone || '',
-        address: userData.address || '',
-        avatar: userData.avatar || '',
-        role: userData.role || ''
+        names: userData.names || "",
+        shopownerName: userData.shopownerName || "",
+        email: userData.email || "",
+        phone: userData.phone || "",
+        address: userData.address || "",
+        avatar: userData.avatar || "",
+        role: userData.role || "",
       });
     } catch (error) {
-      console.error('Fetch error:', error);
-      toast.error('Error fetching user data');
+      console.error("Fetch error:", error);
+      toast.error("Error fetching user data");
     } finally {
       setLoading(false);
     }
@@ -57,46 +67,51 @@ const UserProfile = ({ onClose }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const updateData = {
         ...formData,
         // Send only the appropriate name field based on role
-        names: formData.role === 'shopowner' ? undefined : formData.names,
-        shopownerName: formData.role === 'shopowner' ? formData.shopownerName : undefined
+        names: formData.role === "shopowner" ? undefined : formData.names,
+        shopownerName:
+          formData.role === "shopowner" ? formData.shopownerName : undefined,
       };
 
-      const response = await axios.put('/api/v1/auth/update-profile', updateData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      const response = await axios.put(
+        "/api/v1/auth/update-profile",
+        updateData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       if (response.data.success) {
         const updatedUser = response.data.user;
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        localStorage.setItem("user", JSON.stringify(updatedUser));
         setUser(updatedUser);
         setIsEditing(false);
-        toast.success('Profile updated successfully');
-        
+        toast.success("Profile updated successfully");
+
         // Update formData with the new values
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           names: updatedUser.names || prev.names,
           shopownerName: updatedUser.shopownerName || prev.shopownerName,
           email: updatedUser.email,
           phone: updatedUser.phone,
           address: updatedUser.address,
-          avatar: updatedUser.avatar
+          avatar: updatedUser.avatar,
         }));
       }
     } catch (error) {
-      console.error('Update error:', error);
-      toast.error(error.response?.data?.message || 'Error updating profile');
+      console.error("Update error:", error);
+      toast.error(error.response?.data?.message || "Error updating profile");
     }
   };
 
@@ -104,52 +119,59 @@ const UserProfile = ({ onClose }) => {
     const file = e.target.files[0];
     if (file) {
       // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
         return;
       }
-      
+
       // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
+        toast.error("Image size should be less than 5MB");
         return;
       }
 
       try {
         setIsLoading(true);
         const formData = new FormData();
-        formData.append('avatar', file);
-        
+        formData.append("avatar", file);
+
         // Create a local preview URL
         const previewUrl = URL.createObjectURL(file);
-        setFormData(prev => ({ ...prev, avatar: previewUrl }));
-        
-        const token = localStorage.getItem('token');
-        const response = await axios.post('/api/v1/auth/upload-avatar', formData, {
-          headers: {
-            Authorization: `Bearer ${token}`
+        setFormData((prev) => ({ ...prev, avatar: previewUrl }));
+
+        const token = localStorage.getItem("token");
+        const response = await axios.post(
+          "/api/v1/auth/upload-avatar",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
-        
+        );
+
         if (response.data.success) {
           // Create a local URL for immediate display
           const localUrl = URL.createObjectURL(file);
-          setFormData(prev => ({ ...prev, avatar: localUrl }));
-          
+          setFormData((prev) => ({ ...prev, avatar: localUrl }));
+
           // Update the form data with the server URL after it's saved
           if (response.data.avatarUrl) {
-            setFormData(prev => ({ ...prev, avatar: response.data.avatarUrl }));
+            setFormData((prev) => ({
+              ...prev,
+              avatar: response.data.avatarUrl,
+            }));
           }
-          toast.success('Profile picture updated successfully');
-          
+          toast.success("Profile picture updated successfully");
+
           // Update the user state and localStorage
           const updatedUser = { ...user, avatar: response.data.avatarUrl };
           setUser(updatedUser);
-          localStorage.setItem('user', JSON.stringify(updatedUser));
+          localStorage.setItem("user", JSON.stringify(updatedUser));
         }
       } catch (error) {
-        console.error('Upload error:', error);
-        toast.error('Failed to upload image. Please try again.');
+        console.error("Upload error:", error);
+        toast.error("Failed to upload image. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -170,7 +192,10 @@ const UserProfile = ({ onClose }) => {
   }
 
   return (
-    <div className="profile-modal" onClick={(e) => e.target.className === 'profile-modal' && onClose()}>
+    <div
+      className="profile-modal"
+      onClick={(e) => e.target.className === "profile-modal" && onClose()}
+    >
       <div className="profile-content">
         <button className="close-button" onClick={onClose}>
           <FaTimes />
@@ -183,9 +208,13 @@ const UserProfile = ({ onClose }) => {
           <div className="avatar-section">
             <div className="avatar-container">
               <img
-                src={formData.avatar ? `http://localhost:8080${formData.avatar}` : MaleUser}
+                src={
+                  formData.avatar
+                    ? `http://localhost:8080${formData.avatar}`
+                    : MaleUser
+                }
                 alt="Profile"
-                className={`profile-avatar ${isLoading ? 'loading' : ''}`}
+                className={`profile-avatar ${isLoading ? "loading" : ""}`}
               />
               {isEditing && (
                 <label className="avatar-upload-label">
@@ -193,7 +222,7 @@ const UserProfile = ({ onClose }) => {
                     type="file"
                     accept="image/*"
                     onChange={handleAvatarChange}
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                   />
                   <div className="avatar-upload">
                     <FaCamera />
@@ -202,7 +231,7 @@ const UserProfile = ({ onClose }) => {
               )}
             </div>
             {!isEditing ? (
-              <button 
+              <button
                 className="edit-button"
                 onClick={() => setIsEditing(true)}
               >
@@ -210,14 +239,20 @@ const UserProfile = ({ onClose }) => {
               </button>
             ) : (
               <div className="edit-actions">
-                <button 
+                <button
                   className="save-button"
                   onClick={handleSubmit}
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Saving...' : <><FaSave /> Save Changes</>}
+                  {isLoading ? (
+                    "Saving..."
+                  ) : (
+                    <>
+                      <FaSave /> Save Changes
+                    </>
+                  )}
                 </button>
-                <button 
+                <button
                   className="cancel-button"
                   onClick={() => {
                     setIsEditing(false);
@@ -241,11 +276,21 @@ const UserProfile = ({ onClose }) => {
                 <label htmlFor="">Name:</label>
                 <input
                   type="text"
-                  name={formData.role === 'shopowner' ? 'shopownerName' : 'names'}
-                  value={formData.role === 'shopowner' ? formData.shopownerName : formData.names}
+                  name={
+                    formData.role === "shopowner" ? "shopownerName" : "names"
+                  }
+                  value={
+                    formData.role === "shopowner"
+                      ? formData.shopownerName
+                      : formData.names
+                  }
                   onChange={handleChange}
                   disabled={!isEditing}
-                  placeholder={formData.role === 'shopowner' ? 'Shop Owner Name' : 'Your Name'}
+                  placeholder={
+                    formData.role === "shopowner"
+                      ? "Shop Owner Name"
+                      : "Your Name"
+                  }
                   className="form-input"
                 />
               </div>

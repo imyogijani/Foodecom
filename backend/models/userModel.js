@@ -30,6 +30,15 @@ const userSchema = new mongoose.Schema(
         return false;
       },
     },
+    shopName: {
+      type: String,
+      required: function () {
+        if (this.role === "shopowner") {
+          return true;
+        }
+        return false;
+      },
+    },
     email: {
       type: String,
       required: [true, "Email is required"],

@@ -15,10 +15,21 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
+  discount: {
+    type: Number,
+    required: false,
+    min: 0,
+    max: 100
+  },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true
+  },
+  subcategory: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: false // Subcategory is optional
   },
   image: {
     type: String,
