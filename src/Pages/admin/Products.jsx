@@ -31,9 +31,12 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("/api/admin/all-products", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "/api/admin/all-products?populateCategory=true&populateSubcategory=true",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setProducts(response.data.products);
     } catch (error) {
       toast.error("Error fetching products");
@@ -58,7 +61,7 @@ const Products = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`/api/v1/admin/products/${productId}`, {
+        await axios.delete(`/api/admin/all-products/${productId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Product deleted successfully");
@@ -122,11 +125,13 @@ const Products = () => {
           onChange={(e) => setSelectedShop(e.target.value)}
         >
           <option value="all">All Shops</option>
-          {shops.map((shop) => (
-            <option key={shop._id} value={shop._id}>
-              {shop.names}
-            </option>
-          ))}
+          {shops
+            .filter((shop) => shop.shopName)
+            .map((shop) => (
+              <option key={shop._id} value={shop._id}>
+                {shop.shopName}
+              </option>
+            ))}
         </select>
       </div>
 
@@ -200,7 +205,11 @@ const Products = () => {
                     <span>{product.shopName}</span>
                   </div>
                 </td>
-                <td>{product.category}</td>
+                <td>
+                  {product.category?.name}
+                  {product.subcategory?.name &&
+                    ` (${product.subcategory.name})`}
+                </td>
                 <td>₹{product.price}</td>
                 <td>{product.stock}</td>
                 <td>

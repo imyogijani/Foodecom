@@ -71,8 +71,18 @@ export const getDashboardStats = async (req, res) => {
 // Get all products with shop details
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find()
-      .populate('seller', 'shopName');
+    const { populateCategory, populateSubcategory } = req.query;
+    let query = Product.find({});
+
+    if (populateCategory === 'true') {
+      query = query.populate('category');
+    }
+
+    if (populateSubcategory === 'true') {
+      query = query.populate('subcategory');
+    }
+
+    const products = await query.populate('seller', 'shopName');
 
     res.json({
       success: true,
@@ -82,6 +92,7 @@ export const getAllProducts = async (req, res) => {
         description: product.description,
         price: product.price,
         category: product.category,
+        subcategory: product.subcategory,
         image: product.image,
         stock: product.stock,
         status: product.status,
