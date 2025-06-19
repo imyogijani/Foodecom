@@ -31,7 +31,7 @@ export const getDashboardStats = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(10)
       .populate('user', 'name')
-      .populate('seller', 'shopName');
+      .populate('seller', 'names' , 'shopName');
 
     // Calculate total revenue
     const revenue = await Order.aggregate([
@@ -53,7 +53,7 @@ export const getDashboardStats = async (req, res) => {
       recentOrders: recentOrders.map(order => ({
         _id: order._id,
         customerName: order.user.name,
-        shopName: order.seller.shopName,
+        shopName: order.seller?.names || order.seller?.shopName || 'Unknown Shop',
         amount: order.totalAmount,
         status: order.status,
         date: order.createdAt
@@ -72,7 +72,7 @@ export const getDashboardStats = async (req, res) => {
 export const getAllProducts = async (req, res) => {
   try {
     const products = await Product.find()
-      .populate('seller', 'shopName');
+      .populate('seller', 'names');
 
     res.json({
       success: true,
@@ -85,8 +85,8 @@ export const getAllProducts = async (req, res) => {
         image: product.image,
         stock: product.stock,
         status: product.status,
-        shopId: product.seller._id,
-        shopName: product.seller.shopName
+        shopId: product.seller?._id || null,
+        shopName: product.seller?.names || product.seller?.shopName || 'Unknown Shop',
       }))
     });
   } catch (error) {
@@ -102,7 +102,7 @@ export const getAllProducts = async (req, res) => {
 export const getAllShops = async (req, res) => {
   try {
     const shops = await User.find({ role: 'shopowner' })
-      .select('_id shopName email status createdAt');
+      .select('_id names email status createdAt') || ('_id shopName email status createdAt');
 
     res.json({
       success: true,
@@ -131,7 +131,7 @@ export const getAllUsers = async (req, res) => {
       success: true,
       users: users.map(user => ({
         _id: user._id,
-        name: user.names || user.shopownerName, // Use appropriate name field
+        name: user.names || user.shopName,
         email: user.email,
         role: user.role.toLowerCase(), // Ensure consistent lowercase role
         status: user.status || 'active',
