@@ -44,6 +44,7 @@ const registerController = async (req, res) => {
       userData.subscription = subscriptionId;
       userData.subscriptionStartDate = new Date();
       userData.shopName = shopName; // Add shopName for shopowner
+      userData.subscriptionFeatures = subscription.includedFeatures; // Store features at registration
     }
 
     const user = new userModel(userData);
@@ -284,6 +285,21 @@ export const verifyToken = async (req, res) => {
       message: "Error in token verification",
       error,
     });
+  }
+};
+
+// Clear notification for shopowner
+export const clearNotification = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    user.notification = null;
+    await user.save();
+    res.json({ success: true, message: "Notification cleared" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error clearing notification", error: error.message });
   }
 };
 

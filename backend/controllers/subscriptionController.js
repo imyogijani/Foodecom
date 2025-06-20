@@ -64,6 +64,12 @@ export const updateSubscription = async (req, res) => {
     if (!updatedSubscription) {
       return res.status(404).json({ message: "Subscription plan not found" });
     }
+    // Notify all shopowners with this subscription
+    const User = (await import("../models/userModel.js")).default;
+    await User.updateMany(
+      { subscription: req.params.id },
+      { $set: { notification: `A new version of your subscription plan ('${planName}') is available. Please review the changes.` } }
+    );
     res.status(200).json({
       message: "Subscription plan updated successfully",
       subscription: updatedSubscription,

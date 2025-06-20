@@ -54,6 +54,30 @@ export const addProduct = async (req, res) => {
       });
     }
 
+    // --- Dynamic Subscription Feature Enforcement ---
+    const user = await (await import("../models/userModel.js")).default.findById(req.userId).populate("subscription");
+    if (user && user.role === "shopowner" && user.subscription) {
+      // Parse features from user.subscriptionFeatures (array of strings)
+      const features = Array.isArray(user.subscriptionFeatures) ? user.subscriptionFeatures : [];
+      // Product limit enforcement
+      const productLimitFeature = features.find(f => f.startsWith("productLimit:"));
+      if (productLimitFeature) {
+        const limit = parseInt(productLimitFeature.split(":")[1], 10);
+        const productCount = await Product.countDocuments({ seller: user._id });
+        if (!isNaN(limit) && productCount >= limit) {
+          return res.status(403).json({
+            success: false,
+            message: `Your plan allows only ${limit} products. Upgrade your plan to add more.`
+          });
+        }
+      }
+      // Example: Analytics access enforcement (template for future features)
+      // if (!features.includes("analytics")) {
+      //   // Optionally restrict analytics access elsewhere in the code
+      // }
+      // Add more feature checks here as needed
+    }
+
     const product = new Product({
       name,
       description,

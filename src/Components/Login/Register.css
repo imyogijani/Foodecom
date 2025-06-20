@@ -112,6 +112,15 @@
   overflow: hidden;
 }
 
+.register-button,
+.register-button:active,
+.register-button.loading {
+  /* Prevent size change on click/loading */
+  box-sizing: border-box;
+  padding: 1rem !important;
+  width: 100%;
+}
+
 .register-button:hover {
   background: #d67e00;
   transform: translateY(-1px);
