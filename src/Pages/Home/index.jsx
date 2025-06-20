@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
-// import  { useState } from "react";
-import "./Home.css"; // Import the new CSS file
+import "./Home.css";
 import p1 from "../../images/Person-1.png";
 import img1 from "../../images/TopD1.png";
 import img2 from "../../images/TopD2.png";
@@ -61,17 +60,13 @@ const deals = [
   },
 ];
 
-const categories = ["Vegan", "Sushi", "Pizza & Fast food", "Others"];
-
-const categorie = [
-  { name: "Burgers & Fast food", restaurants: 21, img: cat1 },
-  { name: "Salads", restaurants: 32, img: cat2 },
-  { name: "Pasta & Casuals", restaurants: 4, img: cat3 },
-  { name: "Pizza", restaurants: 8, img: cat4 },
-  { name: "Breakfast", restaurants: 4, img: cat5 },
-  { name: "Soups", restaurants: 32, img: cat6 },
-  { name: "Hello", restaurants: 2, img: cat6 },
+const categories = [
+  { name: "Vegan", img: cat1, restaurants: 12 },
+  { name: "Sushi", img: cat2, restaurants: 8 },
+  { name: "Pizza & Fast food", img: cat3, restaurants: 15 },
+  { name: "Others", img: cat4, restaurants: 10 },
 ];
+
 const restaurants = [
   { name: "McDonald's London", img: McD },
   { name: "Papa Johns", img: papajohn },
@@ -86,14 +81,34 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("Pizza & Fast food");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState({});
 
-  // Handler for both Get Started buttons
   const handleGetStarted = () => {
-    // TODO: Replace with navigation or modal as needed
     alert("Get Started clicked!");
   };
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get("/api/category");
+        const categoriesData = response.data.categories;
+        setCategories(categoriesData);
+
+        const subCategoriesMap = {};
+        for (const category of categoriesData) {
+          const subResponse = await axios.get(
+            `/api/subcategories/${category._id}`
+          );
+          subCategoriesMap[category._id] = subResponse.data.subcategories;
+        }
+        setSubcategories(subCategoriesMap);
+      } catch (error) {
+        toast.error("Error fetching categories");
+      }
+    };
+
+    fetchCategories();
     fetchProducts();
   }, []);
 
@@ -117,7 +132,7 @@ export default function Home() {
           <div className="text">
             <h2>Order Restaurant food takeaway and groceries.</h2>
             <h2>Feast Your Senses,</h2>
-            <h2>Fast and Freash</h2>
+            <h2>Fast and Fresh</h2>
           </div>
           <div className="person">
             <img src={p1} alt="person" />
@@ -134,11 +149,11 @@ export default function Home() {
           <div className="category-tabs">
             {categories.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={cat === activeCategory ? "active" : ""}
+                key={cat._id}
+                onClick={() => setActiveCategory(cat.name)}
+                className={cat.name === activeCategory ? "active" : ""}
               >
-                {cat}
+                {cat.name}
               </button>
             ))}
           </div>
@@ -152,7 +167,14 @@ export default function Home() {
             ) : (
               products.map((product) => (
                 <div className="deal-card" key={product._id}>
-                  <img src={product.images && product.images.length > 0 ? product.images[0] : 'placeholder.jpg'} alt={product.name} />
+                  <img
+                    src={
+                      product.images && product.images.length > 0
+                        ? product.images[0]
+                        : "placeholder.jpg"
+                    }
+                    alt={product.name}
+                  />
                   <div className="badge">
                     {product.discountPercentage
                       ? `-${product.discountPercentage}%`
@@ -164,7 +186,22 @@ export default function Home() {
                     </span>
                     <h4>{product.name}</h4>
                   </div>
-                  <button className="plus-icon" onClick={() => addToCart({id: product._id, name: product.name, price: product.price, image: product.images && product.images.length > 0 ? product.images[0] : 'placeholder.jpg'})}>+</button>
+                  <button
+                    className="plus-icon"
+                    onClick={() =>
+                      addToCart({
+                        id: product._id,
+                        name: product.name,
+                        price: product.price,
+                        image:
+                          product.images && product.images.length > 0
+                            ? product.images[0]
+                            : "placeholder.jpg",
+                      })
+                    }
+                  >
+                    +
+                  </button>
                 </div>
               ))
             )}
@@ -176,12 +213,12 @@ export default function Home() {
       <div className="popular-categories">
         <h3>Order.uk Popular Categories 🥳</h3>
         <div className="category-grid">
-          {categorie.map((cat, index) => (
-            <div className="category-card" key={index}>
-              <img src={cat.img} alt={cat.name} />
+          {categories.map((cat, index) => (
+            <div className="category-card" key={cat._id || index}>
+              <img src={cat.image || cat1} alt={cat.name} />
               <div className="category_text">
                 <h5>{cat.name}</h5>
-                <p>{cat.restaurants} Restaurants</p>
+                <p>{cat.restaurantCount || 0} Restaurants</p>
               </div>
             </div>
           ))}
@@ -213,7 +250,6 @@ export default function Home() {
             maxWidth: "70%",
             height: "auto",
             borderRadius: "16px",
-            // boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
           }}
         />
       </div>
