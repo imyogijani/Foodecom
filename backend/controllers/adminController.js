@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
+import Subscription from "../models/subscriptionModel.js";
 
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
@@ -144,7 +145,7 @@ export const getAllShops = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password").sort({ createdAt: -1 });
+    const users = await User.find().populate('subscription').select("-password").sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -155,6 +156,10 @@ export const getAllUsers = async (req, res) => {
         role: user.role.toLowerCase(),
         status: user.status || "active",
         createdAt: user.createdAt,
+        subscription: user.role === "shopowner" && user.subscription ? {
+          planName: user.subscription.planName,
+          _id: user.subscription._id
+        } : undefined
       })),
     });
   } catch (error) {
@@ -248,6 +253,42 @@ export const updateUserRole = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Error updating user role",
+      error: error.message,
+    });
+  }
+};
+
+// Update shopowner subscription plan and features
+export const updateShopownerSubscription = async (req, res) => {
+  try {
+    const { subscriptionId } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user || user.role !== "shopowner") {
+      return res.status(404).json({
+        success: false,
+        message: "Shopowner not found",
+      });
+    }
+    const subscription = await Subscription.findById(subscriptionId);
+    if (!subscription) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid subscription plan",
+      });
+    }
+    user.subscription = subscriptionId;
+    user.subscriptionFeatures = subscription.includedFeatures;
+    user.subscriptionStartDate = new Date();
+    await user.save();
+    res.json({
+      success: true,
+      message: "Shopowner subscription updated successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error updating shopowner subscription",
       error: error.message,
     });
   }

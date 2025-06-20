@@ -45,7 +45,7 @@ const Dashboard = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log("dashboard‑stats →", response.data);   // <— add this
-        setStats(response.data);
+        setStats(response.data.data);
       } catch (error) {
         console.error("Error fetching stats:", error);
       }
