@@ -7,7 +7,8 @@ import {
   getAllShops,
   getAllUsers,
   deleteUser,
-  updateUserRole
+  updateUserRole,
+  updateShopownerSubscription
 } from '../controllers/adminController.js';
 import { getAllOrdersAdmin } from '../controllers/orderController.js';
 
@@ -31,6 +32,7 @@ router.get('/shops', getAllShops);
 router.get('/users', getAllUsers);
 router.delete('/users/:id', deleteUser);
 router.patch('/users/:id/role', updateUserRole);
+router.patch('/users/:id/subscription', updateShopownerSubscription);
 
 // Orders management
 router.get('/orders', getAllOrdersAdmin);

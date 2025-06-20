@@ -112,6 +112,15 @@
   overflow: hidden;
 }
 
+.login-button,
+.login-button:active,
+.login-button.loading {
+  /* Prevent size change on click/loading */
+  box-sizing: border-box;
+  padding: 1rem !important;
+  width: 100%;
+}
+
 .login-button:hover {
   background: #d67e00;
   transform: translateY(-1px);

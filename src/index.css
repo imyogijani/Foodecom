@@ -54,6 +54,18 @@ button:hover {
   background-color: var(--secondary-color);
 }
 
+/* Prevent global button size change on click/focus/disabled */
+button,
+button:active,
+button:focus,
+button:disabled {
+  box-sizing: border-box;
+  padding: 10px 15px;
+  min-width: 0;
+  min-height: 0;
+  font-size: 1rem;
+}
+
 /* Responsive utilities and improvements */
 * {
   box-sizing: border-box;

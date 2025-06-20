@@ -71,6 +71,14 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    subscriptionFeatures: {
+      type: [String],
+      default: [],
+    },
+    notification: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

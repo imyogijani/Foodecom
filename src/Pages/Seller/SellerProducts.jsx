@@ -160,7 +160,7 @@ const SellerProducts = () => {
           <table className="products-table">
             <thead>
               <tr>
-                <th>ID</th>
+                <th>No.</th>
                 <th>Name</th>
                 <th>Category</th>
                 <th>Price</th>
@@ -170,9 +170,9 @@ const SellerProducts = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredProducts.map((product) => (
+              {filteredProducts.map((product, idx) => (
                 <tr key={product._id}>
-                  <td>{product._id}</td>
+                  <td>{idx + 1}</td>
                   <td>{product.name}</td>
                   <td>{product.category.name}</td>
                   <td>₹{product.price.toFixed(2)}</td>

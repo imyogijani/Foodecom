@@ -7,9 +7,11 @@ import {
   updateProfileController,
   uploadAvatarController,
   verifyToken,
+  clearNotification,
 } from "../controllers/authController.js";
 import upload from "../middlewares/uploadMiddleware.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
+import path from "path";
 
 const router = express.Router();
 
@@ -36,6 +38,9 @@ router.post(
   upload.single("avatar"),
   uploadAvatarController
 );
+
+// Clear notification || PATCH
+router.patch("/clear-notification", authenticateToken, clearNotification);
 
 // Serve avatar images
 router.get("/uploads/avatars/:filename", (req, res) => {

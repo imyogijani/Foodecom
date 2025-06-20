@@ -168,18 +168,19 @@ const Users = () => {
               <th>Email</th>
               <th>Role</th>
               <th>Status</th>
+              <th>Subscription Plan</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan="5" className="no-users">
+                <td colSpan="6" className="no-users">
                   No users found
                 </td>
               </tr>
             ) : (
-              users.map((user) => (
+              filteredUsers.map((user) => (
                 <tr key={user._id}>
                   <td>{user.name || user.shopownerName}</td>
                   <td>{user.email}</td>
@@ -190,6 +191,13 @@ const Users = () => {
                   </td>
                   <td>
                     <span className="status-badge active">Active</span>
+                  </td>
+                  <td>
+                    {user.role === "shopowner" && user.subscription && user.subscription.planName
+                      ? user.subscription.planName
+                      : user.role === "shopowner" && typeof user.subscription === "string"
+                        ? user.subscription
+                        : "-"}
                   </td>
                   <td>
                     <div className="action-buttons">

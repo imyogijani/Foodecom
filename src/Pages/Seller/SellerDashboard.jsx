@@ -17,6 +17,7 @@ import {
   FaShoppingBag,
   FaDollarSign,
 } from "react-icons/fa";
+import SellerNotification from "../../Components/SellerNotification";
 
 const data = [
   { name: "Jan", sales: 4000, orders: 2400 },
@@ -37,6 +38,7 @@ const recentOrders = [
 const SellerDashboard = () => {
   return (
     <div className="seller-dashboard">
+      <SellerNotification />
       <div className="seller-header">
         <h1>Seller Dashboard</h1>
         <p className="seller-subtitle">
