@@ -125,7 +125,8 @@ export const getAllShops = async (req, res) => {
       success: true,
       shops: shops.map((shop) => ({
         _id: shop._id,
-        name: shop.names || shop.shopName,
+        names: shop.names,
+        shopName: shop.shopName,
         email: shop.email,
         status: shop.status,
         createdAt: shop.createdAt,
