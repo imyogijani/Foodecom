@@ -19,6 +19,10 @@ const Users = () => {
   const [filterRole, setFilterRole] = useState("all");
   const [modal, setModal] = useState(null); // { type: 'edit'|'delete', user: {...} }
   const [roleToSet, setRoleToSet] = useState("");
+  const [formData, setFormData] = useState({
+    role: "",
+    status: "",
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -72,6 +76,10 @@ const Users = () => {
       toast.error("Error updating user role");
     }
     setModal(null);
+  };
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const filteredUsers = users.filter((user) => {
@@ -220,19 +228,39 @@ const Users = () => {
                   Change role for{" "}
                   <b>{modal.user.name || modal.user.shopownerName}</b>
                 </p>
-                <select
-                  value={roleToSet}
-                  onChange={(e) => setRoleToSet(e.target.value)}
-                  style={{
-                    margin: "1rem 0",
-                    padding: "0.5rem",
-                    borderRadius: 8,
-                  }}
-                >
-                  <option value="admin">Admin</option>
-                  <option value="shopowner">Shop Owner</option>
-                  <option value="client">Customer</option>
-                </select>
+                <div className="form-group">
+                  <label htmlFor="role">Role:</label>
+                  <select
+                    id="role"
+                    name="role"
+                    value={roleToSet}
+                    onChange={(e) => setRoleToSet(e.target.value)}
+                    required
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="shopowner">Shop Owner</option>
+                    <option value="client">Client</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="status">Status:</label>
+                  <select
+                    id="status"
+                    name="status"
+                    value={modal.user.status}
+                    onChange={(e) => {
+                      const updatedUser = { ...modal.user, status: e.target.value };
+                      setModal({ ...modal, user: updatedUser });
+                    }}
+                    required
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="banned">Banned</option>
+                  </select>
+                </div>
+
                 <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
                   <button
                     className="modal-btn confirm"

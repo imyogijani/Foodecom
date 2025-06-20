@@ -58,6 +58,25 @@ const SellerCustomers = () => {
   const [showViewModal, setShowViewModal] = useState(false);
   const [showOrdersModal, setShowOrdersModal] = useState(false);
 
+  // Controlled filter states
+  const [searchText, setSearchText] = useState("");
+  const [citySearch, setCitySearch] = useState("");
+  // Applied filter states
+  const [appliedSearchText, setAppliedSearchText] = useState("");
+  const [appliedCitySearch, setAppliedCitySearch] = useState("");
+
+  const handleApplyFilters = () => {
+    setAppliedSearchText(searchText);
+    setAppliedCitySearch(citySearch);
+  };
+
+  const handleResetFilters = () => {
+    setSearchText("");
+    setCitySearch("");
+    setAppliedSearchText("");
+    setAppliedCitySearch("");
+  };
+
   const handleViewCustomer = (customer) => {
     setSelectedCustomer(customer);
     setShowViewModal(true);
@@ -78,6 +97,17 @@ const SellerCustomers = () => {
     setSelectedCustomer(null);
   };
 
+  // Filter customers by id or name and city
+  const filteredCustomers = tempCustomers.filter((customer) => {
+    const matchesText =
+      customer.id.toLowerCase().includes(appliedSearchText.toLowerCase()) ||
+      customer.name.toLowerCase().includes(appliedSearchText.toLowerCase());
+    const matchesCity = customer.city
+      .toLowerCase()
+      .includes(appliedCitySearch.toLowerCase());
+    return matchesText && matchesCity;
+  });
+
   return (
     <div className="admin-users">
       <div className="admin-header">
@@ -85,6 +115,35 @@ const SellerCustomers = () => {
         <p className="admin-subtitle">View and manage your customers</p>
       </div>
       <div className="customers-container">
+        {/* Search Bars with Apply/Reset */}
+        <div className="filters-section">
+          <div className="filter-group">
+            <label>Customer ID or Name</label>
+            <input
+              type="text"
+              placeholder="Search by Customer ID or Name"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </div>
+          <div className="filter-group">
+            <label>City</label>
+            <input
+              type="text"
+              placeholder="Search by City"
+              value={citySearch}
+              onChange={(e) => setCitySearch(e.target.value)}
+            />
+          </div>
+          <div className="filter-actions">
+            <button className="apply-btn" onClick={handleApplyFilters}>
+              Apply
+            </button>
+            <button className="reset-btn" onClick={handleResetFilters}>
+              Reset
+            </button>
+          </div>
+        </div>
         <div className="customers-table-container">
           <table className="customers-table">
             <thead>
@@ -101,36 +160,44 @@ const SellerCustomers = () => {
               </tr>
             </thead>
             <tbody>
-              {tempCustomers.map((customer) => (
-                <tr key={customer.id}>
-                  <td>{customer.id}</td>
-                  <td>{customer.name}</td>
-                  <td>{customer.email}</td>
-                  <td>{customer.phone}</td>
-                  <td>{customer.city}</td>
-                  <td>{customer.orders.length}</td>
-                  <td>₹{customer.totalSpent.toFixed(2)}</td>
-                  <td>{customer.lastOrder}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button 
-                        className="action-btn view" 
-                        onClick={() => handleViewCustomer(customer)}
-                        title="View Customer Details"
-                      >
-                        <FaEye />
-                      </button>
-                      <button 
-                        className="action-btn edit" 
-                        onClick={() => handleViewOrders(customer)}
-                        title="View Order History"
-                      >
-                        <FaListAlt />
-                      </button>
-                    </div>
+              {filteredCustomers.length === 0 ? (
+                <tr>
+                  <td colSpan="9" style={{ textAlign: "center", color: "#888" }}>
+                    No customers found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredCustomers.map((customer) => (
+                  <tr key={customer.id}>
+                    <td>{customer.id}</td>
+                    <td>{customer.name}</td>
+                    <td>{customer.email}</td>
+                    <td>{customer.phone}</td>
+                    <td>{customer.city}</td>
+                    <td>{customer.orders.length}</td>
+                    <td>₹{customer.totalSpent.toFixed(2)}</td>
+                    <td>{customer.lastOrder}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="action-btn view"
+                          onClick={() => handleViewCustomer(customer)}
+                          title="View Customer Details"
+                        >
+                          <FaEye />
+                        </button>
+                        <button
+                          className="action-btn edit"
+                          onClick={() => handleViewOrders(customer)}
+                          title="View Order History"
+                        >
+                          <FaListAlt />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
