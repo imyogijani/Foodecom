@@ -45,6 +45,25 @@ const Products = () => {
     }
   };
 
+  const handleDeleteAllProducts = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete ALL products? This action cannot be undone."
+      )
+    ) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete("/api/admin/products/all", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("All products deleted successfully");
+        fetchProducts(); // Re-fetch products after deletion
+      } catch (error) {
+        toast.error("Error deleting all products");
+      }
+    }
+  };
+
   const fetchShops = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -133,6 +152,12 @@ const Products = () => {
               </option>
             ))}
         </select>
+        <button
+          className="delete-all-products-btn"
+          onClick={handleDeleteAllProducts}
+        >
+          Delete All Products
+        </button>
       </div>
 
       <div className="products-stats">
@@ -210,7 +235,7 @@ const Products = () => {
                   {product.subcategory?.name &&
                     ` (${product.subcategory.name})`}
                 </td>
-                <td>₹{product.price}</td>
+                <td>₹{product.price.toFixed(2)}</td>
                 <td>{product.stock}</td>
                 <td>
                   <span className={`status ${product.status.toLowerCase()}`}>

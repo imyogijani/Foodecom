@@ -200,6 +200,28 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+export const deleteAllProducts = async (req, res) => {
+  try {
+    // Ensure only admin can delete all products
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    }
+
+    await Product.deleteMany({});
+    res.status(200).json({
+      success: true,
+      message: 'All products deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting all products:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting all products',
+      error: error.message,
+    });
+  }
+};
+
 export const deleteProduct = async (req, res) => {
   try {
     const { productId } = req.params;

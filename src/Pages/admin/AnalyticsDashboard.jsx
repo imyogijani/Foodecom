@@ -129,13 +129,13 @@ const AnalyticsDashboard = () => {
         <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
           <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Revenue</h2>
           <p className="text-2xl sm:text-3xl font-bold text-green-600">
-            ${salesData.totalRevenue.toLocaleString()}
+            ₹{salesData.totalRevenue.toLocaleString()}
           </p>
           <p className="text-xs sm:text-sm text-gray-500">
-            Monthly: ${salesData.monthlyRevenue.toLocaleString()}
+            Monthly: ₹{salesData.monthlyRevenue.toLocaleString()}
           </p>
           <p className="text-xs sm:text-sm text-gray-500">
-            Daily: ${salesData.dailyRevenue.toLocaleString()}
+            Daily: ₹{salesData.dailyRevenue.toLocaleString()}
           </p>
         </div>
 
@@ -196,7 +196,7 @@ const AnalyticsDashboard = () => {
                     {product.sales.toLocaleString()}
                   </td>
                   <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">
-                    ${product.revenue.toLocaleString()}
+                    ₹{product.revenue.toLocaleString()}
                   </td>
                 </tr>
               ))}

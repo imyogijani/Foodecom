@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
 import {
@@ -41,7 +42,7 @@ export default function Restaurants() {
     return items.filter(
       (item) =>
         item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.desc.toLowerCase().includes(searchQuery.toLowerCase()),
+        item.desc.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
@@ -58,12 +59,16 @@ export default function Restaurants() {
               <h4>{offer.title}</h4>
               <button
                 className="plus-icon"
-                onClick={() => addToCart({
-                  id: offer.id,
-                  name: offer.title,
-                  price: parseFloat((offer.price || "0").toString().replace(/[£GBP\s]/g, "")),
-                  image: offer.image
-                })}
+                onClick={() =>
+                  addToCart({
+                    id: offer.id,
+                    name: offer.title,
+                    price: parseFloat(
+                      (offer.price || "0").toString().replace(/[₹INR\s]/g, "")
+                    ),
+                    image: offer.image,
+                  })
+                }
                 aria-label="Add to cart"
               >
                 +
@@ -110,12 +115,14 @@ export default function Restaurants() {
                       <button
                         key={index}
                         className={`compact-size-btn ${size.name.toLowerCase()}`}
-                        onClick={() => addToCart({
-                          id: `${item.id}-${size.name}`,
-                          name: `${item.title} (${size.name})`,
-                          price: parseFloat(size.price.replace("£", "")),
-                          image: item.image
-                        })}
+                        onClick={() =>
+                          addToCart({
+                            id: `${item.id}-${size.name}`,
+                            name: `${item.title} (${size.name})`,
+                            price: parseFloat(size.price.replace("₹", "")),
+                            image: item.image,
+                          })
+                        }
                       >
                         {size.name}{" "}
                         <span className="size-price">{size.price}</span>
@@ -132,12 +139,16 @@ export default function Restaurants() {
                   <div className="xl-option">
                     <button
                       className="xl-btn"
-                      onClick={() => addToCart({
-                        id: `${item.id}-XL`,
-                        name: `${item.title} (XL)` ,
-                        price: parseFloat(item.xlOption.price.replace("£", "")),
-                        image: item.image
-                      })}
+                      onClick={() =>
+                        addToCart({
+                          id: `${item.id}-XL`,
+                          name: `${item.title} (XL)`,
+                          price: parseFloat(
+                            item.xlOption.price.replace("₹", "")
+                          ),
+                          image: item.image,
+                        })
+                      }
                     >
                       {item.xlOption.name}{" "}
                       <span className="xl-price">{item.xlOption.price}</span>
@@ -153,12 +164,18 @@ export default function Restaurants() {
                 {!item.sizes && (
                   <button
                     className="add-btn"
-                    onClick={() => addToCart({
-                      id: item.id,
-                      name: item.title,
-                      price: parseFloat((item.price || "0").toString().replace(/[£GBP\s]/g, "")),
-                      image: item.image
-                    })}
+                    onClick={() =>
+                      addToCart({
+                        id: item.id,
+                        name: item.title,
+                        price: parseFloat(
+                          (item.price || "0")
+                            .toString()
+                            .replace(/[₹INR\s]/g, "")
+                        ),
+                        image: item.image,
+                      })
+                    }
                     aria-label="Add to cart"
                   >
                     +
@@ -466,17 +483,12 @@ export default function Restaurants() {
         <div className="restaurants-grid">
           {similarRestaurants.map((restaurant) => (
             <div className="restaurant-brand-card" key={restaurant.name}>
-              <img
-                src={restaurant.img}
-                alt={restaurant.name}
-                loading="lazy"
-              />
+              <img src={restaurant.img} alt={restaurant.name} loading="lazy" />
               <span className="restaurant-name">{restaurant.name}</span>
             </div>
           ))}
         </div>
       </div>
-
     </div>
   );
 }

@@ -109,7 +109,7 @@ const SellerCustomers = () => {
                   <td>{customer.phone}</td>
                   <td>{customer.city}</td>
                   <td>{customer.orders.length}</td>
-                  <td>${customer.totalSpent.toFixed(2)}</td>
+                  <td>₹{customer.totalSpent.toFixed(2)}</td>
                   <td>{customer.lastOrder}</td>
                   <td>
                     <div className="action-buttons">
@@ -152,7 +152,7 @@ const SellerCustomers = () => {
                 <p><strong>Phone:</strong> {selectedCustomer.phone}</p>
                 <p><strong>City:</strong> {selectedCustomer.city}</p>
                 <p><strong>Total Orders:</strong> {selectedCustomer.orders.length}</p>
-                <p><strong>Total Spent:</strong> ${selectedCustomer.totalSpent.toFixed(2)}</p>
+                <p><strong>Total Spent:</strong> ₹{selectedCustomer.totalSpent.toFixed(2)}</p>
                 <p><strong>Last Order:</strong> {selectedCustomer.lastOrder}</p>
               </div>
             </div>
@@ -174,7 +174,7 @@ const SellerCustomers = () => {
                 <p><strong>Email:</strong> {selectedCustomer.email}</p>
                 <p><strong>Phone:</strong> {selectedCustomer.phone}</p>
                 <p><strong>Total Orders:</strong> {selectedCustomer.orders.length}</p>
-                <p><strong>Total Spent:</strong> ${selectedCustomer.totalSpent.toFixed(2)}</p>
+                <p><strong>Total Spent:</strong> ₹{selectedCustomer.totalSpent.toFixed(2)}</p>
               </div>
               <div className="order-history">
                 <h3>Order History</h3>
@@ -203,15 +203,15 @@ const SellerCustomers = () => {
                             <tr key={index}>
                               <td>{item.name}</td>
                               <td>{item.quantity}</td>
-                              <td>${item.rate.toFixed(2)}</td>
-                              <td>${item.total.toFixed(2)}</td>
+                              <td>₹{item.rate.toFixed(2)}</td>
+                              <td>₹{item.total.toFixed(2)}</td>
                             </tr>
                           ))}
                         </tbody>
                         <tfoot>
                           <tr>
                             <td colSpan="3" className="total-label">Order Total:</td>
-                            <td className="total-amount">${order.total.toFixed(2)}</td>
+                            <td className="total-amount">₹{order.total.toFixed(2)}</td>
                           </tr>
                         </tfoot>
                       </table>
@@ -227,4 +227,4 @@ const SellerCustomers = () => {
   );
 };
 
-export default SellerCustomers; 
+export default SellerCustomers;

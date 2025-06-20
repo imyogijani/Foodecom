@@ -175,7 +175,7 @@ const Orders = () => {
                   <td>#{order.orderId}</td>
                   <td>{order.customerName}</td>
                   <td>{new Date(order.date).toLocaleDateString()}</td>
-                  <td>${order.amount}</td>
+                  <td>₹{order.amount}</td>
                   <td>
                     <span
                       className={`status-badge ${order.status.toLowerCase()}`}

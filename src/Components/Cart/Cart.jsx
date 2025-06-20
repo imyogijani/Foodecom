@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import './Cart.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "./Cart.css";
 
 const Cart = () => {
   const [orders, setOrders] = useState([]);
@@ -12,13 +12,14 @@ const Cart = () => {
 
   const fetchOrders = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/v1/orders/user-orders', {
-        headers: { Authorization: `Bearer ${token}` }
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/v1/orders/user-orders", {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setOrders(response.data.orders);
     } catch (error) {
-      toast.error('Error fetching orders');
+      toast.error("Error fetching orders");
+      console.log(error);
     }
   };
 
@@ -44,14 +45,16 @@ const Cart = () => {
                     <div className="item-details">
                       <h4>{item.name}</h4>
                       <p>Quantity: {item.quantity}</p>
-                      <p>Price: ${item.price.toFixed(2)}</p>
+                      <p>Price: ₹{item.price.toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
               </div>
               <div className="order-footer">
-                <p>Total: ${order.total.toFixed(2)}</p>
-                <p>Order Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+                <p>Total: ₹{order.total.toFixed(2)}</p>
+                <p>
+                  Order Date: {new Date(order.createdAt).toLocaleDateString()}
+                </p>
               </div>
             </div>
           ))}

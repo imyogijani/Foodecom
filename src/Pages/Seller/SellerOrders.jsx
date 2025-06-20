@@ -217,7 +217,7 @@ const SellerOrders = () => {
                   <td>{order.city}</td>
                   <td>{order.date}</td>
                   <td>{order.items}</td>
-                  <td>${order.total.toFixed(2)}</td>
+                  <td>₹{order.total.toFixed(2)}</td>
                   <td>
                     <span className={`status-badge ${order.status.toLowerCase().replace(' ', '-')}`}>
                       {order.status}
@@ -293,15 +293,15 @@ const SellerOrders = () => {
                       <tr key={index}>
                         <td>{item.name}</td>
                         <td>{item.quantity}</td>
-                        <td>${item.rate.toFixed(2)}</td>
-                        <td>${item.total.toFixed(2)}</td>
+                        <td>₹{item.rate.toFixed(2)}</td>
+                        <td>₹{item.total.toFixed(2)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr>
                       <td colSpan="3" className="total-label">Total Amount:</td>
-                      <td className="total-amount">${selectedOrder.total.toFixed(2)}</td>
+                      <td className="total-amount">₹{selectedOrder.total.toFixed(2)}</td>
                     </tr>
                   </tfoot>
                 </table>
@@ -314,4 +314,4 @@ const SellerOrders = () => {
   );
 };
 
-export default SellerOrders; 
+export default SellerOrders;

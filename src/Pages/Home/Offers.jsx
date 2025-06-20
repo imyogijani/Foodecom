@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import "./restaurant.css";
 import {
@@ -16,7 +17,7 @@ export default function Offers() {
     return offers.filter(
       (offer) =>
         offer.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        offer.restaurant.toLowerCase().includes(searchQuery.toLowerCase()),
+        offer.restaurant.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
@@ -31,7 +32,7 @@ export default function Offers() {
   // Get special offer items from all menu items
   const specialOfferItems = getAllMenuItems()
     .filter(
-      (item) => item.badge === "SPECIAL" || item.promoText || item.isPopular,
+      (item) => item.badge === "SPECIAL" || item.promoText || item.isPopular
     )
     .slice(0, 6);
 
@@ -98,12 +99,18 @@ export default function Offers() {
                     <button
                       className="plus-icon"
                       aria-label="Add to cart"
-                      onClick={() => addToCart({
-                        id: offer.id,
-                        name: offer.title,
-                        price: parseFloat((offer.price || "0").toString().replace(/[£GBP\s]/g, "")),
-                        image: offer.image
-                      })}
+                      onClick={() =>
+                        addToCart({
+                          id: offer.id,
+                          name: offer.title,
+                          price: parseFloat(
+                            (offer.price || "0")
+                              .toString()
+                              .replace(/[₹INR\s]/g, "")
+                          ),
+                          image: offer.image,
+                        })
+                      }
                     >
                       +
                     </button>
@@ -126,7 +133,11 @@ export default function Offers() {
                         {Array.from({ length: 5 }, (_, index) => (
                           <span
                             key={index}
-                            className={`chili ${index < (item.spiceLevel || 3) ? "filled" : "empty"}`}
+                            className={`chili ${
+                              index < (item.spiceLevel || 3)
+                                ? "filled"
+                                : "empty"
+                            }`}
                           >
                             🌶️
                           </span>
@@ -144,12 +155,18 @@ export default function Offers() {
                             <button
                               key={index}
                               className={`compact-size-btn ${size.name.toLowerCase()}`}
-                              onClick={() => addToCart({
-                                id: item.id,
-                                name: item.title,
-                                price: parseFloat((size.price || "0").toString().replace(/[£GBP\s]/g, "")),
-                                image: item.image
-                              })}
+                              onClick={() =>
+                                addToCart({
+                                  id: item.id,
+                                  name: item.title,
+                                  price: parseFloat(
+                                    (size.price || "0")
+                                      .toString()
+                                      .replace(/[₹INR\s]/g, "")
+                                  ),
+                                  image: item.image,
+                                })
+                              }
                             >
                               {size.name}{" "}
                               <span className="size-price">{size.price}</span>
@@ -166,12 +183,18 @@ export default function Offers() {
                         <div className="xl-option">
                           <button
                             className="xl-btn"
-                            onClick={() => addToCart({
-                              id: item.id,
-                              name: item.title,
-                              price: parseFloat((item.xlOption.price || "0").toString().replace(/[£GBP\s]/g, "")),
-                              image: item.image
-                            })}
+                            onClick={() =>
+                              addToCart({
+                                id: item.id,
+                                name: item.title,
+                                price: parseFloat(
+                                  (item.xlOption.price || "0")
+                                    .toString()
+                                    .replace(/[₹INR\s]/g, "")
+                                ),
+                                image: item.image,
+                              })
+                            }
                           >
                             {item.xlOption.name}{" "}
                             <span className="xl-price">
@@ -190,12 +213,18 @@ export default function Offers() {
                         <button
                           className="add-btn"
                           aria-label="Add to cart"
-                          onClick={() => addToCart({
-                            id: item.id,
-                            name: item.title,
-                            price: parseFloat((item.price || "0").toString().replace(/[£GBP\s]/g, "")),
-                            image: item.image
-                          })}
+                          onClick={() =>
+                            addToCart({
+                              id: item.id,
+                              name: item.title,
+                              price: parseFloat(
+                                (item.price || "0")
+                                  .toString()
+                                  .replace(/[₹INR\s]/g, "")
+                              ),
+                              image: item.image,
+                            })
+                          }
                         >
                           +
                         </button>
@@ -295,8 +324,8 @@ export default function Offers() {
           <div className="review-card stats-card">
             <div className="stats-content">
               <h4>🚚 Free Delivery</h4>
-              <span className="stats-number">Over £15</span>
-              <p>Free delivery on orders over £15</p>
+              <span className="stats-number">Over ₹15</span>
+              <p>Free delivery on orders over ₹15</p>
             </div>
           </div>
           <div className="review-card stats-card">

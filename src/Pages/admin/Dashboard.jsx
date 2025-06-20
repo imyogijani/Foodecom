@@ -111,7 +111,7 @@ const Dashboard = () => {
           </div>
           <div className="stat-details">
             <h3>Total Revenue</h3>
-            <p className="stat-value">${stats.revenue}</p>
+            <p className="stat-value">₹{stats.revenue}</p>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@ const Dashboard = () => {
                   <td>#{order._id.slice(-6)}</td>
                   <td>{order.customerName}</td>
                   <td>{order.shopName}</td>
-                  <td>${order.amount}</td>
+                  <td>₹{order.amount}</td>
                   <td>
                     <span className={`status ${order.status.toLowerCase()}`}>
                       {order.status}

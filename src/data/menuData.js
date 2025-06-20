@@ -6,7 +6,7 @@ export const restaurantInfo = {
   description: "Best flavours with a blend of Italian sweetness",
   rating: 3.4,
   reviews: 1360,
-  minOrder: "£12.00",
+  minOrder: "₹12.00",
   deliveryTime: "20-25 Minutes",
   phone: "+934443-43",
   website: "http://tandooripizza.uk/",
@@ -46,8 +46,8 @@ export const offerItems = [
     discount: "-20%",
     restaurant: "Tandoori Pizza London",
     badge: "NEW",
-    price: "£15.90",
-    originalPrice: "£19.90",
+    price: "₹15.90",
+    originalPrice: "₹19.90",
   },
   {
     id: "offer-2",
@@ -57,8 +57,8 @@ export const offerItems = [
     discount: "-20%",
     restaurant: "Tandoori Pizza London",
     badge: "POPULAR",
-    price: "£12.90",
-    originalPrice: "£16.90",
+    price: "₹12.90",
+    originalPrice: "₹16.90",
   },
   {
     id: "offer-3",
@@ -68,8 +68,8 @@ export const offerItems = [
     discount: "-100%",
     restaurant: "Tandoori Pizza London",
     badge: "LIMITED",
-    price: "£0.00",
-    originalPrice: "£4.90",
+    price: "₹0.00",
+    originalPrice: "₹4.90",
   },
 ];
 
@@ -86,11 +86,11 @@ export const pizzaItems = [
     isPopular: true,
     calories: "850 cal",
     sizes: [
-      { name: "Small", price: "£19.90" },
-      { name: "Medium", price: "£29.90" },
-      { name: "Large", price: "£27.90" },
+      { name: "Small", price: "₹19.90" },
+      { name: "Medium", price: "₹29.90" },
+      { name: "Large", price: "₹27.90" },
     ],
-    xlOption: { name: "XL Large with Sauces", price: "£32.90" },
+    xlOption: { name: "XL Large with Sauces", price: "₹32.90" },
   },
   {
     id: "pizza-2",
@@ -104,11 +104,11 @@ export const pizzaItems = [
     isPopular: true,
     calories: "720 cal",
     sizes: [
-      { name: "Small", price: "£24.90" },
-      { name: "Medium", price: "£34.90" },
-      { name: "Large", price: "£31.90" },
+      { name: "Small", price: "₹24.90" },
+      { name: "Medium", price: "₹34.90" },
+      { name: "Large", price: "₹31.90" },
     ],
-    xlOption: { name: "XL Large with Sauces", price: "£35.90" },
+    xlOption: { name: "XL Large with Sauces", price: "₹35.90" },
   },
   {
     id: "pizza-3",
@@ -124,11 +124,11 @@ export const pizzaItems = [
     badge: "SPECIAL",
     promoText: "-20%",
     sizes: [
-      { name: "Small", price: "£19.90" },
-      { name: "Medium", price: "£29.90" },
-      { name: "Large", price: "£27.90" },
+      { name: "Small", price: "₹19.90" },
+      { name: "Medium", price: "₹29.90" },
+      { name: "Large", price: "₹27.90" },
     ],
-    xlOption: { name: "XL Large with Sauces", price: "£32.90" },
+    xlOption: { name: "XL Large with Sauces", price: "₹32.90" },
   },
   {
     id: "pizza-4",
@@ -142,11 +142,11 @@ export const pizzaItems = [
     isPopular: true,
     calories: "620 cal",
     sizes: [
-      { name: "Small", price: "£17.90" },
-      { name: "Medium", price: "£27.90" },
-      { name: "Large", price: "£25.90" },
+      { name: "Small", price: "₹17.90" },
+      { name: "Medium", price: "₹27.90" },
+      { name: "Large", price: "₹25.90" },
     ],
-    xlOption: { name: "XL Large with Sauces", price: "£30.90" },
+    xlOption: { name: "XL Large with Sauces", price: "₹30.90" },
   },
   {
     id: "pizza-5",
@@ -160,11 +160,11 @@ export const pizzaItems = [
     isPopular: false,
     calories: "590 cal",
     sizes: [
-      { name: "Small", price: "£18.90" },
-      { name: "Medium", price: "£28.90" },
-      { name: "Large", price: "£26.90" },
+      { name: "Small", price: "₹18.90" },
+      { name: "Medium", price: "₹28.90" },
+      { name: "Large", price: "₹26.90" },
     ],
-    xlOption: { name: "XL Large with Sauces", price: "£31.90" },
+    xlOption: { name: "XL Large with Sauces", price: "₹31.90" },
   },
   {
     id: "pizza-6",
@@ -178,11 +178,11 @@ export const pizzaItems = [
     isPopular: true,
     calories: "750 cal",
     sizes: [
-      { name: "Small", price: "£20.90" },
-      { name: "Medium", price: "£30.90" },
-      { name: "Large", price: "£28.90" },
+      { name: "Small", price: "₹20.90" },
+      { name: "Medium", price: "₹30.90" },
+      { name: "Large", price: "₹28.90" },
     ],
-    xlOption: { name: "XL Large with Sauces", price: "£33.90" },
+    xlOption: { name: "XL Large with Sauces", price: "₹33.90" },
   },
 ];
 
@@ -191,7 +191,7 @@ export const garlicBreadItems = [
     id: "garlic-1",
     title: "Classic Garlic Bread",
     desc: "Fresh baked bread with garlic butter and herbs",
-    price: "£4.90",
+    price: "₹4.90",
     image:
       "https://images.pexels.com/photos/209540/pexels-photo-209540.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -203,7 +203,7 @@ export const garlicBreadItems = [
     id: "garlic-2",
     title: "Cheesy Garlic Bread",
     desc: "Garlic bread topped with melted mozzarella cheese",
-    price: "£6.90",
+    price: "₹6.90",
     image:
       "https://images.pexels.com/photos/209540/pexels-photo-209540.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -215,7 +215,7 @@ export const garlicBreadItems = [
     id: "garlic-3",
     title: "Herb Garlic Bread",
     desc: "Garlic bread with mixed Italian herbs and olive oil",
-    price: "£5.90",
+    price: "₹5.90",
     image:
       "https://images.pexels.com/photos/209540/pexels-photo-209540.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: false,
@@ -230,7 +230,7 @@ export const calzoneItems = [
     id: "calzone-1",
     title: "Chicken Calzone",
     desc: "Folded pizza with chicken, mozzarella, and tomato sauce",
-    price: "£12.90",
+    price: "₹12.90",
     image:
       "https://images.pexels.com/photos/708587/pexels-photo-708587.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -242,7 +242,7 @@ export const calzoneItems = [
     id: "calzone-2",
     title: "Vegetarian Calzone",
     desc: "Folded pizza with mixed vegetables and mozzarella",
-    price: "£11.90",
+    price: "₹11.90",
     image:
       "https://images.pexels.com/photos/708587/pexels-photo-708587.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: false,
@@ -257,7 +257,7 @@ export const kebabItems = [
     id: "kebab-1",
     title: "Chicken Kebab",
     desc: "Grilled chicken with fresh salad and sauce in pita bread",
-    price: "£8.90",
+    price: "₹8.90",
     image:
       "https://images.pexels.com/photos/4676410/pexels-photo-4676410.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -269,7 +269,7 @@ export const kebabItems = [
     id: "kebab-2",
     title: "Lamb Kebab",
     desc: "Grilled lamb with fresh salad and sauce in pita bread",
-    price: "£9.90",
+    price: "₹9.90",
     image:
       "https://images.pexels.com/photos/4676410/pexels-photo-4676410.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -281,7 +281,7 @@ export const kebabItems = [
     id: "kebab-3",
     title: "Mixed Kebab",
     desc: "Combination of chicken and lamb with fresh salad",
-    price: "£10.90",
+    price: "₹10.90",
     image:
       "https://images.pexels.com/photos/4676410/pexels-photo-4676410.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: false,
@@ -296,7 +296,7 @@ export const saladItems = [
     id: "salad-1",
     title: "Caesar Salad",
     desc: "Fresh lettuce, croutons, parmesan, and caesar dressing",
-    price: "£7.90",
+    price: "₹7.90",
     image:
       "https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -307,7 +307,7 @@ export const saladItems = [
     id: "salad-2",
     title: "Greek Salad",
     desc: "Mixed greens, feta cheese, olives, tomatoes, cucumber",
-    price: "£8.90",
+    price: "₹8.90",
     image:
       "https://images.pexels.com/photos/257816/pexels-photo-257816.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: false,
@@ -321,7 +321,7 @@ export const coldDrinksItems = [
     id: "drink-1",
     title: "Coca Cola Large",
     desc: "Classic Coca Cola served ice cold in large cup",
-    price: "£2.90",
+    price: "₹2.90",
     image:
       "https://images.pexels.com/photos/4966100/pexels-photo-4966100.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -332,7 +332,7 @@ export const coldDrinksItems = [
     id: "drink-2",
     title: "Fresh Lemonade",
     desc: "Freshly squeezed lemon juice with mint and ice",
-    price: "£3.50",
+    price: "₹3.50",
     image:
       "https://images.pexels.com/photos/4966100/pexels-photo-4966100.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -343,7 +343,7 @@ export const coldDrinksItems = [
     id: "drink-3",
     title: "Strawberry Milkshake",
     desc: "Creamy strawberry milkshake with whipped cream",
-    price: "£4.80",
+    price: "₹4.80",
     image:
       "https://images.pexels.com/photos/4966100/pexels-photo-4966100.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -354,7 +354,7 @@ export const coldDrinksItems = [
     id: "drink-4",
     title: "Orange Juice Fresh",
     desc: "100% pure orange juice squeezed daily",
-    price: "£3.80",
+    price: "₹3.80",
     image:
       "https://images.pexels.com/photos/4966100/pexels-photo-4966100.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: false,
@@ -368,7 +368,7 @@ export const dessertItems = [
     id: "dessert-1",
     title: "Chocolate Brownie",
     desc: "Rich chocolate brownie with vanilla ice cream",
-    price: "£5.90",
+    price: "₹5.90",
     image:
       "https://images.pexels.com/photos/45202/brownie-dessert-cake-sweet-45202.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -379,7 +379,7 @@ export const dessertItems = [
     id: "dessert-2",
     title: "Tiramisu",
     desc: "Classic Italian tiramisu with coffee and mascarpone",
-    price: "£6.90",
+    price: "₹6.90",
     image:
       "https://images.pexels.com/photos/45202/brownie-dessert-cake-sweet-45202.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -393,7 +393,7 @@ export const hotDrinksItems = [
     id: "hot-1",
     title: "Cappuccino",
     desc: "Rich espresso with steamed milk and foam",
-    price: "£3.50",
+    price: "₹3.50",
     image:
       "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -404,7 +404,7 @@ export const hotDrinksItems = [
     id: "hot-2",
     title: "Hot Chocolate",
     desc: "Rich hot chocolate with whipped cream",
-    price: "£4.20",
+    price: "₹4.20",
     image:
       "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -418,7 +418,7 @@ export const sauceItems = [
     id: "sauce-1",
     title: "Garlic Mayo",
     desc: "Creamy garlic mayonnaise sauce",
-    price: "£1.50",
+    price: "₹1.50",
     image:
       "https://images.pexels.com/photos/4198170/pexels-photo-4198170.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -429,7 +429,7 @@ export const sauceItems = [
     id: "sauce-2",
     title: "BBQ Sauce",
     desc: "Sweet and tangy barbecue sauce",
-    price: "£1.50",
+    price: "₹1.50",
     image:
       "https://images.pexels.com/photos/4198170/pexels-photo-4198170.jpeg?auto=compress&cs=tinysrgb&w=400",
     isPopular: true,
@@ -438,7 +438,6 @@ export const sauceItems = [
   },
 ];
 
-// Sample basket items for demo
 export const defaultBasketItems = [
   {
     id: 1,
@@ -470,7 +469,6 @@ export const defaultBasketItems = [
   },
 ];
 
-// Helper function to get all items by category
 export const getItemsByCategory = (category) => {
   switch (category.toLowerCase()) {
     case "offers":
@@ -498,7 +496,6 @@ export const getItemsByCategory = (category) => {
   }
 };
 
-// Get all menu items
 export const getAllMenuItems = () => {
   return [
     ...offerItems,

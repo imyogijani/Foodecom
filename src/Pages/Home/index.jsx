@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+// import  { useState } from "react";
 import "./Home.css"; // Import the new CSS file
 import p1 from "../../images/Person-1.png";
 import img1 from "../../images/TopD1.png";
 import img2 from "../../images/TopD2.png";
 import img3 from "../../images/TopD3.png";
 import img4 from "../../images/TopD3.png";
+import React, { useState, useEffect } from "react";
+import axios from "../../utils/axios";
+import { toast } from "react-toastify";
 import cat1 from "../../images/cat1.png";
 import cat2 from "../../images/cat2.png";
 import cat3 from "../../images/cat3.png";
@@ -80,11 +84,30 @@ const restaurants = [
 export default function Home() {
   const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState("Pizza & Fast food");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Handler for both Get Started buttons
   const handleGetStarted = () => {
     // TODO: Replace with navigation or modal as needed
     alert("Get Started clicked!");
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(
+        "/api/products?populateCategory=true&populateSubcategory=true"
+      );
+      setProducts(response.data.products);
+    } catch (error) {
+      toast.error("Error fetching products");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -124,17 +147,27 @@ export default function Home() {
         {/* Horizontal scroll wrapper */}
         <div className="deal-cards-wrapper">
           <div className="deal-cards">
-            {deals.map((deal) => (
-              <div className="deal-card" key={deal.id}>
-                <img src={deal.img} alt={deal.name} />
-                <div className="badge">{deal.discount}</div>
-                <div className="overlay">
-                  <span>Restaurant</span>
-                  <h4>{deal.name}</h4>
+            {loading ? (
+              <p>Loading products...</p>
+            ) : (
+              products.map((product) => (
+                <div className="deal-card" key={product._id}>
+                  <img src={product.images && product.images.length > 0 ? product.images[0] : 'placeholder.jpg'} alt={product.name} />
+                  <div className="badge">
+                    {product.discountPercentage
+                      ? `-${product.discountPercentage}%`
+                      : ""}
+                  </div>
+                  <div className="overlay">
+                    <span>
+                      {product.shopId ? product.shopId.shopName : "N/A"}
+                    </span>
+                    <h4>{product.name}</h4>
+                  </div>
+                  <button className="plus-icon" onClick={() => addToCart({id: product._id, name: product.name, price: product.price, image: product.images && product.images.length > 0 ? product.images[0] : 'placeholder.jpg'})}>+</button>
                 </div>
-                <button className="plus-icon" onClick={() => addToCart({id: deal.id, name: deal.name, price: 0, image: deal.img})}>+</button>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
