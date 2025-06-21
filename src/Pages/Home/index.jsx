@@ -91,7 +91,7 @@ export default function Home() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("/api/category");
+        const response = await axios.get("/api/category/get-category");
         const categoriesData = response.data.categories;
         setCategories(categoriesData);
 

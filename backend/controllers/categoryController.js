@@ -64,6 +64,28 @@ export const categoryController = async (req, res) => {
   }
 };
 
+// Get subcategories
+export const getSubcategoriesController = async (req, res) => {
+  try {
+    const { parentId } = req.params;
+    const subcategories = await Category.find({ parent: parentId }).populate(
+      "children"
+    );
+    res.status(200).send({
+      success: true,
+      message: "Subcategories retrieved successfully",
+      subcategories,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "Error while getting subcategories",
+    });
+  }
+};
+
 // Single category
 export const singleCategoryController = async (req, res) => {
   try {

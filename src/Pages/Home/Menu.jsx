@@ -23,11 +23,11 @@ export default function Menu() {
   }, [activeTab]);
 
   const filterItems = (items) => {
-    if (!searchQuery) return items;
+    if (!searchQuery || !items) return items;
     return items.filter(
       (item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.desc.toLowerCase().includes(searchQuery.toLowerCase())
+        item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.desc?.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
@@ -40,6 +40,7 @@ export default function Menu() {
   };
 
   const renderOffers = (items) => {
+    if (!items) return null;
     return (
       <div className="offers-grid">
         {items.map((offer) => (
@@ -73,6 +74,7 @@ export default function Menu() {
   };
 
   const renderMenuItems = (items) => {
+    if (!items) return null;
     return (
       <div className="compact-menu-grid">
         {items.map((item) => (
@@ -150,8 +152,7 @@ export default function Menu() {
                         id: item.id,
                         name: item.title,
                         price: parseFloat(
-                          (item.price || "0")
-                            .toString()
+                          (typeof item.price === 'string' ? item.price : '0')
                             .replace(/[₹INR\s]/g, "")
                         ),
                         image: item.image,
@@ -180,6 +181,7 @@ export default function Menu() {
     }
 
     const items = getItemsByCategory(activeTab);
+    if (!items) return null;
 
     if (activeTab === "Offers") {
       return renderOffers(items);
@@ -193,13 +195,16 @@ export default function Menu() {
     );
   };
 
+  const menuCats = menuCategories || [];
+  const allMenuItems = getAllMenuItems() || [];
+
   return (
     <div className="restaurant-page">
       {/* Hero Section */}
       <div className="restaurant-hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>Browse Menu - {restaurantInfo.name}</h1>
+            <h1>Browse Menu - {restaurantInfo?.name}</h1>
             <div className="hero-tags">
               <span className="tag">Full Menu Available</span>
               <span className="tag">All Categories</span>
@@ -218,7 +223,7 @@ export default function Menu() {
       {/* Menu Section */}
       <div className="restaurant-menu">
         <div className="menu-header">
-          <h2>Complete Menu from {restaurantInfo.name}</h2>
+          <h2>Complete Menu from {restaurantInfo?.name}</h2>
           <div className="search-bar">
             <input
               type="text"
@@ -231,7 +236,7 @@ export default function Menu() {
         </div>
 
         <div className="menu-tabs">
-          {menuCategories.map((cat) => (
+          {menuCats.map((cat) => (
             <button
               key={cat}
               className={`menu-tab ${activeTab === cat ? "active" : ""}`}
@@ -252,16 +257,16 @@ export default function Menu() {
             <h3>📋 Menu Information</h3>
             <div className="info-item">
               <span className="label">Total Categories:</span>
-              <span className="value">{menuCategories.length}</span>
+              <span className="value">{menuCats.length}</span>
             </div>
             <div className="info-item">
               <span className="label">Total Items:</span>
-              <span className="value">{getAllMenuItems().length}</span>
+              <span className="value">{allMenuItems.length}</span>
             </div>
             <div className="info-item">
               <span className="label">Popular Items:</span>
               <span className="value">
-                {getAllMenuItems().filter((item) => item.isPopular).length}
+                {allMenuItems.filter((item) => item?.isPopular).length}
               </span>
             </div>
             <div className="info-item highlight">
@@ -275,16 +280,16 @@ export default function Menu() {
             <div className="info-item">
               <span className="label">Rating:</span>
               <span className="value">
-                ⭐ {restaurantInfo.rating} ({restaurantInfo.reviews} reviews)
+                ⭐ {restaurantInfo?.rating} ({restaurantInfo?.reviews} reviews)
               </span>
             </div>
             <div className="info-item">
               <span className="label">Minimum Order:</span>
-              <span className="value">{restaurantInfo.minOrder}</span>
+              <span className="value">{restaurantInfo?.minOrder}</span>
             </div>
             <div className="info-item">
               <span className="label">Delivery Time:</span>
-              <span className="value">{restaurantInfo.deliveryTime}</span>
+              <span className="value">{restaurantInfo?.deliveryTime}</span>
             </div>
           </div>
 
@@ -292,11 +297,11 @@ export default function Menu() {
             <h3>📞 Contact</h3>
             <div className="info-item">
               <span className="label">Phone:</span>
-              <span className="value">{restaurantInfo.phone}</span>
+              <span className="value">{restaurantInfo?.phone}</span>
             </div>
             <div className="info-item">
               <span className="label">Website:</span>
-              <span className="value">{restaurantInfo.website}</span>
+              <span className="value">{restaurantInfo?.website}</span>
             </div>
             <div className="info-item">
               <span className="label">Location:</span>
