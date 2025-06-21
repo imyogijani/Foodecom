@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../utils/axios";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import "./Menu.css";
 import { toast } from "react-toastify";
@@ -25,7 +25,7 @@ const Menu = () => {
   const fetchMenuItems = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("/api/admin/menu-items", {
+      const response = await axiosInstance.get("/api/admin/menu-items", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMenuItems(response.data.data);
@@ -58,12 +58,12 @@ const Menu = () => {
       }
 
       if (currentMenuItem) {
-        await axios.put(`/api/admin/menu-items/${currentMenuItem._id}`, itemData, {
+        await axiosInstance.put(`/api/admin/menu-items/${currentMenuItem._id}`, itemData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Menu item updated successfully!");
       } else {
-        await axios.post("/api/admin/menu-items", itemData, {
+        await axiosInstance.post("/api/admin/menu-items", itemData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Menu item created successfully!");
@@ -101,7 +101,7 @@ const Menu = () => {
     if (window.confirm("Are you sure you want to delete this menu item?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`/api/admin/menu-items/${id}`, {
+        await axiosInstance.delete(`/api/admin/menu-items/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Menu item deleted successfully!");
@@ -170,7 +170,7 @@ const Menu = () => {
                 <td>
                   {item.image && (
                     <img
-                      src={`/uploads/${item.image}`}
+                      src={item.image.startsWith("/uploads/") ? item.image : `/uploads/${item.image}`}
                       alt={item.name}
                       className="menu-item-image"
                     />

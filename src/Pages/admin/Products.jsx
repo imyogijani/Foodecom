@@ -21,6 +21,12 @@ const Products = () => {
   const [loading, setLoading] = useState(true);
   const [selectedShop, setSelectedShop] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [editStatus, setEditStatus] = useState("");
+  const [editStock, setEditStock] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editLoading, setEditLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -88,6 +94,70 @@ const Products = () => {
       } catch (error) {
         toast.error("Error deleting product");
       }
+    }
+  };
+
+  const handleRowClick = (product) => {
+    setSelectedProduct(product);
+    setShowProductModal(true);
+  };
+
+  const closeProductModal = () => {
+    setShowProductModal(false);
+    setSelectedProduct(null);
+  };
+
+  const handleModalDelete = async () => {
+    if (!selectedProduct) return;
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.delete(`/api/admin/products/${selectedProduct._id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success("Product deleted successfully");
+        fetchProducts();
+        closeProductModal();
+      } catch (error) {
+        toast.error("Error deleting product");
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (showProductModal && selectedProduct) {
+      setEditStatus(selectedProduct.status || "");
+      setEditStock(selectedProduct.stock);
+      setEditPrice(selectedProduct.price);
+    }
+  }, [showProductModal, selectedProduct]);
+
+  const handleModalUpdate = async (e) => {
+    e.preventDefault();
+    if (!selectedProduct) return;
+    setEditLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `/api/admin/products/${selectedProduct._id}`,
+        {
+          status: editStatus,
+          stock: Number(editStock) || 0,
+          price: Number(editPrice) || 0,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Product updated successfully");
+      fetchProducts();
+      closeProductModal();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Error updating product"
+      );
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -214,59 +284,187 @@ const Products = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredProducts.map((product) => (
-              <tr key={product._id}>
-                <td>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="product-thumbnail"
-                  />
-                </td>
-                <td>{product.name}</td>
-                <td>
-                  <div className="shop-info">
-                    <FaStore className="shop-icon" />
-                    <span>{product.shopName}</span>
-                  </div>
-                </td>
-                <td>
-                  {product.category?.name}
-                  {product.subcategory?.name &&
-                    ` (${product.subcategory.name})`}
-                </td>
-                <td>₹{product.price.toFixed(2)}</td>
-                <td>{product.stock}</td>
-                <td>
-                  <span className={`status ${product.status.toLowerCase()}`}>
-                    {product.status}
-                  </span>
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button
-                      className="edit-btn"
-                      onClick={() =>
-                        navigate(`/admin/products/edit/${product._id}`)
-                      }
-                      title="Edit Product"
+            {filteredProducts.map((product) => {
+              let imageUrl = "";
+              if (product.image) {
+                if (product.image.startsWith("/uploads/products/")) {
+                  imageUrl = `http://localhost:8080${product.image}`;
+                } else if (product.image.startsWith("/uploads/")) {
+                  imageUrl = `http://localhost:8080${product.image}`;
+                } else {
+                  imageUrl = `http://localhost:8080/uploads/products/${product.image}`;
+                }
+              }
+              return (
+                <tr
+                  key={product._id}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleRowClick(product)}
+                >
+                  <td>
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt={product.name}
+                        className="product-thumbnail"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/vite.svg";
+                        }}
+                      />
+                    ) : null}
+                  </td>
+                  <td>{product.name}</td>
+                  <td>
+                    <div className="shop-info">
+                      <FaStore className="shop-icon" />
+                      <span>{product.shopName}</span>
+                    </div>
+                  </td>
+                  <td>
+                    {product.category?.name}
+                    {product.subcategory?.name &&
+                      ` (${product.subcategory.name})`}
+                  </td>
+                  <td>₹{product.price.toFixed(2)}</td>
+                  <td>{product.stock}</td>
+                  <td>
+                    <span
+                      className={`status ${product.status.toLowerCase()}`}
                     >
-                      <FaEdit />
-                    </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteProduct(product._id)}
-                      title="Delete Product"
+                      {product.status}
+                    </span>
+                  </td>
+                  <td>
+                    <div
+                      className="action-buttons"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <FaTrash />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      <button
+                        className="edit-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRowClick(product); // Open modal for editing
+                        }}
+                        title="Edit Product"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteProduct(product._id)}
+                        title="Delete Product"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+
+      {showProductModal && selectedProduct && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Product Details</h2>
+              <button className="close-btn" onClick={closeProductModal}>
+                &times;
+              </button>
+            </div>
+            <div className="modal-body">
+              <img
+                className="product-modal-image"
+                src={
+                  selectedProduct.image &&
+                  (selectedProduct.image.startsWith("/uploads")
+                    ? `http://localhost:8080${selectedProduct.image}`
+                    : `http://localhost:8080/uploads/products/${selectedProduct.image}`)
+                }
+                alt={selectedProduct.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = "/vite.svg";
+                }}
+              />
+              <div className="product-modal-details">
+                <h3>{selectedProduct.name}</h3>
+                <p>{selectedProduct.description}</p>
+                <div className="product-meta">
+                  <b>Shop:</b> {selectedProduct.shopName}
+                  <br />
+                  <b>Category:</b> {selectedProduct.category?.name}
+                  {selectedProduct.subcategory?.name &&
+                    ` (${selectedProduct.subcategory.name})`}
+                </div>
+                <form className="product-modal-form" onSubmit={handleModalUpdate}>
+                  <div className="form-group">
+                    <label>Price (₹)</label>
+                    <input
+                      type="number"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Stock</label>
+                    <input
+                      type="number"
+                      value={editStock}
+                      onChange={(e) => setEditStock(e.target.value)}
+                      min="0"
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Status</label>
+                    <select
+                      value={editStatus}
+                      onChange={(e) => setEditStatus(e.target.value)}
+                      required
+                    >
+                      <option value="In Stock">In Stock</option>
+                      <option value="Low Stock">Low Stock</option>
+                      <option value="Out of Stock">Out of Stock</option>
+                    </select>
+                  </div>
+                  <div className="modal-actions">
+                    <button
+                      type="submit"
+                      className="glass-btn btn-primary"
+                      disabled={editLoading}
+                    >
+                      {editLoading ? "Saving..." : "Update"}
+                    </button>
+                    <button
+                      type="button"
+                      className="glass-btn btn-danger"
+                      onClick={handleModalDelete}
+                      disabled={editLoading}
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      className="glass-btn btn-secondary"
+                      onClick={closeProductModal}
+                      disabled={editLoading}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
