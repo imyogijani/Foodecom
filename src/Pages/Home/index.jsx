@@ -92,7 +92,11 @@ export default function Home() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get("/api/category/get-category");
+<<<<<<< HEAD
         const categoriesData = response.data.categories || [];
+=======
+        const categoriesData = response.data.categories;
+>>>>>>> 4e64bc7b6764aa34a4722b7ee915400f73b19a8c
         setCategories(categoriesData);
 
         // Subcategories are already included as children in the categories response

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaEdit, FaTrash, FaEye, FaUtensils, FaStar, FaDollarSign, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import "./Menu.css";
 import { toast } from "react-toastify";
 
@@ -29,7 +29,7 @@ const Menu = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("/api/products", {
+      const response = await axios.get("/api/admin/menu-items", {
         headers: { Authorization: `Bearer ${token}` },
         params: { populateCategory: 'true' }
       });
@@ -191,13 +191,13 @@ const Menu = () => {
         }
       }
 
-      if (currentProduct) {
-        await axios.put(`/api/products/${currentProduct._id}`, productData, {
+      if (currentMenuItem) {
+        await axios.put(`/api/admin/menu-items/${currentMenuItem._id}`, itemData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Product updated successfully!");
       } else {
-        await axios.post("/api/products/add", productData, {
+        await axios.post("/api/admin/menu-items", itemData, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Product created successfully!");
@@ -240,7 +240,7 @@ const Menu = () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`/api/products/${id}`, {
+        await axios.delete(`/api/admin/menu-items/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Product deleted successfully!");
@@ -339,31 +339,8 @@ const Menu = () => {
 
       <div className="menu-stats">
         <div className="stat-card">
-          <div className="stat-icon">
-            <FaUtensils />
-          </div>
-          <div className="stat-details">
-            <h3>Total Products</h3>
-            <p>{totalProducts}</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaEye />
-          </div>
-          <div className="stat-details">
-            <h3>No. of Categories</h3>
-            <p>{categories.length}</p>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaStar />
-          </div>
-          <div className="stat-details">
-            <h3>Premium Products</h3>
-            <p>{premiumProducts}</p>
-          </div>
+          <h3>Total Menu Items</h3>
+          <p>{menuItems.length}</p>
         </div>
       </div>
 
@@ -394,69 +371,47 @@ const Menu = () => {
           <h2>Products</h2>
         </div>
 
-        <div className="table-responsive">
-          <table className="menu-table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
+        <table className="menu-table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Price</th>
+              <th>Category</th>
+              <th>Premium</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {menuItems.map((item) => (
+              <tr key={item._id}>
+                <td>
+                  {item.image && (
+                    <img
+                      src={`/uploads/${item.image}`}
+                      alt={item.name}
+                      className="menu-item-image"
+                    />
+                  )}
+                </td>
+                <td>{item.name}</td>
+                <td>{item.description}</td>
+                <td>₹{item.price}</td>
+                <td>{item.category}</td>
+                <td>{item.isPremium ? "Yes" : "No"}</td>
+                <td>
+                  <button className="edit-btn" onClick={() => handleEdit(item)}>
+                    <FaEdit />
+                  </button>
+                  <button className="delete-btn" onClick={() => handleDelete(item._id)}>
+                    <FaTrash />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan="8" className="no-items">
-                    {searchTerm || categoryFilter ? "No products match your filters" : "No products found"}
-                  </td>
-                </tr>
-              ) : (
-                filteredProducts.map((product) => (
-                  <tr key={product._id}>
-                    <td>
-                      {product.image && (
-                        <img
-                          src={product.image.startsWith('/') ? product.image : `/uploads/${product.image}`}
-                          alt={product.name || "Product"}
-                          className="menu-item-image"
-                        />
-                      )}
-                    </td>
-                    <td>{product.name || "N/A"}</td>
-                    <td className="description-cell">{product.description || "No description"}</td>
-                    <td>₹{product.price || 0}</td>
-                    <td>{product.category?.name || product.category || "Uncategorized"}</td>
-                    <td>{product.stock || 0}</td>
-                    <td>
-                      <span className={`status-badge ${product.status === 'In Stock' ? 'active' : product.status === 'Low Stock' ? 'warning' : 'inactive'}`}>
-                        {product.status || 'Unknown'}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="action-buttons">
-                        <button 
-                          className={`action-btn ${product.isPremium ? 'premium' : 'regular'}`}
-                          onClick={() => handleTogglePremium(product)} 
-                          title={product.isPremium ? "Remove from Premium" : "Mark as Premium"}
-                        >
-                          {product.isPremium ? <FaStar /> : <FaStar />}
-                        </button>
-                        <button className="action-btn delete" onClick={() => handleDelete(product._id)} title="Delete">
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {showModal && (

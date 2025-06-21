@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({
-  // baseURL: "https://ecomb.emallworld.com/api",
-  baseURL: "http://localhost:8080",
+  baseURL: "http://localhost:8080/",
   timeout: 15000, // Increased timeout for file uploads
   headers: {
     "Content-Type": "application/json",

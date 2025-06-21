@@ -5,6 +5,7 @@ import {
   singleCategoryController,
   deleteCategoryController,
   updateCategoryController,
+  getSubcategoriesController,
 } from "../controllers/categoryController.js";
 import {
   authenticateToken,
@@ -35,6 +36,9 @@ router.put(
 
 // Get All Categories
 router.get("/get-category", categoryController);
+
+//get all subcategory
+router.get("/get-sub-category/:parentId", getSubcategoriesController);
 
 // Single Category
 router.get("/single-category/:slug", singleCategoryController);
