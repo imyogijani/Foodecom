@@ -140,7 +140,7 @@ const Menu = () => {
       <div className="menu-stats">
         <div className="stat-card">
           <h3>Total Menu Items</h3>
-          <p>{menuItems.length}</p>
+          <p>{menuItems?.length || 0}</p>
         </div>
       </div>
 
@@ -165,7 +165,7 @@ const Menu = () => {
             </tr>
           </thead>
           <tbody>
-            {menuItems.map((item) => (
+            {(menuItems || []).map((item) => (
               <tr key={item._id}>
                 <td>
                   {item.image && (
