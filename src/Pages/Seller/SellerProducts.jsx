@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaEdit } from "react-icons/fa";
 import axios from "../../utils/axios";
 import "../../App.css";
 import "./SellerProducts.css";
@@ -11,6 +11,10 @@ const SellerProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
+  const [editCategory, setEditCategory] = useState("");
+  const [editStatus, setEditStatus] = useState("");
 
   useEffect(() => {
     fetchCategories();
@@ -67,6 +71,42 @@ const SellerProducts = () => {
         toast.error("Error deleting product");
         console.log(error);
       }
+    }
+  };
+
+  const handleEdit = (product) => {
+    setEditProduct(product);
+    setEditCategory(product.category?._id || "");
+    setEditStatus(product.status || "");
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditProduct(null);
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editProduct) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `/api/products/${editProduct._id}`,
+        {
+          category: editCategory,
+          status: editStatus,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      toast.success("Product updated successfully");
+      closeEditModal();
+      fetchProducts();
+    } catch (error) {
+      toast.error("Error updating product");
+      console.log(error);
     }
   };
 
@@ -147,17 +187,12 @@ const SellerProducts = () => {
                     </span>
                   </td>
                   <td>
-                    <Link
-                      to={`/seller/edit-product/${product._id}`}
-                      className="edit-btn"
-                    >
-                      Edit
-                    </Link>
                     <button
-                      onClick={() => handleDelete(product._id)}
-                      className="delete-btn"
+                      className="edit-icon-btn"
+                      onClick={() => handleEdit(product)}
+                      title="Edit Product"
                     >
-                      Delete
+                      <FaEdit />
                     </button>
                   </td>
                 </tr>
@@ -166,6 +201,53 @@ const SellerProducts = () => {
           </table>
         </div>
       </div>
+
+      {/* Edit Product Modal */}
+      {showEditModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Edit Product</h2>
+            <form onSubmit={handleSaveEdit}>
+              <div className="form-group">
+                <label>Name</label>
+                <input type="text" value={editProduct?.name || ''} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Category</label>
+                <select value={editCategory} onChange={e => setEditCategory(e.target.value)} required>
+                  <option value="" disabled>Select category</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Price</label>
+                <input type="number" value={editProduct?.price || ''} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Stock</label>
+                <input type="number" value={editProduct?.stock || ''} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Status</label>
+                <select value={editStatus} onChange={e => setEditStatus(e.target.value)} required>
+                  <option value="" disabled>Select status</option>
+                  <option value="In Stock">In Stock</option>
+                  <option value="Low Stock">Low Stock</option>
+                  <option value="Out of Stock">Out of Stock</option>
+                </select>
+              </div>
+              <div className="modal-actions">
+                <button type="submit" className="btn btn-primary">Save</button>
+                <button type="button" className="btn btn-secondary" onClick={closeEditModal}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -14,6 +14,7 @@ import Restaurants from "./Pages/Home/Restaurants";
 import Footer from "./Components/Footer/index";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Login/Register";
+import Pricing from "./Components/Login/Pricing";
 import AdminLayout from "./Components/AdminLayout";
 import SellerLayout from "./Components/SellerLayout";
 import Dashboard from "./Pages/admin/Dashboard";
@@ -77,6 +78,7 @@ function LayoutWrapper() {
         <Route path="restaurant" element={<Restaurants />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+        <Route path="pricing" element={<Pricing />} />
         <Route
           path="cart"
           element={

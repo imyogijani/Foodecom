@@ -18,12 +18,13 @@ const Register = () => {
     email: "",
     password: "",
     role: "client",
-    names: "",
+    firstName: "",
+    lastName: "",
     shopownerName: "",
     shopName: "",
     phone: "",
     address: "",
-    subscriptionId: "", // Add subscriptionId to form data
+    subscriptionId: "",
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -63,8 +64,20 @@ const Register = () => {
     setIsLoading(true);
     setError("");
 
+    if (formData.role === "shopowner") {
+      // Redirect to pricing page with form data
+      navigate("/pricing", { state: { formData } });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post("/api/auth/register", formData);
+      // Before sending formData to backend
+      const submitData = {
+        ...formData,
+        names: `${formData.firstName} ${formData.lastName}`.trim(),
+      };
+      const response = await axios.post("/api/auth/register", submitData);
       if (response.data.success) {
         toast.success("Registration successful! Please login.");
         navigate("/login");
@@ -113,19 +126,34 @@ const Register = () => {
           </div>
 
           {formData.role === "client" || formData.role === "admin" ? (
-            <div className="form-group">
-              <div className="input-group">
-                <input
-                  type="text"
-                  name="names"
-                  placeholder="Full Name"
-                  value={formData.names}
-                  onChange={handleChange}
-                  required
-                  className="form-input"
-                />
+            <>
+              <div className="form-group">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
               </div>
-            </div>
+              <div className="form-group">
+                <div className="input-group">
+                  <input
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            </>
           ) : (
             <>
               <div className="form-group">

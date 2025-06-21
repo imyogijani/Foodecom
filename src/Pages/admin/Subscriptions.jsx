@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrash, FaPlus, FaUsers, FaCheckCircle, FaClock, FaTimesCircle } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
 import "./Subscriptions.css";
@@ -102,21 +102,6 @@ const Subscriptions = () => {
       <div className="admin-header">
         <h1>Subscription Plans</h1>
         <p className="admin-subtitle">Manage your subscription plans and pricing</p>
-      </div>
-
-      <div className="subscription-stats">
-        <div className="stat-card">
-          <h3>Total Plans</h3>
-          <p>{subscriptions.length}</p>
-        </div>
-        <div className="stat-card">
-          <h3>Active Plans</h3>
-          <p>{subscriptions.filter(sub => sub.status === 'active').length}</p>
-        </div>
-        <div className="stat-card">
-          <h3>Total Revenue</h3>
-          <p>₹{subscriptions.reduce((sum, sub) => sum + Number(sub.monthlyPrice), 0)}</p>
-        </div>
       </div>
 
       <div className="subscriptions-table-container">
