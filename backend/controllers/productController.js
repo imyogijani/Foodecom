@@ -46,7 +46,7 @@ export const addProduct = async (req, res) => {
       );
 
       await file.mv(uploadPath);
-      image = `/uploads/${filename}`;
+      image = `/uploads/products/${filename}`; // Store full path for correct frontend usage
     } else {
       return res.status(400).json({
         success: false,

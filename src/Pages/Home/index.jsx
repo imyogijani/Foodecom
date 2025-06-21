@@ -60,7 +60,7 @@ const deals = [
   },
 ];
 
-const categories = [
+const fallbackCategories = [
   { name: "Vegan", img: cat1, restaurants: 12 },
   { name: "Sushi", img: cat2, restaurants: 8 },
   { name: "Pizza & Fast food", img: cat3, restaurants: 15 },
@@ -92,19 +92,26 @@ export default function Home() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get("/api/category/get-category");
+<<<<<<< HEAD
+        const categoriesData = response.data.categories || [];
+=======
         const categoriesData = response.data.categories;
+>>>>>>> 4e64bc7b6764aa34a4722b7ee915400f73b19a8c
         setCategories(categoriesData);
 
+        // Subcategories are already included as children in the categories response
+        // No need for separate API calls
         const subCategoriesMap = {};
-        for (const category of categoriesData) {
-          const subResponse = await axios.get(
-            `/api/subcategories/${category._id}`
-          );
-          subCategoriesMap[category._id] = subResponse.data.subcategories;
-        }
+        categoriesData.forEach(category => {
+          subCategoriesMap[category._id] = category.children || [];
+        });
         setSubcategories(subCategoriesMap);
       } catch (error) {
+        console.error("Category fetch error:", error);
         toast.error("Error fetching categories");
+        // Set empty array as fallback
+        setCategories([]);
+        setSubcategories({});
       }
     };
 
@@ -147,9 +154,9 @@ export default function Home() {
             Up to <span>–40%</span> 🎉 Order.uk exclusive deals
           </h3>
           <div className="category-tabs">
-            {categories.map((cat) => (
+            {(categories.length > 0 ? categories : fallbackCategories).map((cat, index) => (
               <button
-                key={cat._id}
+                key={cat._id || index}
                 onClick={() => setActiveCategory(cat.name)}
                 className={cat.name === activeCategory ? "active" : ""}
               >
@@ -213,7 +220,7 @@ export default function Home() {
       <div className="popular-categories">
         <h3>Order.uk Popular Categories 🥳</h3>
         <div className="category-grid">
-          {categories.map((cat, index) => (
+          {(categories.length > 0 ? categories : fallbackCategories).map((cat, index) => (
             <div className="category-card" key={cat._id || index}>
               <img src={cat.image || cat1} alt={cat.name} />
               <div className="category_text">
