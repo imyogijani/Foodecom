@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -36,7 +36,20 @@ import CartFloatingButton from "./Components/CartFloatingButton";
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
+  const [isMobileOrTablet, setIsMobileOrTablet] = useState(false);
   const location = useLocation();
+
+  // Check if device is mobile or tablet
+  useEffect(() => {
+    const checkDevice = () => {
+      const isMobile = window.innerWidth <= 1024; // Tablet and mobile breakpoint
+      setIsMobileOrTablet(isMobile);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
 
   // Define paths where you DON'T want header, navbar, footer
   const hideLayoutPaths = [
@@ -66,6 +79,9 @@ function LayoutWrapper() {
     location.pathname.startsWith("/seller") ||
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/register");
+
+  // Show cart button on all pages for mobile/tablet, or only on non-admin/seller/auth pages for desktop
+  const shouldShowCartButton = isMobileOrTablet || !isAdminOrSellerOrAuth;
 
   return (
     <>
@@ -123,8 +139,8 @@ function LayoutWrapper() {
         {/* Add more routes as needed */}
       </Routes>
       {!hideLayout && <Footer />}
-      {/* Only show CartFloatingButton if not on admin, seller, login, or register pages */}
-      {!isAdminOrSellerOrAuth && <CartFloatingButton />}
+      {/* Cart button rendered at the end to ensure it's not clipped by containers */}
+      {shouldShowCartButton && <CartFloatingButton />}
     </>
   );
 }

@@ -1,8 +1,8 @@
 .cart-float-btn {
-  position: fixed;
+  position: fixed !important;
   bottom: 32px;
   right: 32px;
-  z-index: 1500;
+  z-index: 9999 !important;
   background: #e57a00;
   color: #fff;
   border: none;
@@ -15,11 +15,16 @@
   align-items: center;
   gap: 0.7rem;
   cursor: pointer;
-  transition: background 0.2s, box-shadow 0.2s;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+  /* Ensure it's positioned relative to viewport, not any container */
+  transform: translateZ(0);
+  /* Force hardware acceleration */
+  will-change: transform;
 }
 .cart-float-btn:hover {
   background: #fc8a06;
   box-shadow: 0 8px 32px rgba(252,138,6,0.18);
+  transform: translateY(-2px);
 }
 .cart-float-icon {
   font-size: 1.5rem;
@@ -42,14 +47,167 @@
   font-size: 1.1rem;
   font-weight: 600;
 }
-@media (max-width: 600px) {
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+  .cart-float-btn {
+    bottom: 24px;
+    right: 24px;
+    padding: 0.6rem 1.3rem 0.6rem 1rem;
+    font-size: 1rem;
+    border-radius: 28px;
+  }
+  
+  .cart-float-icon {
+    font-size: 1.3rem;
+  }
+  
+  .cart-float-label {
+    font-size: 1rem;
+  }
+  
+  .cart-float-count {
+    font-size: 0.9rem;
+    min-width: 22px;
+    padding: 1px 7px;
+  }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+  .cart-float-btn {
+    bottom: 20px;
+    right: 16px;
+    padding: 0.5rem 1.1rem 0.5rem 0.9rem;
+    font-size: 0.95rem;
+    border-radius: 24px;
+    gap: 0.5rem;
+  }
+  
+  .cart-float-icon {
+    font-size: 1.2rem;
+    margin-right: 0.1rem;
+  }
+  
+  .cart-float-label {
+    font-size: 0.95rem;
+  }
+  
+  .cart-float-count {
+    font-size: 0.85rem;
+    min-width: 20px;
+    padding: 1px 6px;
+    margin-right: 0.2rem;
+    margin-left: -0.3rem;
+  }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
   .cart-float-btn {
     bottom: 16px;
     right: 12px;
-    padding: 0.6rem 1.1rem 0.6rem 0.8rem;
+    padding: 0.5rem 1rem 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 22px;
+    gap: 0.4rem;
+  }
+  
+  .cart-float-icon {
+    font-size: 1.1rem;
+    margin-right: 0;
+  }
+  
+  .cart-float-label {
+    font-size: 0.9rem;
+  }
+  
+  .cart-float-count {
+    font-size: 0.8rem;
+    min-width: 18px;
+    padding: 1px 5px;
+    margin-right: 0.1rem;
+    margin-left: -0.2rem;
+  }
+}
+
+/* Extra Small Mobile Styles */
+@media (max-width: 360px) {
+  .cart-float-btn {
+    bottom: 12px;
+    right: 8px;
+    padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    gap: 0.3rem;
+  }
+  
+  .cart-float-icon {
     font-size: 1rem;
   }
+  
+  .cart-float-label {
+    font-size: 0.85rem;
+  }
+  
+  .cart-float-count {
+    font-size: 0.75rem;
+    min-width: 16px;
+    padding: 1px 4px;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .cart-float-btn {
+    bottom: 8px;
+    right: 12px;
+    padding: 0.4rem 0.8rem 0.4rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
   .cart-float-label {
     display: none;
+  }
+  
+  .cart-float-icon {
+    font-size: 1rem;
+    margin-right: 0;
+  }
+}
+
+/* Safe area support for devices with notches */
+@supports (padding: max(0px)) {
+  .cart-float-btn {
+    bottom: max(32px, env(safe-area-inset-bottom) + 16px);
+    right: max(32px, env(safe-area-inset-right) + 16px);
+  }
+  
+  @media (max-width: 1024px) {
+    .cart-float-btn {
+      bottom: max(24px, env(safe-area-inset-bottom) + 12px);
+      right: max(24px, env(safe-area-inset-right) + 12px);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .cart-float-btn {
+      bottom: max(20px, env(safe-area-inset-bottom) + 10px);
+      right: max(16px, env(safe-area-inset-right) + 8px);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .cart-float-btn {
+      bottom: max(16px, env(safe-area-inset-bottom) + 8px);
+      right: max(12px, env(safe-area-inset-right) + 6px);
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .cart-float-btn {
+      bottom: max(12px, env(safe-area-inset-bottom) + 6px);
+      right: max(8px, env(safe-area-inset-right) + 4px);
+    }
   }
 } 
