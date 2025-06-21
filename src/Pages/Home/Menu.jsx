@@ -1,34 +1,54 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
-import {
-  restaurantInfo,
-  menuCategories,
-  getItemsByCategory,
-  getAllMenuItems,
-} from "../../data/menuData";
+import axios from "axios";
+import { restaurantInfo, menuCategories } from "../../data/menuData";
 import { useCart } from "../../context/CartContext";
 
 export default function Menu() {
-  const [activeTab, setActiveTab] = useState("Pizzas");
+  const [activeTab, setActiveTab] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [menuItems, setMenuItems] = useState([]);
   const { addToCart } = useCart();
 
-  // Simulate loading state
   useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 300);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
+    const fetchMenuItems = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get("/api/admin/menu");
+        const sortedItems = response.data.data.sort((a, b) => {
+          if (a.isPremium && !b.isPremium) return -1;
+          if (!a.isPremium && b.isPremium) return 1;
+          return a.category.localeCompare(b.category);
+        });
+        setMenuItems(sortedItems);
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+        setMenuItems([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
 
   const filterItems = (items) => {
-    if (!searchQuery) return items;
-    return items.filter(
-      (item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.desc.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = items;
+
+    if (activeTab !== "All" && activeTab !== "Offers") {
+      filtered = filtered.filter((item) => item.category === activeTab);
+    }
+
+    if (searchQuery) {
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    return filtered;
   };
 
   const renderStars = (rating) => {
@@ -39,23 +59,10 @@ export default function Menu() {
     ));
   };
 
-  const renderOffers = (items) => {
+  const renderOffers = () => {
     return (
       <div className="offers-grid">
-        {items.map((offer) => (
-          <div className="offer-card" key={offer.id}>
-            <img src={offer.image} alt={offer.title} loading="lazy" />
-            <div className="discount-badge">{offer.discount}</div>
-            {offer.badge && <div className="special-badge">{offer.badge}</div>}
-            <div className="offer-info">
-              <span>{offer.restaurant}</span>
-              <h4>{offer.title}</h4>
-              <button className="plus-icon" aria-label="Add to cart">
-                +
-              </button>
-            </div>
-          </div>
-        ))}
+        <p>Offers will be displayed here.</p>
       </div>
     );
   };
@@ -76,91 +83,40 @@ export default function Menu() {
     return (
       <div className="compact-menu-grid">
         {items.map((item) => (
-          <div className="compact-menu-card" key={item.id}>
+          <div className="compact-menu-card" key={item._id}>
             <div className="card-content">
               <div className="item-info">
-                <h4 className="item-title">{item.title}</h4>
-                <div className="chili-rating">
-                  {renderChiliRating(item.spiceLevel || 3)}
-                </div>
+                <h4 className="item-title">{item.name}</h4>
+                {item.isPremium && (
+                  <span className="premium-badge">Premium</span>
+                )}
                 <p className="item-description">
-                  {item.desc && item.desc.length > 60
-                    ? item.desc.substring(0, 60) + "..."
-                    : item.desc}
+                  {item.description && item.description.length > 60
+                    ? item.description.substring(0, 60) + "..."
+                    : item.description}
                 </p>
-
-                {item.sizes ? (
-                  <div className="size-row">
-                    {item.sizes.slice(0, 3).map((size, index) => (
-                      <button
-                        key={index}
-                        className={`compact-size-btn ${size.name.toLowerCase()}`}
-                        onClick={() =>
-                          addToCart({
-                            id: `${item.id}-${size.name}`,
-                            name: `${item.title} (${size.name})`,
-                            price: parseFloat(size.price.replace("₹", "")),
-                            image: item.image,
-                          })
-                        }
-                      >
-                        {size.name}{" "}
-                        <span className="size-price">{size.price}</span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="simple-price">
-                    <span className="price-tag">{item.price}</span>
-                  </div>
-                )}
-
-                {item.xlOption && (
-                  <div className="xl-option">
-                    <button
-                      className="xl-btn"
-                      onClick={() =>
-                        addToCart({
-                          id: `${item.id}-XL`,
-                          name: `${item.title} (XL)`,
-                          price: parseFloat(
-                            item.xlOption.price.replace("₹", "")
-                          ),
-                          image: item.image,
-                        })
-                      }
-                    >
-                      {item.xlOption.name}{" "}
-                      <span className="xl-price">{item.xlOption.price}</span>
-                    </button>
-                  </div>
-                )}
+                <div className="simple-price">
+                  <span className="price-tag">₹{item.price}</span>
+                </div>
               </div>
-
               <div className="item-image-container">
                 <div className="circular-image">
-                  <img src={item.image} alt={item.title} loading="lazy" />
+                  <img src={item.image} alt={item.name} loading="lazy" />
                 </div>
-                {!item.sizes && (
-                  <button
-                    className="add-btn"
-                    aria-label="Add to cart"
-                    onClick={() =>
-                      addToCart({
-                        id: item.id,
-                        name: item.title,
-                        price: parseFloat(
-                          (item.price || "0")
-                            .toString()
-                            .replace(/[₹INR\s]/g, "")
-                        ),
-                        image: item.image,
-                      })
-                    }
-                  >
-                    +
-                  </button>
-                )}
+                <button
+                  className="add-btn"
+                  aria-label="Add to cart"
+                  onClick={() =>
+                    addToCart({
+                      id: item._id,
+                      name: item.name,
+                      price: item.price,
+                      image: item.image,
+                    })
+                  }
+                >
+                  +
+                </button>
               </div>
             </div>
           </div>
@@ -179,73 +135,93 @@ export default function Menu() {
       );
     }
 
-    const items = getItemsByCategory(activeTab);
+    const itemsToDisplay = filterItems(menuItems);
 
     if (activeTab === "Offers") {
-      return renderOffers(items);
+      return renderOffers();
     }
 
     return (
       <div className="menu-section">
-        <h3 className="menu-category-title">{activeTab}</h3>
-        {renderMenuItems(items)}
+        <h3 className="menu-category-title">
+          {activeTab === "All" ? "All Menu Items" : activeTab}
+        </h3>
+        {itemsToDisplay.length > 0 ? (
+          renderMenuItems(itemsToDisplay)
+        ) : (
+          <p>No items found for this category or search query.</p>
+        )}
       </div>
     );
   };
 
   return (
     <div className="restaurant-page">
-      {/* Hero Section */}
       <div className="restaurant-hero">
         <div className="hero-content">
-          <div className="hero-text">
-            <h1>Browse Menu - {restaurantInfo.name}</h1>
-            <div className="hero-tags">
-              <span className="tag">Full Menu Available</span>
-              <span className="tag">All Categories</span>
-            </div>
+          <h1>{restaurantInfo.name}</h1>
+          <p>{restaurantInfo.description}</p>
+          <div className="rating">
+            {renderStars(restaurantInfo.rating)}
+            <span>({restaurantInfo.reviews} reviews)</span>
           </div>
-          <div className="hero-image">
-            <img
-              src="https://images.pexels.com/photos/7192147/pexels-photo-7192147.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Menu items"
-              loading="eager"
-            />
-          </div>
+          <p className="cuisine">{restaurantInfo.cuisine}</p>
+          <p className="address">{restaurantInfo.address}</p>
+          <p className="hours">{restaurantInfo.hours}</p>
         </div>
       </div>
 
-      {/* Menu Section */}
-      <div className="restaurant-menu">
-        <div className="menu-header">
-          <h2>Complete Menu from {restaurantInfo.name}</h2>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search from menu..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <span className="search-icon">🔍</span>
-          </div>
-        </div>
-
-        <div className="menu-tabs">
-          {menuCategories.map((cat) => (
+      <div className="menu-controls">
+        <input
+          type="text"
+          placeholder="Search menu items..."
+          className="search-bar"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <div className="category-tabs">
+          <button
+            className={activeTab === "All" ? "active" : ""}
+            onClick={() => setActiveTab("All")}
+          >
+            All
+          </button>
+          {menuCategories.map((category) => (
             <button
-              key={cat}
-              className={`menu-tab ${activeTab === cat ? "active" : ""}`}
-              onClick={() => setActiveTab(cat)}
+              key={category.id}
+              className={activeTab === category.name ? "active" : ""}
+              onClick={() => setActiveTab(category.name)}
             >
-              {cat}
+              {category.name}
             </button>
           ))}
+          <button
+            className={activeTab === "Offers" ? "active" : ""}
+            onClick={() => setActiveTab("Offers")}
+          >
+            Offers
+          </button>
         </div>
+      </div>
 
+      <div className="menu-content">
+        <div className="hero-text">
+          <h1>Browse Menu - {restaurantInfo.name}</h1>
+          <div className="hero-tags">
+            <span className="tag">Full Menu Available</span>
+            <span className="tag">All Categories</span>
+          </div>
+        </div>
+        <div className="hero-image">
+          <img
+            src="https://images.pexels.com/photos/7192147/pexels-photo-7192147.jpeg?auto=compress&cs=tinysrgb&w=600"
+            alt="Menu items"
+            loading="eager"
+          />
+        </div>
         <div className="menu-content">{renderContent()}</div>
       </div>
 
-      {/* Quick Stats */}
       <div className="delivery-info-section">
         <div className="delivery-info-grid">
           <div className="delivery-info-card">
@@ -256,12 +232,12 @@ export default function Menu() {
             </div>
             <div className="info-item">
               <span className="label">Total Items:</span>
-              <span className="value">{getAllMenuItems().length}</span>
+              <span className="value">{menuItems.length}</span>
             </div>
             <div className="info-item">
               <span className="label">Popular Items:</span>
               <span className="value">
-                {getAllMenuItems().filter((item) => item.isPopular).length}
+                {menuItems.filter((item) => item.isPopular).length}
               </span>
             </div>
             <div className="info-item highlight">

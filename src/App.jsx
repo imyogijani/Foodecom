@@ -22,6 +22,7 @@ import Orders from "./Pages/admin/Orders";
 import Users from "./Pages/admin/Users";
 import Subscriptions from "./Pages/admin/Subscriptions";
 import Categories from "./Pages/admin/Categories";
+import AdminMenu from "./Pages/admin/Menu";
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
 import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
@@ -47,6 +48,7 @@ function LayoutWrapper() {
     "/admin/users",
     "/admin/subscriptions",
     "/admin/categories",
+    "/admin/menu",
     "/seller",
     "/seller/dashboard",
     "/seller/products/all",
@@ -98,6 +100,7 @@ function LayoutWrapper() {
           <Route path="users" element={<Users />} />
           <Route path="subscriptions" element={<Subscriptions />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="menu" element={<AdminMenu />} />
         </Route>
 
         <Route

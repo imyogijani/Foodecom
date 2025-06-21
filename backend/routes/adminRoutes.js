@@ -11,6 +11,7 @@ import {
   updateShopownerSubscription
 } from '../controllers/adminController.js';
 import { getAllOrdersAdmin } from '../controllers/orderController.js';
+import { createMenuItem, getAllMenuItems, updateMenuItem, deleteMenuItem } from '../controllers/menuController.js';
 
 const router = express.Router();
 
@@ -36,5 +37,11 @@ router.patch('/users/:id/subscription', updateShopownerSubscription);
 
 // Orders management
 router.get('/orders', getAllOrdersAdmin);
+
+// Menu management
+router.post('/menu-items', createMenuItem);
+router.get('/menu-items', getAllMenuItems);
+router.put('/menu-items/:id', updateMenuItem);
+router.delete('/menu-items/:id', deleteMenuItem);
 
 export default router;
