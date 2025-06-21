@@ -63,7 +63,7 @@ const Products = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("All products deleted successfully");
-        fetchProducts(); // Re-fetch products after deletion
+        fetchProducts();
       } catch (error) {
         toast.error("Error deleting all products");
       }
@@ -153,9 +153,7 @@ const Products = () => {
       fetchProducts();
       closeProductModal();
     } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Error updating product"
-      );
+      toast.error(error.response?.data?.message || "Error updating product");
     } finally {
       setEditLoading(false);
     }
@@ -284,51 +282,6 @@ const Products = () => {
             </tr>
           </thead>
           <tbody>
-<<<<<<< HEAD
-            {filteredProducts.map((product) => (
-              <tr key={product._id}>
-                <td>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="product-thumbnail"
-                  />
-                </td>
-                <td>{product.name}</td>
-                <td>
-                  <div className="shop-info">
-                    <FaStore className="shop-icon" />
-                    <span>{product.shopName}</span>
-                  </div>
-                </td>
-                <td>
-                  {product.category?.name}
-                  {product.subcategory?.name &&
-                    ` (${product.subcategory.name})`}
-                </td>
-                <td>₹{product.price.toFixed(2)}</td>
-                <td>{product.stock}</td>
-                <td>
-                  <span className={`status ${product.status.toLowerCase()}`}>
-                    {product.status}
-                  </span>
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    {/* <button
-                      className="edit-btn"
-                      onClick={() =>
-                        navigate(`/admin/products/edit/${product._id}`)
-                      }
-                      title="Edit Product"
-                    >
-                      <FaEdit />
-                    </button> */}
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteProduct(product._id)}
-                      title="Delete Product"
-=======
             {filteredProducts.map((product) => {
               let imageUrl = "";
               if (product.image) {
@@ -374,9 +327,7 @@ const Products = () => {
                   <td>₹{product.price.toFixed(2)}</td>
                   <td>{product.stock}</td>
                   <td>
-                    <span
-                      className={`status ${product.status.toLowerCase()}`}
-                    >
+                    <span className={`status ${product.status.toLowerCase()}`}>
                       {product.status}
                     </span>
                   </td>
@@ -384,13 +335,12 @@ const Products = () => {
                     <div
                       className="action-buttons"
                       onClick={(e) => e.stopPropagation()}
->>>>>>> d846128919944262c287437bddb618f30e9dbcb0
                     >
                       <button
                         className="edit-btn"
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRowClick(product); // Open modal for editing
+                          handleRowClick(product);
                         }}
                         title="Edit Product"
                       >
@@ -398,7 +348,10 @@ const Products = () => {
                       </button>
                       <button
                         className="delete-btn"
-                        onClick={() => handleDeleteProduct(product._id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteProduct(product._id);
+                        }}
                         title="Delete Product"
                       >
                         <FaTrash />
@@ -446,7 +399,10 @@ const Products = () => {
                   {selectedProduct.subcategory?.name &&
                     ` (${selectedProduct.subcategory.name})`}
                 </div>
-                <form className="product-modal-form" onSubmit={handleModalUpdate}>
+                <form
+                  className="product-modal-form"
+                  onSubmit={handleModalUpdate}
+                >
                   <div className="form-group">
                     <label>Price (₹)</label>
                     <input
