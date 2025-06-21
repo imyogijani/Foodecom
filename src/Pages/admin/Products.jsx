@@ -244,7 +244,7 @@ const Products = () => {
                 </td>
                 <td>
                   <div className="action-buttons">
-                    <button
+                    {/* <button
                       className="edit-btn"
                       onClick={() =>
                         navigate(`/admin/products/edit/${product._id}`)
@@ -252,7 +252,7 @@ const Products = () => {
                       title="Edit Product"
                     >
                       <FaEdit />
-                    </button>
+                    </button> */}
                     <button
                       className="delete-btn"
                       onClick={() => handleDeleteProduct(product._id)}

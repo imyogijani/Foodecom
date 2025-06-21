@@ -62,18 +62,18 @@ const Users = () => {
     setModal(null);
   };
 
-  const handleUpdateRole = async (userId, newRole) => {
+  const handleUpdateUser = async (userId, newRole, newStatus) => {
     try {
       const token = localStorage.getItem("token");
       await axios.patch(
-        `/api/admin/users/${userId}/role`,
-        { role: newRole },
+        `/api/admin/users/${userId}`,
+        { role: newRole, status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("User role updated successfully");
+      toast.success("User updated successfully");
       fetchUsers();
     } catch (error) {
-      toast.error("Error updating user role");
+      toast.error("Error updating user");
     }
     setModal(null);
   };
@@ -190,7 +190,9 @@ const Users = () => {
                     </span>
                   </td>
                   <td>
-                    <span className="status-badge active">Active</span>
+                    <span className={`status-badge ${user.status ? user.status.toLowerCase() : 'inactive'}`}>
+                      {user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Inactive'}
+                    </span>
                   </td>
                   <td>
                     {user.role === "shopowner" && user.subscription && user.subscription.planName
@@ -205,6 +207,7 @@ const Users = () => {
                         className="action-btn edit"
                         onClick={() => {
                           setRoleToSet(user.role);
+                          setFormData({ ...formData, status: user.status || 'inactive' });
                           setModal({ type: "edit", user });
                         }}
                       >
@@ -256,11 +259,8 @@ const Users = () => {
                   <select
                     id="status"
                     name="status"
-                    value={modal.user.status}
-                    onChange={(e) => {
-                      const updatedUser = { ...modal.user, status: e.target.value };
-                      setModal({ ...modal, user: updatedUser });
-                    }}
+                    value={formData.status}
+                    onChange={handleInputChange}
                     required
                   >
                     <option value="active">Active</option>
@@ -272,7 +272,7 @@ const Users = () => {
                 <div style={{ display: "flex", gap: 12, marginTop: 16 }}>
                   <button
                     className="modal-btn confirm"
-                    onClick={() => handleUpdateRole(modal.user._id, roleToSet)}
+                    onClick={() => handleUpdateUser(modal.user._id, roleToSet, modal.user.status)}
                   >
                     Save
                   </button>

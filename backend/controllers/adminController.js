@@ -195,6 +195,32 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+// Update user role and status
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role, status } = req.body;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (role) {
+      user.role = role;
+    }
+    if (status) {
+      user.status = status;
+    }
+
+    await user.save();
+
+    res.json({ success: true, message: "User updated successfully", user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error updating user", error: error.message });
+  }
+};
+
 // Delete product
 export const deleteProduct = async (req, res) => {
   try {
@@ -220,43 +246,7 @@ export const deleteProduct = async (req, res) => {
 };
 
 // Update user role
-export const updateUserRole = async (req, res) => {
-  try {
-    const { role } = req.body;
 
-    if (!role) {
-      return res.status(400).json({
-        success: false,
-        message: "Role is required",
-      });
-    }
-
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { role },
-      { new: true }
-    ).select("-password");
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      message: "User role updated successfully",
-      user,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error updating user role",
-      error: error.message,
-    });
-  }
-};
 
 // Update shopowner subscription plan and features
 export const updateShopownerSubscription = async (req, res) => {
