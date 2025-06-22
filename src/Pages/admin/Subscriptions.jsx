@@ -203,66 +203,74 @@ const Subscriptions = () => {
       </div>
 
       {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>{currentSubscription ? "Edit Subscription" : "Add New Subscription"}</h3>
-            <form onSubmit={handleFormSubmit}>
-              <div className="form-group">
-                <label>Plan Name:</label>
-                <input
-                  type="text"
-                  name="planName"
-                  value={formData.planName}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Monthly Price:</label>
-                <input
-                  type="number"
-                  name="monthlyPrice"
-                  value={formData.monthlyPrice}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group feature-selection-group">
-                <div className="product-limit-row">
-                  <label htmlFor="productLimit">Product Limit:</label>
+        <div className="subscription-modal-overlay">
+          <div className="subscription-modal-card">
+            <h3 className="subscription-modal-title">
+              {currentSubscription ? "Edit Subscription" : "Add New Subscription"}
+            </h3>
+            <div className="subscription-modal-card-content">
+              <form className="subscription-form" onSubmit={handleFormSubmit}>
+                <div className="subscription-form-group">
+                  <label className="subscription-label">Plan Name:</label>
                   <input
-                    type="number"
-                    name="productLimit"
-                    id="productLimit"
-                    value={featureState.productLimit}
-                    onChange={handleFeatureChange}
-                    min="1"
-                    placeholder="e.g. 10"
+                    type="text"
+                    name="planName"
+                    className="subscription-input"
+                    value={formData.planName}
+                    onChange={handleInputChange}
+                    required
                   />
                 </div>
-                <label style={{marginBottom: 0}}>Features:</label>
-                {ALL_FEATURES.map((f) => (
-                  <div key={f.key} className="feature-checkbox-row">
+                <div className="subscription-form-group">
+                  <label className="subscription-label">Monthly Price:</label>
+                  <input
+                    type="number"
+                    name="monthlyPrice"
+                    className="subscription-input"
+                    value={formData.monthlyPrice}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+                <div className="subscription-feature-group">
+                  <div className="subscription-product-limit-row">
+                    <label htmlFor="productLimit" className="subscription-label">Product Limit:</label>
                     <input
-                      type="checkbox"
-                      name={f.key}
-                      id={f.key}
-                      checked={featureState[f.key]}
+                      type="number"
+                      name="productLimit"
+                      id="productLimit"
+                      className="subscription-input"
+                      value={featureState.productLimit}
                       onChange={handleFeatureChange}
+                      min="1"
+                      placeholder="e.g. 10"
                     />
-                    <label htmlFor={f.key}>{f.label}</label>
                   </div>
-                ))}
-              </div>
-              <div className="form-actions">
-                <button type="submit" className="save-btn">
-                  Save
-                </button>
-                <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </form>
+                  <label className="subscription-label" style={{marginBottom: 0}}>Features:</label>
+                  {ALL_FEATURES.map((f) => (
+                    <div key={f.key} className="subscription-feature-checkbox-row">
+                      <input
+                        type="checkbox"
+                        name={f.key}
+                        id={f.key}
+                        className="subscription-feature-checkbox"
+                        checked={featureState[f.key]}
+                        onChange={handleFeatureChange}
+                      />
+                      <label htmlFor={f.key} className="subscription-feature-label">{f.label}</label>
+                    </div>
+                  ))}
+                </div>
+                <div className="subscription-form-actions">
+                  <button type="submit" className="subscription-save-btn">
+                    Save
+                  </button>
+                  <button type="button" className="subscription-cancel-btn" onClick={() => setShowModal(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}
