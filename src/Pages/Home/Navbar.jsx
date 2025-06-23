@@ -18,7 +18,7 @@ const navLinks = [
   { name: "Home", path: "/" },
   { name: "Browse Menu", path: "/menu" },
   { name: "Special Offers", path: "/Offer" },
-  { name: "Restaurants", path: "/Restaurant" },
+  { name: "Shops", path: "/Restaurant" },
 ];
 
 const Navbar = () => {
