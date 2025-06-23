@@ -183,8 +183,15 @@ export default function Home() {
         <h3>E-Mall World Popular Categories 🥳</h3>
         <div className="category-grid">
           {categories.map((cat) => (
-            <div className="category-card" key={cat._id}>
-              <img src={`http://localhost:8080${cat.image}`} alt={cat.name} />
+            <div className="category-card enhanced-category-card" key={cat._id}>
+              <div className="category-image-wrapper">
+                <img
+                  src={cat.image ? `http://localhost:8080${cat.image}` : "/vite.svg"}
+                  alt={cat.name}
+                  onError={e => { e.target.onerror = null; e.target.src = "/vite.svg"; }}
+                  className="category-image"
+                />
+              </div>
               <div className="category_text">
                 <h5>{cat.name}</h5>
                 <p>{cat.restaurantCount || 0} Shops</p>

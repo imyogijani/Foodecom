@@ -5,7 +5,8 @@ import {
   FaCog,
   FaSignOutAlt,
   FaSignInAlt,
-} from "react-icons/fa";
+  FaShoppingCart,
+} from "react-icons/fa";  
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
 import "./Navbar.css";
@@ -16,8 +17,7 @@ const navLinks = [
   { name: "Home", path: "/" },
   { name: "Browse Menu", path: "/menu" },
   { name: "Special Offers", path: "/Offer" },
-  { name: "Restaurants", path: "/Restaurant" },
-  { name: "Counter", path: "/counter" },
+  { name: "Shops", path: "/Restaurant" },
 ];
 
 const Navbar = () => {

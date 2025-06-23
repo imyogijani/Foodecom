@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const categorySchema = new mongoose.Schema({
-  nop: {
+  name: {
     type: String,
     required: true,
     unique: true,
@@ -22,6 +22,10 @@ const categorySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   }],
+  image: {
+    type: String, // URL or path to the image
+    default: "",
+  },
 }, { timestamps: true });
 
 const Category = mongoose.model('Category', categorySchema);

@@ -211,7 +211,7 @@ const Products = () => {
           value={selectedShop}
           onChange={(e) => setSelectedShop(e.target.value)}
         >
-          <option value="all">All Shops</option>
+          <option value="all" className="all-shops-option">All Shops</option>
           {shops
             .filter((shop) => shop.names || shop.shopName)
             .map((shop) => (
@@ -337,7 +337,7 @@ const Products = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        className="edit-btn"
+                        className="edit-btn product-action-icon"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRowClick(product);
@@ -347,7 +347,7 @@ const Products = () => {
                         <FaEdit />
                       </button>
                       <button
-                        className="delete-btn"
+                        className="delete-btn product-action-icon"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteProduct(product._id);
@@ -439,14 +439,14 @@ const Products = () => {
                   <div className="modal-actions">
                     <button
                       type="submit"
-                      className="glass-btn btn-primary"
+                      className="product-modal-glass-btn product-modal-primary"
                       disabled={editLoading}
                     >
                       {editLoading ? "Saving..." : "Update"}
                     </button>
                     <button
                       type="button"
-                      className="glass-btn btn-danger"
+                      className="product-modal-glass-btn product-modal-danger"
                       onClick={handleModalDelete}
                       disabled={editLoading}
                     >
@@ -454,7 +454,7 @@ const Products = () => {
                     </button>
                     <button
                       type="button"
-                      className="glass-btn btn-secondary"
+                      className="product-modal-glass-btn product-modal-secondary"
                       onClick={closeProductModal}
                       disabled={editLoading}
                     >
