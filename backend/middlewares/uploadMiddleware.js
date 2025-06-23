@@ -11,7 +11,8 @@ const createUploadDirs = () => {
   const dirs = [
     path.join(__dirname, '../public/uploads'),
     path.join(__dirname, '../public/uploads/avatars'),
-    path.join(__dirname, '../public/uploads/products')
+    path.join(__dirname, '../public/uploads/products'),
+    path.join(__dirname, '../public/uploads/categories')
   ];
   
   dirs.forEach(dir => {
@@ -26,12 +27,26 @@ createUploadDirs();
 // Configure storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadType = req.path.includes('avatar') ? 'avatars' : 'products';
-    const dest = path.join(__dirname, `../public/uploads/${uploadType}`);
-    cb(null, dest);
+    // Always store category images in categories folder for any category route
+    if (
+      req.baseUrl.includes('category') || req.originalUrl.includes('category')
+    ) {
+      const dest = path.join(__dirname, '../public/uploads/categories');
+      cb(null, dest);
+    } else if (req.baseUrl.includes('avatar')) {
+      const dest = path.join(__dirname, '../public/uploads/avatars');
+      cb(null, dest);
+    } else if (req.baseUrl.includes('product')) {
+      const dest = path.join(__dirname, '../public/uploads/products');
+      cb(null, dest);
+    } else {
+      // fallback
+      const dest = path.join(__dirname, '../public/uploads');
+      cb(null, dest);
+    }
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = `${Date.now()}-${req.userId}`;
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     cb(null, uniqueSuffix + '-' + file.originalname.replace(/\s+/g, '-').toLowerCase());
   }
 });
@@ -53,5 +68,4 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024 // 5MB limit
   }
 });
-
 export default upload;

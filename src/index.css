@@ -4,8 +4,13 @@
   --background-color: #f4f7f6;
   --text-color: #000000;
   --text-color-dark: #333333;
-  --primary-color: #e48a00;
-  --hover-color: #d67e00;
+  --primary-color: #fc8a06;
+  --primary-color-hover: #d67e00;
+  --button-text-color: #fff;
+  --button-radius: 8px;
+  --button-shadow: 0 2px 8px rgba(252, 138, 6, 0.08);
+  --button-font-weight: 600;
+  --button-font-size: 1rem;
   --secondary-color: #6c757d;
   --accent-color: #28a745;
   --border-color: #e0e0e0;
@@ -40,18 +45,57 @@ a:hover {
   text-decoration: none;
 }
 
-button {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+button, .btn, .glass-btn, .subscription-save-btn, .subscription-cancel-btn, .add-new-btn, .edit-btn, .delete-btn, .save-btn, .cancel-btn, .view-cart-btn, .plus-icon, .compact-size-btn, .xl-btn {
+  background: var(--primary-color) !important;
+  color: var(--button-text-color) !important;
+  border: none !important;
+  border-radius: var(--button-radius) !important;
+  box-shadow: var(--button-shadow) !important;
+  font-weight: var(--button-font-weight) !important;
+  font-size: var(--button-font-size) !important;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  outline: none !important;
 }
 
-button:hover {
-  background-color: var(--secondary-color);
+button:hover, .btn:hover, .glass-btn:hover, .subscription-save-btn:hover, .subscription-cancel-btn:hover, .add-new-btn:hover, .edit-btn:hover, .delete-btn:hover, .save-btn:hover, .cancel-btn:hover, .view-cart-btn:hover, .plus-icon:hover, .compact-size-btn:hover, .xl-btn:hover {
+  background: var(--primary-color-hover) !important;
+  color: var(--button-text-color) !important;
+}
+
+/* For disabled state */
+button:disabled, .btn:disabled, .glass-btn:disabled, .subscription-save-btn:disabled, .subscription-cancel-btn:disabled, .add-new-btn:disabled, .edit-btn:disabled, .delete-btn:disabled, .save-btn:disabled, .cancel-btn:disabled, .view-cart-btn:disabled, .plus-icon:disabled, .compact-size-btn:disabled, .xl-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  background: var(--primary-color) !important;
+  color: var(--button-text-color) !important;
+}
+
+/* For text links that look like buttons */
+a[role="button"], .link-btn {
+  background: var(--primary-color) !important;
+  color: var(--button-text-color) !important;
+  border-radius: var(--button-radius) !important;
+  font-weight: var(--button-font-weight) !important;
+  font-size: var(--button-font-size) !important;
+  padding: 10px 15px !important;
+  text-decoration: none !important;
+  display: inline-block;
+  transition: background 0.18s, color 0.18s;
+}
+a[role="button"]:hover, .link-btn:hover {
+  background: var(--primary-color-hover) !important;
+  color: var(--button-text-color) !important;
+}
+
+/* Remove conflicting background from .compact-size-btn.small, .plus-icon, etc. */
+.compact-size-btn.small, .plus-icon, .xl-btn {
+  background: var(--primary-color) !important;
+  color: var(--button-text-color) !important;
+}
+
+/* Ensure text color for all buttons */
+button *, .btn *, .glass-btn *, .subscription-save-btn *, .subscription-cancel-btn *, .add-new-btn *, .edit-btn *, .delete-btn *, .save-btn *, .cancel-btn *, .view-cart-btn *, .plus-icon *, .compact-size-btn *, .xl-btn * {
+  color: var(--button-text-color) !important;
 }
 
 /* Prevent global button size change on click/focus/disabled */
