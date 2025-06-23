@@ -10,7 +10,7 @@ export const createCategoryController = async (req, res) => {
     const { name, parent } = req.body;
     let image = "";
     if (req.file) {
-      console.log('Category image upload:', req.file);
+      console.log("Category image upload:", req.file);
       image = `/uploads/categories/${req.file.filename}`;
     }
     if (!name) {
@@ -168,7 +168,7 @@ export const updateCategoryController = async (req, res) => {
       updateData.name = name;
       updateData.slug = slugify(name);
     }
-    if (typeof parent !== 'undefined') {
+    if (typeof parent !== "undefined") {
       updateData.parent = parent;
     }
     let oldImagePath = null;
@@ -178,11 +178,13 @@ export const updateCategoryController = async (req, res) => {
       if (currentCategory && currentCategory.image) {
         oldImagePath = path.join(
           path.resolve(),
-          'backend/public',
-          currentCategory.image.startsWith('/') ? currentCategory.image : `/${currentCategory.image}`
+          "backend/public",
+          currentCategory.image.startsWith("/")
+            ? currentCategory.image
+            : `/${currentCategory.image}`
         );
       }
-      updateData.image = `/uploads/categories/${req.file.filename}`;
+      updateData.image = `../../public/uploads/categories/${req.file.filename}`;
     }
     const category = await Category.findByIdAndUpdate(
       req.params.id,
@@ -193,8 +195,9 @@ export const updateCategoryController = async (req, res) => {
     if (req.file && oldImagePath && fs.existsSync(oldImagePath)) {
       try {
         fs.unlinkSync(oldImagePath);
-      } catch (e) {
+      } catch (err) {
         // Ignore error
+        console.error("Error deleting old image:", err);
       }
     }
     res.status(200).send({
