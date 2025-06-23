@@ -138,10 +138,6 @@ const Navbar = () => {
           <div className="nav-right">
             {localStorage.getItem("token") ? (
               <>
-                <Link to="/cart" className="cart-button" title="Shopping Cart">
-                  <FaShoppingCart />
-                  <span className="cart-count">0</span>
-                </Link>
                 <div className="user-menu-container">
                   <button
                     className="profile-button"
@@ -256,13 +252,6 @@ const Navbar = () => {
         <div className="mobile-nav-actions">
           {localStorage.getItem("token") ? (
             <>
-              <Link
-                to="/cart"
-                className="nav-pill-link"
-                onClick={closeMobileMenu}
-              >
-                <FaShoppingCart /> Shopping Cart (0)
-              </Link>
               <button
                 className="nav-pill-link"
                 onClick={() => {
