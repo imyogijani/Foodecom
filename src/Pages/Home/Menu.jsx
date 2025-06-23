@@ -204,18 +204,14 @@ export default function Menu() {
       <div className="restaurant-hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>Browse Menu - {restaurantInfo?.name}</h1>
+            <h1>{restaurantInfo?.name}</h1>
             <div className="hero-tags">
               <span className="tag">Full Menu Available</span>
               <span className="tag">All Categories</span>
             </div>
           </div>
           <div className="hero-image">
-            <img
-              src="https://images.pexels.com/photos/7192147/pexels-photo-7192147.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Menu items"
-              loading="eager"
-            />
+            
           </div>
         </div>
       </div>

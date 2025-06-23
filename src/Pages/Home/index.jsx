@@ -99,7 +99,7 @@ export default function Home() {
       <div className="hero-section">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>Welcome to E-mall.World</h1>
+            <h1>Welcome to E-mall World</h1>
             <p>Your One-Stop Destination for All Shopping Needs</p>
           </div>
           <div className="hero-image">
@@ -113,7 +113,7 @@ export default function Home() {
       <div className="top-deals-container">
         <div className="top-deals-header">
           <h3>
-            Up to <span>–40%</span> 🎉 E-mall.World exclusive deals
+            Up to <span>–40%</span> 🎉 E-mall World exclusive deals
           </h3>
           <div className="category-tabs">
             {categories.map((cat) => (
@@ -180,7 +180,7 @@ export default function Home() {
 
       {/* === Popular Categories Section === */}
       <div className="popular-categories">
-        <h3>E-mall.World Popular Categories 🥳</h3>
+        <h3>E-mall World Popular Categories 🥳</h3>
         <div className="category-grid">
           {categories.map((cat) => (
             <div className="category-card" key={cat._id}>

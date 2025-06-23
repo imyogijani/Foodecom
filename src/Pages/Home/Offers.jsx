@@ -42,18 +42,13 @@ export default function Offers() {
       <div className="restaurant-hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>Special Offers - {restaurantInfo.name}</h1>
+            <h1>{restaurantInfo.name}</h1>
             <div className="hero-tags">
               <span className="tag">Limited Time Offers</span>
               <span className="tag">Great Savings</span>
             </div>
           </div>
           <div className="hero-image">
-            <img
-              src="https://images.pexels.com/photos/7192147/pexels-photo-7192147.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt="Special offers"
-              loading="eager"
-            />
           </div>
         </div>
       </div>

@@ -240,11 +240,7 @@ export default function Restaurants() {
             </div>
           </div>
           <div className="hero-image">
-            <img
-              src="https://images.pexels.com/photos/7192147/pexels-photo-7192147.jpeg?auto=compress&cs=tinysrgb&w=600"
-              alt={`${restaurantInfo.name} restaurant`}
-              loading="eager"
-            />
+            
           </div>
         </div>
       </div>

@@ -2,14 +2,14 @@
 // This ensures consistency across Restaurant page, Track Order page, and other menu pages
 
 export const restaurantInfo = {
-  name: "E-mall.World Shopping Center",
+  name: "E-mall World Shopping Center",
   description: "Your one-stop destination for all shopping needs",
   rating: 4.5,
   reviews: 2500,
   minOrder: "$0.00",
   deliveryTime: "1-3 Business Days",
   phone: "+1-800-EMALL",
-  website: "https://e-mall.world",
+  website: "https://e-mallworld.com",
   address: "Global Online Shopping Mall",
   operationalHours: {
     monday: "12:00 AM–3:00 AM, 8:00 AM–3:00 AM",

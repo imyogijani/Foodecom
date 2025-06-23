@@ -9,8 +9,8 @@ const faqTabs = [
     label: "Frequent Questions",
     faqs: [
       {
-        q: "How does E-mall.World work?",
-        a: "E-mall.World connects you with local restaurants and stores. Browse the menu, place your order online or via our app, and get your food delivered quickly to your doorstep.",
+        q: "How does E-mall World work?",
+        a: "E-mall World connects you with local restaurants and stores. Browse the menu, place your order online or via our app, and get your food delivered quickly to your doorstep.",
         highlight: true,
       },
       {
@@ -26,8 +26,8 @@ const faqTabs = [
         a: "Yes, we regularly offer exclusive deals and discounts. Check the 'Special Offers' section or subscribe to our newsletter for updates.",
       },
       {
-        q: "Is E-Mall World available in my area?",
-        a: "E-Mall World is available in most major cities and towns. Enter your postcode on our homepage to check availability in your area.",
+        q: "Is E-mall World available in my area?",
+        a: "E-mall World is available in most major cities and towns. Enter your postcode on our homepage to check availability in your area.",
       },
     ],
   },
@@ -35,11 +35,11 @@ const faqTabs = [
     label: "Who we are?",
     faqs: [
       {
-        q: "Who is behind E-Mall World?",
-        a: "E-Mall World is a passionate team dedicated to making food delivery fast, easy, and enjoyable for everyone.",
+        q: "Who is behind E-mall World?",
+        a: "E-mall World is a passionate team dedicated to making food delivery fast, easy, and enjoyable for everyone.",
       },
       {
-        q: "What is the mission of E-Mall World?",
+        q: "What is the mission of E-mall World?",
         a: "Our mission is to connect people with great food from their favorite local restaurants, delivered quickly and reliably.",
       },
     ],
@@ -48,7 +48,7 @@ const faqTabs = [
     label: "Partner Program",
     faqs: [
       {
-        q: "How can I partner with E-Mall World?",
+        q: "How can I partner with E-mall World?",
         a: "If you own a restaurant or store, you can join our platform by signing up through the 'Partner with us' section. We'll guide you through the onboarding process.",
       },
       {
@@ -149,7 +149,7 @@ export default function BottomCard() {
             ))}
           </div>
           <div className="desc bottom-card-desc">
-            E-Mall World simplifies the food ordering process. Browse through our
+            E-mall World simplifies the food ordering process. Browse through our
             diverse menu, select your favorite dishes, and proceed to checkout.
             Your delicious meal will be on its way to your doorstep in no time!
           </div>
