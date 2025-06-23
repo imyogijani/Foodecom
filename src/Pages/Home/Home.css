@@ -206,7 +206,7 @@
   min-width: 340px;
   max-width: 768px;
   min-height: 300px;
-  background: #fff;
+  background: #fff9ed;
   border-radius: 16px;
   margin: 0;
   display: flex;
@@ -214,7 +214,7 @@
   justify-content: flex-end;
   padding: 2rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border: 2px solid #eee;
+  border: 2px solid #ffe5b7;
 }
 
 .partner-banner-box .top-label {
@@ -272,20 +272,20 @@
   align-items: stretch;
   margin: 40px auto;
   width: 100%;
-  max-width: 1600px;
+  max-width: 1800px;
   padding: 0 20px;
 }
 
 .partner-banner-row .partner-banner {
   flex: 1 1 0;
   min-width: 340px;
-  max-width: 768px;
+  max-width: 900px;
 }
 
 .partner-banner-row .availperks-banner {
   flex: 1 1 0;
   min-width: 340px;
-  max-width: 768px;
+  max-width: 900px;
 }
 
 .availperks-img-wrap {
@@ -318,15 +318,15 @@
   min-width: 340px;
   max-width: 768px;
   min-height: 300px;
-  background: #fff;
+  background: #fff9ed;
   border-radius: 16px;
-  margin-left: 32px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   padding: 2rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  border: 2px solid #eee;
+  border: 2px solid #ffe5b7;
 }
 
 .availperks-label {
@@ -334,6 +334,7 @@
   color: var(--primary-color);
   margin-bottom: 0.5rem;
   font-weight: 600;
+  background: transparent;
 }
 
 .availperks-subtitle {
@@ -357,9 +358,11 @@
     gap: 24px;
     align-items: center;
     padding: 0 15px;
+    max-width: 100%;
   }
   .partner-banner,
-  .partner-banner-box {
+  .partner-banner-box,
+  .availperks-box {
     max-width: 100%;
     min-width: 0;
     width: 100%;
