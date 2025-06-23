@@ -1,116 +1,67 @@
 /* eslint-disable no-unused-vars */
 import "./Home.css";
 import p1 from "../../images/Person-1.png";
-import img1 from "../../images/TopD1.png";
-import img2 from "../../images/TopD2.png";
-import img3 from "../../images/TopD3.png";
-import img4 from "../../images/TopD3.png";
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
-import cat1 from "../../images/cat1.png";
-import cat2 from "../../images/cat2.png";
-import cat3 from "../../images/cat3.png";
-import cat4 from "../../images/cat4.png";
-import cat5 from "../../images/cat5.png";
-import cat6 from "../../images/cat6.png";
-import McD from "../../images/McD.png";
-import papajohn from "../../images/Papajohns.png";
-import kfc from "../../images/KFC.png";
-import texasChicken from "../../images/Tex.png";
-import burgerKing from "../../images/Bking.png";
-import shaurma from "../../images/shaurma.png";
 import promo from "../../images/promo.png";
-import partnerBanner from "../../images/partner-banner.png";
-import availperks from "../../images/availperks.png";
 import BottomCard from "./BottomCard";
 import StatsBanner from "./StatsBanner";
 import { useCart } from "../../context/CartContext";
 
-const deals = [
-  {
-    id: 1,
-    img: img1,
-    discount: "-40%",
-    name: "Chef Burgers London",
-  },
-  {
-    id: 2,
-    img: img2,
-    discount: "-20%",
-    name: "Grand Ai Cafe London",
-  },
-  {
-    id: 3,
-    img: img3,
-    discount: "-17%",
-    name: "Butterbrot Cafe London",
-  },
-  {
-    id: 4,
-    img: img4,
-    discount: "-17%",
-    name: "Butterbrot Cafe London",
-  },
-  {
-    id: 5,
-    img: img4,
-    discount: "-17%",
-    name: "Butterbrot Cafe London",
-  },
-];
-
-const fallbackCategories = [
-  { name: "Vegan", img: cat1, restaurants: 12 },
-  { name: "Sushi", img: cat2, restaurants: 8 },
-  { name: "Pizza & Fast food", img: cat3, restaurants: 15 },
-  { name: "Others", img: cat4, restaurants: 10 },
-];
-
-const restaurants = [
-  { name: "McDonald's London", img: McD },
-  { name: "Papa Johns", img: papajohn },
-  { name: "KFC West London", img: kfc },
-  { name: "Texas Chicken", img: texasChicken },
-  { name: "Burger King", img: burgerKing },
-  { name: "Shaurma 1", img: shaurma },
-];
-
 export default function Home() {
   const { addToCart } = useCart();
-  const [activeCategory, setActiveCategory] = useState("Pizza & Fast food");
+  const [activeCategory, setActiveCategory] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState({});
+  const [restaurants, setRestaurants] = useState([]);
+  const [deals, setDeals] = useState([]);
 
   const handleGetStarted = () => {
     alert("Get Started clicked!");
   };
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchInitialData = async () => {
       try {
-        const response = await axios.get("/api/category/get-category");
-        const categoriesData = response.data.categories || [];
-        setCategories(categoriesData);
-
-        const subCategoriesMap = {};
-        categoriesData.forEach((category) => {
-          subCategoriesMap[category._id] = category.children || [];
-        });
-        setSubcategories(subCategoriesMap);
+        await Promise.all([
+          fetchCategories(),
+          fetchProducts(),
+          fetchRestaurants(),
+          fetchDeals(),
+        ]);
       } catch (error) {
-        console.error("Category fetch error:", error);
-        toast.error("Error fetching categories");
-        setCategories([]);
-        setSubcategories({});
+        console.error("Error fetching initial data:", error);
       }
     };
 
-    fetchCategories();
-    fetchProducts();
+    fetchInitialData();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/category/get-category");
+      const categoriesData = response.data.categories || [];
+      setCategories(categoriesData);
+
+      if (categoriesData.length > 0) {
+        setActiveCategory(categoriesData[0].name);
+      }
+
+      const subCategoriesMap = {};
+      categoriesData.forEach((category) => {
+        subCategoriesMap[category._id] = category.children || [];
+      });
+      setSubcategories(subCategoriesMap);
+    } catch (error) {
+      console.error("Category fetch error:", error);
+      toast.error("Error fetching categories");
+      setCategories([]);
+      setSubcategories({});
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -122,6 +73,26 @@ export default function Home() {
       toast.error("Error fetching products");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchRestaurants = async () => {
+    try {
+      const response = await axios.get("/api/restaurants");
+      setRestaurants(response.data.restaurants);
+    } catch (error) {
+      console.error("Restaurant fetch error:", error);
+      toast.error("Error fetching restaurants");
+    }
+  };
+
+  const fetchDeals = async () => {
+    try {
+      const response = await axios.get("/api/deals");
+      setDeals(response.data.deals);
+    } catch (error) {
+      console.error("Deals fetch error:", error);
+      toast.error("Error fetching deals");
     }
   };
 
@@ -147,17 +118,15 @@ export default function Home() {
             Up to <span>–40%</span> 🎉 Order.uk exclusive deals
           </h3>
           <div className="category-tabs">
-            {(categories.length > 0 ? categories : fallbackCategories).map(
-              (cat, index) => (
-                <button
-                  key={cat._id || index}
-                  onClick={() => setActiveCategory(cat.name)}
-                  className={cat.name === activeCategory ? "active" : ""}
-                >
-                  {cat.name}
-                </button>
-              )
-            )}
+            {categories.map((cat) => (
+              <button
+                key={cat._id}
+                onClick={() => setActiveCategory(cat.name)}
+                className={cat.name === activeCategory ? "active" : ""}
+              >
+                {cat.name}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -215,28 +184,26 @@ export default function Home() {
       <div className="popular-categories">
         <h3>Order.uk Popular Categories 🥳</h3>
         <div className="category-grid">
-          {(categories.length > 0 ? categories : fallbackCategories).map(
-            (cat, index) => (
-              <div className="category-card" key={cat._id || index}>
-                <img src={cat.image || cat1} alt={cat.name} />
-                <div className="category_text">
-                  <h5>{cat.name}</h5>
-                  <p>{cat.restaurantCount || 0} Restaurants</p>
-                </div>
+          {categories.map((cat) => (
+            <div className="category-card" key={cat._id}>
+              <img src={`http://localhost:8080${cat.image}`} alt={cat.name} />
+              <div className="category_text">
+                <h5>{cat.name}</h5>
+                <p>{cat.restaurantCount || 0} Shops</p>
               </div>
-            )
-          )}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* === Popular Restaurants Section === */}
       <div className="popular_restaurants">
-        <h3>Popular Restaurants</h3>
+        <h3>Popular Shops</h3>
         <div className="restaurant-grid">
-          {restaurants.map((res, index) => (
-            <div className="restaurant-card" key={index}>
-              <img src={res.img} alt={res.name} />
-              <p>{res.name}</p>
+          {restaurants.map((restaurant) => (
+            <div className="restaurant-card" key={restaurant._id}>
+              <img src={restaurant.image} alt={restaurant.name} />
+              <p>{restaurant.name}</p>
             </div>
           ))}
         </div>
