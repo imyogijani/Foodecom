@@ -20,7 +20,7 @@ const categories = [
 export default function PopularCategories() {
   return (
     <div className="popular-categories">
-      <h3>Order.uk Popular Categories 🥳</h3>
+      <h3>E-Mall World Popular Categories 🥳</h3>
       <div className="category-grid">
         {categories.map((cat, index) => (
           <div className="category-card" key={index}>

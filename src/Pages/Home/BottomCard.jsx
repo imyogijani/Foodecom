@@ -9,8 +9,8 @@ const faqTabs = [
     label: "Frequent Questions",
     faqs: [
       {
-        q: "How does Order.UK work?",
-        a: "Order.UK connects you with local restaurants and stores. Browse the menu, place your order online or via our app, and get your food delivered quickly to your doorstep.",
+        q: "How does E-mall.World work?",
+        a: "E-mall.World connects you with local restaurants and stores. Browse the menu, place your order online or via our app, and get your food delivered quickly to your doorstep.",
         highlight: true,
       },
       {
@@ -26,8 +26,8 @@ const faqTabs = [
         a: "Yes, we regularly offer exclusive deals and discounts. Check the 'Special Offers' section or subscribe to our newsletter for updates.",
       },
       {
-        q: "Is Order.UK available in my area?",
-        a: "Order.UK is available in most major cities and towns. Enter your postcode on our homepage to check availability in your area.",
+        q: "Is E-Mall World available in my area?",
+        a: "E-Mall World is available in most major cities and towns. Enter your postcode on our homepage to check availability in your area.",
       },
     ],
   },
@@ -35,11 +35,11 @@ const faqTabs = [
     label: "Who we are?",
     faqs: [
       {
-        q: "Who is behind Order.UK?",
-        a: "Order.UK is a passionate team dedicated to making food delivery fast, easy, and enjoyable for everyone.",
+        q: "Who is behind E-Mall World?",
+        a: "E-Mall World is a passionate team dedicated to making food delivery fast, easy, and enjoyable for everyone.",
       },
       {
-        q: "What is the mission of Order.UK?",
+        q: "What is the mission of E-Mall World?",
         a: "Our mission is to connect people with great food from their favorite local restaurants, delivered quickly and reliably.",
       },
     ],
@@ -48,8 +48,8 @@ const faqTabs = [
     label: "Partner Program",
     faqs: [
       {
-        q: "How can I partner with Order.UK?",
-        a: "If you own a restaurant or store, you can join our platform by signing up through the 'Partner with us' section. We’ll guide you through the onboarding process.",
+        q: "How can I partner with E-Mall World?",
+        a: "If you own a restaurant or store, you can join our platform by signing up through the 'Partner with us' section. We'll guide you through the onboarding process.",
       },
       {
         q: "What are the benefits of partnering?",
@@ -62,11 +62,11 @@ const faqTabs = [
     faqs: [
       {
         q: "How do I contact customer support?",
-        a: "You can reach our support team via the 'Help & Support' section on our website or app, or email us at support@order.uk.",
+        a: "You can reach our support team via the 'Help & Support' section on our website or app, or email us at support@emall.world.",
       },
       {
         q: "What if I have an issue with my order?",
-        a: "If you face any issues, please contact us immediately through your order page or support. We’ll resolve it as quickly as possible.",
+        a: "If you face any issues, please contact us immediately through your order page or support. We'll resolve it as quickly as possible.",
       },
     ],
   },
@@ -149,7 +149,7 @@ export default function BottomCard() {
             ))}
           </div>
           <div className="desc bottom-card-desc">
-            Order.UK simplifies the food ordering process. Browse through our
+            E-Mall World simplifies the food ordering process. Browse through our
             diverse menu, select your favorite dishes, and proceed to checkout.
             Your delicious meal will be on its way to your doorstep in no time!
           </div>

@@ -1,10 +1,9 @@
 /* eslint-disable no-unused-vars */
 import "./Home.css";
-import p1 from "../../images/Person-1.png";
+import shoppingImage from "../../images/shopping-hero.svg";
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
 import { toast } from "react-toastify";
-import promo from "../../images/promo.png";
 import BottomCard from "./BottomCard";
 import StatsBanner from "./StatsBanner";
 import { useCart } from "../../context/CartContext";
@@ -45,7 +44,6 @@ export default function Home() {
       const response = await axios.get("/api/category/get-category");
       const categoriesData = response.data.categories || [];
       setCategories(categoriesData);
-
       if (categoriesData.length > 0) {
         setActiveCategory(categoriesData[0].name);
       }
@@ -98,24 +96,24 @@ export default function Home() {
 
   return (
     <>
-      <div className="Home">
-        <div className="Home_text">
-          <div className="text">
-            <h2>Order Restaurant food takeaway and groceries.</h2>
-            <h2>Feast Your Senses,</h2>
-            <h2>Fast and Fresh</h2>
+      <div className="hero-section">
+        <div className="hero-content">
+          <div className="hero-text">
+            <h1>Welcome to E-mall.World</h1>
+            <p>Your One-Stop Destination for All Shopping Needs</p>
           </div>
-          <div className="person">
-            <img src={p1} alt="person" />
+          <div className="hero-image">
+            <img src={shoppingImage} alt="Shopping Experience" />
           </div>
         </div>
       </div>
+    
 
       {/* === Top Deals Section === */}
       <div className="top-deals-container">
         <div className="top-deals-header">
           <h3>
-            Up to <span>–40%</span> 🎉 Order.uk exclusive deals
+            Up to <span>–40%</span> 🎉 E-mall.World exclusive deals
           </h3>
           <div className="category-tabs">
             {categories.map((cat) => (
@@ -182,7 +180,7 @@ export default function Home() {
 
       {/* === Popular Categories Section === */}
       <div className="popular-categories">
-        <h3>Order.uk Popular Categories 🥳</h3>
+        <h3>E-Mall World Popular Categories 🥳</h3>
         <div className="category-grid">
           {categories.map((cat) => (
             <div className="category-card" key={cat._id}>
@@ -209,21 +207,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Promo Image Section */}
-      <div
-        className="promo-image-section"
-        style={{ display: "flex", justifyContent: "center", margin: "2rem 0" }}
-      >
-        <img
-          src={promo}
-          alt="Promo"
-          style={{
-            maxWidth: "70%",
-            height: "auto",
-            borderRadius: "16px",
-          }}
-        />
-      </div>
 
       {/* Partner Banner Section */}
       <div className="partner-banner-row">

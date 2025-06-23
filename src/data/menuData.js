@@ -2,15 +2,15 @@
 // This ensures consistency across Restaurant page, Track Order page, and other menu pages
 
 export const restaurantInfo = {
-  name: "Tandoori Pizza London",
-  description: "Best flavours with a blend of Italian sweetness",
-  rating: 3.4,
-  reviews: 1360,
-  minOrder: "₹12.00",
-  deliveryTime: "20-25 Minutes",
-  phone: "+934443-43",
-  website: "http://tandooripizza.uk/",
-  address: "Tooley St, London Bridge, London SE1 2TF, United Kingdom",
+  name: "E-mall.World Shopping Center",
+  description: "Your one-stop destination for all shopping needs",
+  rating: 4.5,
+  reviews: 2500,
+  minOrder: "$0.00",
+  deliveryTime: "1-3 Business Days",
+  phone: "+1-800-EMALL",
+  website: "https://e-mall.world",
+  address: "Global Online Shopping Mall",
   operationalHours: {
     monday: "12:00 AM–3:00 AM, 8:00 AM–3:00 AM",
     tuesday: "8:00 AM–3:00 AM",

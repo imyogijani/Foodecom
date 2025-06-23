@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <style>
+    .primary { fill: #fc8a06; }
+    .secondary { fill: #03081f; }
+    .accent { fill: #ffffff; }
+  </style>
+  <g id="shopping-scene">
+    <!-- Shopping Bags -->
+    <path class="primary" d="M400 250 L450 250 L470 350 L380 350 Z"/>
+    <path class="secondary" d="M300 270 L340 270 L360 360 L280 360 Z"/>
+    <!-- Shopping Cart -->
+    <path class="secondary" d="M500 300 Q520 300 520 320 L530 380 L470 380 L480 320 Q480 300 500 300Z"/>
+    <circle class="accent" cx="485" cy="390" r="10"/>
+    <circle class="accent" cx="515" cy="390" r="10"/>
+    <!-- Store Front -->
+    <path class="primary" d="M200 150 L600 150 L650 200 L150 200 Z"/>
+    <rect class="secondary" x="250" y="200" width="300" height="150"/>
+    <!-- Store Windows -->
+    <rect class="accent" x="270" y="220" width="80" height="100"/>
+    <rect class="accent" x="370" y="220" width="80" height="100"/>
+    <rect class="accent" x="470" y="220" width="80" height="100"/>
+    <!-- Shopping Items -->
+    <circle class="primary" cx="250" cy="280" r="15"/>
+    <circle class="primary" cx="350" cy="280" r="15"/>
+    <circle class="primary" cx="450" cy="280" r="15"/>
+  </g>
+</svg>

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  FaUserCircle,
   FaStore,
-  FaShoppingCart,
   FaCog,
   FaSignOutAlt,
   FaSignInAlt,
@@ -19,6 +17,7 @@ const navLinks = [
   { name: "Browse Menu", path: "/menu" },
   { name: "Special Offers", path: "/Offer" },
   { name: "Restaurants", path: "/Restaurant" },
+  { name: "Counter", path: "/counter" },
 ];
 
 const Navbar = () => {
