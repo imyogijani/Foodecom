@@ -11,12 +11,19 @@ import {
   authenticateToken,
   authorizeAdmin,
 } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
 // routes
 // Create Category
-router.post("/", authenticateToken, authorizeAdmin, createCategoryController);
+router.post(
+  "/",
+  authenticateToken,
+  authorizeAdmin,
+  upload.single("image"),
+  createCategoryController
+);
 
 // Create Subcategory
 router.post(
@@ -31,6 +38,16 @@ router.put(
   "/update-category/:id",
   authenticateToken,
   authorizeAdmin,
+  upload.single("image"),
+  updateCategoryController
+);
+
+// Add this POST route for file upload updates
+router.post(
+  "/update-category/:id",
+  authenticateToken,
+  authorizeAdmin,
+  upload.single("image"),
   updateCategoryController
 );
 

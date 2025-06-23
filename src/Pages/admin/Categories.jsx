@@ -21,6 +21,8 @@ const Categories = () => {
   const [showConfirmDeleteModal, setShowConfirmDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [itemTypeToDelete, setItemTypeToDelete] = useState(null);
+  const [categoryImage, setCategoryImage] = useState(null);
+  const [editCategoryImage, setEditCategoryImage] = useState(null);
 
   const initialLoad = async () => {
     setLoading(true);
@@ -51,10 +53,12 @@ const Categories = () => {
       return;
     }
     try {
-      const { data } = await axios.post("/api/category", {
-        name: categoryName.trim(),
-      });
+      const formData = new FormData();
+      formData.append("name", categoryName.trim());
+      if (categoryImage) formData.append("image", categoryImage);
+      const { data } = await axios.post("/api/category", formData); // Removed manual Content-Type
       setCategoryName("");
+      setCategoryImage(null);
       toast.success(`Category '${categoryName}' added.`);
       await initialLoad();
     } catch (err) {
@@ -125,13 +129,21 @@ const Categories = () => {
     }
   };
 
+  const handleCategoryImageChange = (e) => {
+    setCategoryImage(e.target.files[0]);
+  };
+
+  const handleEditCategoryImageChange = (e) => {
+    setEditCategoryImage(e.target.files[0]);
+  };
+
   const handleSaveCategoryUpdate = async () => {
     if (!editingCategory?._id || !newCategoryName.trim()) return;
-
     try {
-      await axios.put(`/api/category/update-category/${editingCategory._id}`, {
-        name: newCategoryName.trim(),
-      });
+      const formData = new FormData();
+      formData.append("name", newCategoryName.trim());
+      if (editCategoryImage) formData.append("image", editCategoryImage);
+      await axios.post(`/api/category/update-category/${editingCategory._id}`, formData); // Removed manual Content-Type
       toast.success("Category updated successfully.");
       await initialLoad();
       resetEditState();
@@ -179,7 +191,7 @@ const Categories = () => {
 
       <div className="category-section">
         <h2>Add New Category</h2>
-        <form onSubmit={handleAddCategory} className="category-form">
+        <form onSubmit={handleAddCategory} className="category-form" encType="multipart/form-data">
           <input
             type="text"
             placeholder="Category Name"
@@ -187,6 +199,20 @@ const Categories = () => {
             onChange={(e) => setCategoryName(e.target.value)}
             className="form-input"
           />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleCategoryImageChange}
+            className="form-input"
+            style={{ marginTop: 8 }}
+          />
+          {categoryImage && (
+            <img
+              src={URL.createObjectURL(categoryImage)}
+              alt="Preview"
+              style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8, marginTop: 8 }}
+            />
+          )}
           <button type="submit" className="btn btn-primary">
             Add Category
           </button>
@@ -227,49 +253,45 @@ const Categories = () => {
         {loading && <p>Loading categories...</p>}
         {error && <p className="error-message">Error: {error.message}</p>}
         {!loading && categories.length === 0 && <p>No categories found.</p>}
-        <div className="category-list">
+        <div className="category-list enhanced-category-list">
           {categories.map((cat) => (
-            <div key={cat._id} className="category-item">
+            <div key={cat._id} className="category-item enhanced-category-card">
+              <div className="category-image-wrapper">
+                <img
+                  src={cat.image ? `http://localhost:8080${cat.image}` : "/vite.svg"}
+                  alt={cat.name}
+                  onError={e => { e.target.onerror = null; e.target.src = "/vite.svg"; }}
+                  className="category-image"
+                />
+              </div>
               <div className="category-info">
-                <span>{cat.name}</span>
+                <span className="category-title">{cat.name}</span>
                 <div className="category-actions">
-                  <button
-                    className="btn btn-edit"
-                    onClick={() => handleUpdateCategory(cat)}
-                  >
+                  <button className="btn btn-edit" onClick={() => handleUpdateCategory(cat)}>
                     <FaEdit />
                   </button>
-                  <button
-                    className="btn btn-delete"
-                    onClick={() => handleDeleteCategory(cat)}
-                  >
+                  <button className="btn btn-delete" onClick={() => handleDeleteCategory(cat)}>
                     <FaTrashAlt />
                   </button>
                 </div>
-              </div>
-              {cat.children?.length > 0 && (
-                <div className="subcategory-list">
-                  {cat.children.map((subCat) => (
-                    <div key={subCat._id} className="subcategory-item">
-                      <span>{subCat.name}</span>
-                      <div className="subcategory-actions">
-                        <button
-                          className="btn btn-edit"
-                          onClick={() => handleUpdateSubCategory(subCat)}
-                        >
-                          <FaEdit />
-                        </button>
-                        <button
-                          className="btn btn-delete"
-                          onClick={() => handleDeleteSubCategory(subCat)}
-                        >
-                          <FaTrashAlt />
-                        </button>
+                {cat.children?.length > 0 && (
+                  <div className="subcategory-list">
+                    {cat.children.map((subCat) => (
+                      <div key={subCat._id} className="subcategory-item">
+                        <span>{subCat.name}</span>
+                        <div className="subcategory-actions">
+                          <button className="btn btn-edit" onClick={() => handleUpdateSubCategory(subCat)}>
+                            <FaEdit />
+                          </button>
+                          <button className="btn btn-delete" onClick={() => handleDeleteSubCategory(subCat)}>
+                            <FaTrashAlt />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -289,14 +311,28 @@ const Categories = () => {
               }
               className="form-input"
             />
+            {editingCategory && (
+              <>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleEditCategoryImageChange}
+                  className="form-input"
+                  style={{ marginTop: 8 }}
+                />
+                {(editCategoryImage || editingCategory.image) && (
+                  <img
+                    src={editCategoryImage ? URL.createObjectURL(editCategoryImage) : (editingCategory.image ? `http://localhost:8080${editingCategory.image}` : undefined)}
+                    alt="Preview"
+                    style={{ width: 70, height: 70, objectFit: "cover", borderRadius: 10, marginTop: 8 }}
+                  />
+                )}
+              </>
+            )}
             <div className="modal-actions">
               <button
                 className="btn btn-primary"
-                onClick={
-                  editingCategory
-                    ? handleSaveCategoryUpdate
-                    : handleSaveSubCategoryUpdate
-                }
+                onClick={editingCategory ? handleSaveCategoryUpdate : handleSaveSubCategoryUpdate}
               >
                 Save
               </button>
@@ -310,7 +346,7 @@ const Categories = () => {
 
       {showConfirmDeleteModal && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content confirm-delete">
             <h2>Confirm Deletion</h2>
             <p>
               Are you sure you want to delete "{itemToDelete?.name}"? This

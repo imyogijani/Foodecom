@@ -240,11 +240,11 @@ aside button {
 }
 
 .logout-btn {
-  background: rgba(255, 71, 87, 0.1);
+  background: rgba(255, 71, 87, 0.1) !important;
 }
 
 .logout-btn:hover {
-  background: rgba(255, 71, 87, 0.2);
+  background: rgba(255, 71, 87, 0.2) !important;
   transform: translateY(-2px);
 }
 
@@ -266,6 +266,45 @@ aside button {
   font-weight: 500;
   letter-spacing: 0.3px;
 }
+
+/* --- Admin Sidebar Glass Buttons Override --- */
+.sidebar-footer .logout-btn {
+  background: rgba(255, 71, 87, 0.22) !important;
+  color: #ff4757 !important;
+  border: 1.5px solid rgba(255, 71, 87, 0.22) !important;
+  border-radius: 12px !important;
+  font-weight: 600;
+  box-shadow: 0 4px 24px 0 rgba(255,71,87,0.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.sidebar-footer .logout-btn:hover {
+  background: rgba(255, 71, 87, 0.38) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 24px 0 rgba(255, 71, 87, 0.18);
+  transform: translateY(-2px) scale(1.04);
+}
+
+/* Optional: Glassy login button for admin sidebar (if present) */
+.sidebar-footer .login-btn {
+  background: rgba(66, 133, 244, 0.22) !important;
+  color: #4285f4 !important;
+  border: 1.5px solid rgba(66, 133, 244, 0.22) !important;
+  border-radius: 12px !important;
+  font-weight: 600;
+  box-shadow: 0 4px 24px 0 rgba(66,133,244,0.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.sidebar-footer .login-btn:hover {
+  background: rgba(66, 133, 244, 0.38) !important;
+  color: #fff !important;
+  box-shadow: 0 6px 24px 0 rgba(66, 133, 244, 0.18);
+  transform: translateY(-2px) scale(1.04);
+}
+/* --- End Admin Sidebar Glass Buttons Override --- */
 
 @media (max-width: 768px) {
   aside {

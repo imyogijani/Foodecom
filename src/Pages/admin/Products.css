@@ -78,17 +78,36 @@
 }
 
 .shop-filter {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.75rem 1rem;
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-color-dark);
-  outline: none;
-  min-width: 150px;
+  background: #fff;
+  color: #222;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 500;
   font-size: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  padding: 0.45rem 1.1rem;
+  transition: border 0.18s, box-shadow 0.18s;
+  outline: none;
+  min-width: 120px;
+  appearance: none;
+  cursor: pointer;
+}
+.shop-filter:focus, .shop-filter:hover {
+  border: 1.5px solid #4285f4;
+  box-shadow: 0 2px 8px 0 rgba(66,133,244,0.10);
+}
+.shop-filter option {
+  background: #fff;
+  color: #222;
+  font-weight: 500;
+  border-radius: 0;
+  padding: 0.4rem 1rem;
+  margin: 2px 0;
+}
+.shop-filter option.all-shops-option {
+  color: #fff;
+  background: #4285f4;
+  font-weight: 700;
 }
 
 .products-stats {
@@ -555,16 +574,69 @@
   color: #fff;
 }
 
-/* Hide scrollbars for modal */
-.modal-content::-webkit-scrollbar,
-.modal-body::-webkit-scrollbar {
-  display: none;
+/* --- Delete All Products Button (Compact, Bold, Visible) --- */
+.delete-all-products-btn {
+  background: #e53935 !important;
+  color: #fff !important;
+  border: 2px solid #b71c1c !important;
+  border-radius: 7px !important;
+  font-weight: 700;
+  font-size: 0.92rem;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 8px 0 rgba(229,57,53,0.13);
+  padding: 0.32rem 0.85rem;
+  margin-left: 0.5rem;
+  min-width: 0;
+  min-height: 0;
+  line-height: 1.1;
+  cursor: pointer;
+  outline: none !important;
+  transition: background 0.16s, color 0.16s, box-shadow 0.16s, transform 0.16s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
 }
-.modal-content,
-.modal-body {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.delete-all-products-btn:hover {
+  background: #b71c1c !important;
+  color: #fff !important;
+  box-shadow: 0 4px 16px 0 rgba(183,28,28,0.18);
+  transform: translateY(-1px) scale(1.04);
 }
+
+/* --- Shop Filter Select & Option Styling (Simple, User-Friendly) --- */
+.shop-filter {
+  background: #fff;
+  color: #222;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  box-shadow: none;
+  padding: 0.45rem 1.1rem;
+  transition: border 0.18s, box-shadow 0.18s;
+  outline: none;
+  min-width: 120px;
+  appearance: none;
+  cursor: pointer;
+}
+.shop-filter:focus, .shop-filter:hover {
+  border: 1.5px solid #4285f4;
+  box-shadow: 0 2px 8px 0 rgba(66,133,244,0.10);
+}
+.shop-filter option {
+  background: #fff;
+  color: #222;
+  font-weight: 500;
+  border-radius: 0;
+  padding: 0.4rem 1rem;
+  margin: 2px 0;
+}
+.shop-filter option.all-shops-option {
+  color: #fff;
+  background: #4285f4;
+  font-weight: 700;
+}
+/* --- End Refined Styles --- */
 
 @media (max-width: 1024px) {
   .products-stats {
@@ -803,3 +875,180 @@
     min-height: 44px;
   }
 }
+
+/* --- Delete All Products Button (Admin Panel) --- */
+.delete-all-products-btn {
+  background: linear-gradient(90deg, #ff5858 0%, #f857a6 100%);
+  color: #fff !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 700;
+  font-size: 0.98rem;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 8px 0 rgba(255,88,88,0.10);
+  padding: 0.45rem 1.1rem;
+  margin-left: 0.5rem;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+  outline: none !important;
+  min-width: 0;
+  min-height: 0;
+  line-height: 1.1;
+  cursor: pointer;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+.delete-all-products-btn:hover {
+  background: linear-gradient(90deg, #f857a6 0%, #ff5858 100%);
+  color: #fff !important;
+  box-shadow: 0 4px 16px 0 rgba(255,88,88,0.18);
+  transform: translateY(-1px) scale(1.04);
+}
+
+/* --- Shop Filter Select & Option Styling (No Glass Effect) --- */
+.shop-filter {
+  background: #f4f7fa;
+  color: #174ea6;
+  border: 1.5px solid #b6c6e3;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.98rem;
+  box-shadow: 0 1px 4px 0 rgba(66,133,244,0.06);
+  padding: 0.45rem 1.1rem;
+  transition: border 0.18s, box-shadow 0.18s;
+  outline: none;
+  min-width: 120px;
+  appearance: none;
+  cursor: pointer;
+}
+.shop-filter:focus, .shop-filter:hover {
+  border: 1.5px solid #4285f4;
+  box-shadow: 0 2px 8px 0 rgba(66,133,244,0.10);
+}
+.shop-filter option {
+  background: #fff;
+  color: #174ea6;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.4rem 1rem;
+  margin: 2px 0;
+}
+/* --- End Refined Styles (No Glass Effect) --- */
+
+/* --- Product Detail Modal Glass Buttons (Unique Class) --- */
+.product-modal-glass-btn {
+  background: rgba(255,255,255,0.35);
+  color: #181818;
+  border: 1.5px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+  backdrop-filter: blur(8px);
+}
+.product-modal-glass-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.product-modal-glass-btn.product-modal-primary {
+  background: rgba(252,138,6,0.18);
+  color: #e57a00;
+  border: 1.5px solid #e57a00;
+}
+.product-modal-glass-btn.product-modal-primary:hover {
+  background: #e57a00;
+  color: #fff;
+}
+.product-modal-glass-btn.product-modal-danger {
+  background: rgba(239,68,68,0.13);
+  color: #ef4444;
+  border: 1.5px solid #ef4444;
+}
+.product-modal-glass-btn.product-modal-danger:hover {
+  background: #ef4444;
+  color: #fff;
+}
+.product-modal-glass-btn.product-modal-secondary {
+  background: rgba(108,117,125,0.13);
+  color: #495057;
+  border: 1.5px solid #6c757d;
+}
+.product-modal-glass-btn.product-modal-secondary:hover {
+  background: #6c757d;
+  color: #fff;
+}
+/* --- End Product Detail Modal Glass Buttons --- */
+
+/* --- Force Product Modal Glass Buttons to Override Global Styles --- */
+.modal-actions .product-modal-glass-btn,
+.modal-actions .product-modal-glass-btn.product-modal-primary,
+.modal-actions .product-modal-glass-btn.product-modal-danger,
+.modal-actions .product-modal-glass-btn.product-modal-secondary {
+  background: rgba(255,255,255,0.35) !important;
+  color: #181818 !important;
+  border: 1.5px solid rgba(255,255,255,0.18) !important;
+  border-radius: 10px !important;
+  padding: 10px 22px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08) !important;
+  cursor: pointer !important;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s !important;
+  backdrop-filter: blur(8px) !important;
+}
+.modal-actions .product-modal-glass-btn.product-modal-primary {
+  background: rgba(252,138,6,0.18) !important;
+  color: #e57a00 !important;
+  border: 1.5px solid #e57a00 !important;
+}
+.modal-actions .product-modal-glass-btn.product-modal-primary:hover {
+  background: #e57a00 !important;
+  color: #fff !important;
+}
+.modal-actions .product-modal-glass-btn.product-modal-danger {
+  background: rgba(239,68,68,0.13) !important;
+  color: #ef4444 !important;
+  border: 1.5px solid #ef4444 !important;
+}
+.modal-actions .product-modal-glass-btn.product-modal-danger:hover {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+.modal-actions .product-modal-glass-btn.product-modal-secondary {
+  background: rgba(108,117,125,0.13) !important;
+  color: #495057 !important;
+  border: 1.5px solid #6c757d !important;
+}
+.modal-actions .product-modal-glass-btn.product-modal-secondary:hover {
+  background: #6c757d !important;
+  color: #fff !important;
+}
+/* --- End Force Product Modal Glass Buttons --- */
+
+/* --- Admin Products Table Action Icon Buttons --- */
+.action-buttons .product-action-icon {
+  background: #f4f7fa;
+  color: #4285f4;
+  border: 1.5px solid #e3eafc;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.18rem;
+  transition: background 0.18s, color 0.18s, border 0.18s, transform 0.18s;
+  box-shadow: 0 1px 4px 0 rgba(66,133,244,0.08);
+  cursor: pointer;
+  outline: none;
+  margin: 0 2px;
+}
+.action-buttons .product-action-icon:hover {
+  background: #4285f4;
+  color: #fff;
+  border: 1.5px solid #4285f4;
+  transform: scale(1.12);
+  box-shadow: 0 2px 8px 0 rgba(66,133,244,0.16);
+}
+/* --- End Admin Products Table Action Icon Buttons --- */

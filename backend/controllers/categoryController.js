@@ -1,11 +1,18 @@
 /* eslint-disable no-prototype-builtins */
 import Category from "../models/categoryModel.js";
 import slugify from "slugify";
+import fs from "fs";
+import path from "path";
 
 // Create Category
 export const createCategoryController = async (req, res) => {
   try {
     const { name, parent } = req.body;
+    let image = "";
+    if (req.file) {
+      console.log('Category image upload:', req.file);
+      image = `/uploads/categories/${req.file.filename}`;
+    }
     if (!name) {
       return res.status(400).send({ message: "Name is required" });
     }
@@ -17,6 +24,7 @@ export const createCategoryController = async (req, res) => {
       name,
       slug: slugify(name),
       parent: parent || null,
+      image,
     });
 
     if (parent) {
@@ -154,75 +162,51 @@ export const deleteCategoryController = async (req, res) => {
 // Update category
 export const updateCategoryController = async (req, res) => {
   try {
-    const { name } = req.body; // Only destructure name initially
-    const newParentFromReq = req.body.parent; // Get parent explicitly from req.body
-    const { id } = req.params;
-
-    const oldCategory = await Category.findById(id);
-    if (!oldCategory) {
-      return res.status(404).send({ message: "Category not found" });
+    const { name, parent } = req.body;
+    const updateData = {};
+    if (name) {
+      updateData.name = name;
+      updateData.slug = slugify(name);
     }
-
-    let actualNewParentId = oldCategory.parent; // Default to old parent
-
-    // Determine the actual new parent ID
-    if (req.body.hasOwnProperty("parent")) {
-      // If parent is explicitly provided in req.body
-      if (newParentFromReq === null || newParentFromReq === "") {
-        actualNewParentId = null; // Explicitly setting to root
-      } else {
-        actualNewParentId = newParentFromReq; // New parent ID provided
-      }
+    if (typeof parent !== 'undefined') {
+      updateData.parent = parent;
     }
-
-    // Handle parent change in children arrays
-    const oldParentId = oldCategory.parent
-      ? oldCategory.parent.toString()
-      : null;
-    const currentNewParentId = actualNewParentId
-      ? actualNewParentId.toString()
-      : null;
-
-    if (oldParentId !== currentNewParentId) {
-      // Remove from old parent's children if old parent existed
-      if (oldParentId) {
-        const oldParentCategory = await Category.findById(oldParentId);
-        if (oldParentCategory) {
-          oldParentCategory.children.pull(id);
-          await oldParentCategory.save();
-        }
+    let oldImagePath = null;
+    if (req.file) {
+      // Find the current category to get the old image path
+      const currentCategory = await Category.findById(req.params.id);
+      if (currentCategory && currentCategory.image) {
+        oldImagePath = path.join(
+          path.resolve(),
+          'backend/public',
+          currentCategory.image.startsWith('/') ? currentCategory.image : `/${currentCategory.image}`
+        );
       }
-
-      // Add to new parent's children if new parent exists
-      if (currentNewParentId) {
-        const newParentCategory = await Category.findById(currentNewParentId);
-        if (newParentCategory) {
-          newParentCategory.children.push(id);
-          await newParentCategory.save();
-        }
-      }
+      updateData.image = `/uploads/categories/${req.file.filename}`;
     }
-
     const category = await Category.findByIdAndUpdate(
-      id,
-      {
-        name,
-        slug: slugify(name),
-        parent: actualNewParentId, // Use the determined actualNewParentId
-      },
+      req.params.id,
+      { $set: updateData },
       { new: true }
     );
+    // Delete old image file if a new one was uploaded
+    if (req.file && oldImagePath && fs.existsSync(oldImagePath)) {
+      try {
+        fs.unlinkSync(oldImagePath);
+      } catch (e) {
+        // Ignore error
+      }
+    }
     res.status(200).send({
       success: true,
-      message: "Category Updated Successfully",
+      message: "Category updated successfully",
       category,
     });
   } catch (error) {
-    console.log(error);
     res.status(500).send({
       success: false,
+      message: "Error updating category",
       error,
-      message: "Error while updating category",
     });
   }
 };
