@@ -7,7 +7,6 @@ import morgan from "morgan";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import fileUpload from "express-fileupload";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,7 +34,7 @@ app.use(
   })
 );
 app.use(morgan("dev"));
-app.use(fileUpload());
+// app.use(fileUpload());
 
 // Configure static file serving with proper headers and caching
 app.use(

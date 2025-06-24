@@ -138,8 +138,10 @@ export default function Home() {
                 <div className="deal-card" key={product._id}>
                   <img
                     src={
-                      product.images && product.images.length > 0
-                        ? product.images[0]
+                      product.image
+                        ? (product.image.startsWith("/uploads")
+                            ? `http://localhost:8080${product.image}`
+                            : product.image)
                         : "placeholder.jpg"
                     }
                     alt={product.name}

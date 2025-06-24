@@ -34,19 +34,9 @@ export const addProduct = async (req, res) => {
     }
     let image = "";
 
-    // Handle file upload
-    if (req.files && req.files.image) {
-      const file = req.files.image;
-      const filename =
-        Date.now() + "-" + file.name.replace(/\s+/g, "-").toLowerCase();
-      const uploadPath = path.join(
-        __dirname,
-        "../public/uploads/products",
-        filename
-      );
-
-      await file.mv(uploadPath);
-      image = `/uploads/products/${filename}`; // Store full path for correct frontend usage
+    // Handle file upload (multer)
+    if (req.file) {
+      image = `/uploads/products/${req.file.filename}`;
     } else {
       return res.status(400).json({
         success: false,

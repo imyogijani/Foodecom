@@ -7,11 +7,15 @@ import path from "path";
 // Create Category
 export const createCategoryController = async (req, res) => {
   try {
+    console.log("[DEBUG] req.body:", req.body);
+    console.log("[DEBUG] req.file:", req.file);
     const { name, parent } = req.body;
     let image = "";
     if (req.file) {
       console.log("Category image upload:", req.file);
       image = `/uploads/categories/${req.file.filename}`;
+    } else {
+      console.log("[DEBUG] No file received for category image upload");
     }
     if (!name) {
       return res.status(400).send({ message: "Name is required" });
@@ -184,7 +188,8 @@ export const updateCategoryController = async (req, res) => {
             : `/${currentCategory.image}`
         );
       }
-      updateData.image = `../../public/uploads/categories/${req.file.filename}`;
+      // FIX: Use correct path for frontend
+      updateData.image = `/uploads/categories/${req.file.filename}`;
     }
     const category = await Category.findByIdAndUpdate(
       req.params.id,

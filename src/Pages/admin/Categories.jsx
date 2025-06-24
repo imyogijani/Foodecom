@@ -4,7 +4,7 @@ import { FaEdit, FaTrashAlt } from 'react-icons/fa';
 import { toast } from "react-toastify";
 
 import "./Categories.css"; // Assuming you'll create this CSS file
-import axios from "../../utils/axios";
+import axiosInstance from "../../utils/axios";
 
 const Categories = () => {
   const [categoryName, setCategoryName] = useState("");
@@ -27,7 +27,7 @@ const Categories = () => {
   const initialLoad = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/category/get-category");
+      const response = await axiosInstance.get("/api/category/get-category");
       if (response.data && Array.isArray(response.data.categories)) {
         setCategories(response.data.categories);
       } else {
@@ -52,11 +52,21 @@ const Categories = () => {
       toast.error("Category name cannot be empty.");
       return;
     }
+    if (!categoryImage) {
+      toast.error("Please select an image for the category.");
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append("name", categoryName.trim());
-      if (categoryImage) formData.append("image", categoryImage);
-      const { data } = await axios.post("/api/category", formData); // Removed manual Content-Type
+      formData.append("image", categoryImage);
+      // Debug: log the file
+      console.log("Uploading category image:", categoryImage);
+      // Use your custom axios instance
+      const { data } = await axiosInstance.post(
+        "/api/category",
+        formData
+      );
       setCategoryName("");
       setCategoryImage(null);
       toast.success(`Category '${categoryName}' added.`);
@@ -74,7 +84,7 @@ const Categories = () => {
       return;
     }
     try {
-      await axios.post(`/api/category/subcategory`, {
+      await axiosInstance.post(`/api/category/subcategory`, {
         name: subCategoryName.trim(),
         parent: selectedCategory,
       });
@@ -116,7 +126,7 @@ const Categories = () => {
     if (!itemToDelete?._id) return;
 
     try {
-      await axios.delete(`/api/category/delete-category/${itemToDelete._id}`);
+      await axiosInstance.delete(`/api/category/delete-category/${itemToDelete._id}`);
       toast.success(`${itemTypeToDelete} deleted successfully.`);
       await initialLoad();
     } catch (err) {
@@ -143,7 +153,7 @@ const Categories = () => {
       const formData = new FormData();
       formData.append("name", newCategoryName.trim());
       if (editCategoryImage) formData.append("image", editCategoryImage);
-      await axios.post(`/api/category/update-category/${editingCategory._id}`, formData); // Removed manual Content-Type
+      await axiosInstance.post(`/api/category/update-category/${editingCategory._id}`, formData); // Removed manual Content-Type
       toast.success("Category updated successfully.");
       await initialLoad();
       resetEditState();
@@ -157,7 +167,7 @@ const Categories = () => {
     if (!editingSubCategory?._id || !newSubCategoryName.trim()) return;
 
     try {
-      await axios.put(
+      await axiosInstance.put(
         `/api/category/update-category/${editingSubCategory._id}`,
         {
           name: newSubCategoryName.trim(),
