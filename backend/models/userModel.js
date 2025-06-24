@@ -84,6 +84,10 @@ const userSchema = new mongoose.Schema(
       enum: ['active', 'inactive', 'banned'],
       default: 'active',
     },
+    shopImage: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

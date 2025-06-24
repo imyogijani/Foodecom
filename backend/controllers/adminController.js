@@ -283,3 +283,17 @@ export const updateShopownerSubscription = async (req, res) => {
     });
   }
 };
+
+// Get full details of a shopowner by ID (for admin)
+export const getShopownerDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).populate("subscription");
+    if (!user || user.role !== "shopowner") {
+      return res.status(404).json({ success: false, message: "Shopowner not found" });
+    }
+    res.json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to fetch shopowner details", error: err.message });
+  }
+};

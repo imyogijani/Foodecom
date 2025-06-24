@@ -23,6 +23,7 @@ const sellerLinks = [
   },
   { name: "Orders", path: "/seller/orders", icon: <FaShoppingCart /> },
   { name: "Customers", path: "/seller/customers", icon: <FaUsers /> },
+  { name: "Profile", path: "/seller/profile", icon: <FaUsers /> },
 ];
 
 const SellerSidebar = ({ onClose }) => {

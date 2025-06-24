@@ -33,6 +33,7 @@ import Cart from "./Components/Cart/Cart";
 import UserProfile from "./Components/UserProfile/UserProfile";
 import { CartProvider } from "./context/CartContext";
 import CartFloatingButton from "./Components/CartFloatingButton";
+import SellerProfile from "./Pages/Seller/SellerProfile";
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
@@ -69,6 +70,7 @@ function LayoutWrapper() {
     "/seller/products/add",
     "/seller/orders",
     "/seller/customers",
+    "/seller/profile", // <--- add this line
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
@@ -135,6 +137,7 @@ function LayoutWrapper() {
           <Route path="products/add" element={<AddProduct />} />
           <Route path="orders" element={<SellerOrders />} />
           <Route path="customers" element={<SellerCustomers />} />
+          <Route path="profile" element={<SellerProfile />} />
         </Route>
         {/* Add more routes as needed */}
       </Routes>

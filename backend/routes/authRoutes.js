@@ -26,7 +26,12 @@ router.post("/login", loginController);
 router.get("/current-user", authenticateToken, currentUserController);
 
 // Update profile || PUT
-router.put("/update-profile", authenticateToken, updateProfileController);
+router.put(
+  "/update-profile",
+  authenticateToken,
+  upload.single("shopImage"),
+  updateProfileController
+);
 
 // Verify token || GET
 router.get("/verify-token", authenticateToken, verifyToken);
