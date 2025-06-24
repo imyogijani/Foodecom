@@ -24,6 +24,10 @@ const Users = () => {
     status: "",
   });
 
+  // New: Shopowner details modal state
+  const [shopownerDetails, setShopownerDetails] = useState(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -121,6 +125,22 @@ const Users = () => {
 
   const stats = getUserStats();
 
+  // New: Fetch shopowner details
+  const fetchShopownerDetails = async (id) => {
+    try {
+      setDetailsLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/admin/shopowner/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setShopownerDetails(res.data.user);
+    } catch (err) {
+      toast.error("Failed to fetch shopowner details");
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading-container">
@@ -181,7 +201,12 @@ const Users = () => {
               </tr>
             ) : (
               filteredUsers.map((user) => (
-                <tr key={user._id}>
+                <tr key={user._id}
+                  style={{ cursor: user.role === "shopowner" ? "pointer" : undefined }}
+                  onClick={() => {
+                    if (user.role === "shopowner") fetchShopownerDetails(user._id);
+                  }}
+                >
                   <td>{user.name || user.shopownerName}</td>
                   <td>{user.email}</td>
                   <td>
@@ -205,7 +230,8 @@ const Users = () => {
                     <div className="action-buttons">
                       <button
                         className="action-btn edit"
-                        onClick={() => {
+                        onClick={e => {
+                          e.stopPropagation();
                           setRoleToSet(user.role);
                           setFormData({ ...formData, status: user.status || 'inactive' });
                           setModal({ type: "edit", user });
@@ -215,7 +241,10 @@ const Users = () => {
                       </button>
                       <button
                         className="action-btn delete"
-                        onClick={() => setModal({ type: "delete", user })}
+                        onClick={e => {
+                          e.stopPropagation();
+                          setModal({ type: "delete", user });
+                        }}
                       >
                         <FaTrash />
                       </button>

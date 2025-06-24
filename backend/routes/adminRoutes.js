@@ -8,7 +8,8 @@ import {
   getAllUsers,
   deleteUser,
   updateUser,
-  updateShopownerSubscription
+  updateShopownerSubscription,
+  getShopownerDetails
 } from '../controllers/adminController.js';
 import { getAllOrdersAdmin } from '../controllers/orderController.js';
 import { 
@@ -52,5 +53,8 @@ router.get('/menu-items/:id', getMenuItemById);
 router.put('/menu-items/:id', updateMenuItem);
 router.delete('/menu-items/:id', deleteMenuItem);
 router.get('/menu-stats', getMenuStats);
+
+// Shopowner details (for admin)
+router.get('/shopowner/:id', getShopownerDetails);
 
 export default router;

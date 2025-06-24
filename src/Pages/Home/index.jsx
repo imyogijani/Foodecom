@@ -41,7 +41,8 @@ export default function Home() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("/api/category/get-category");
+      // Use the new endpoint to get shop counts
+      const response = await axios.get("/api/category/get-category-with-shop-count");
       const categoriesData = response.data.categories || [];
       setCategories(categoriesData);
       if (categoriesData.length > 0) {
@@ -138,8 +139,10 @@ export default function Home() {
                 <div className="deal-card" key={product._id}>
                   <img
                     src={
-                      product.images && product.images.length > 0
-                        ? product.images[0]
+                      product.image
+                        ? (product.image.startsWith("/uploads")
+                            ? `http://localhost:8080${product.image}`
+                            : product.image)
                         : "placeholder.jpg"
                     }
                     alt={product.name}
@@ -194,7 +197,7 @@ export default function Home() {
               </div>
               <div className="category-info">
                 <h4>{cat.name}</h4>
-                <p>{cat.restaurantCount || 0} Shops</p>
+                <p>{cat.shopCount || 0} Shops</p>
               </div>
             </div>
           ))}

@@ -3,15 +3,21 @@ import Category from "../models/categoryModel.js";
 import slugify from "slugify";
 import fs from "fs";
 import path from "path";
+import Product from "../models/productModel.js";
+import User from "../models/userModel.js";
 
 // Create Category
 export const createCategoryController = async (req, res) => {
   try {
+    console.log("[DEBUG] req.body:", req.body);
+    console.log("[DEBUG] req.file:", req.file);
     const { name, parent } = req.body;
     let image = "";
     if (req.file) {
       console.log("Category image upload:", req.file);
       image = `/uploads/categories/${req.file.filename}`;
+    } else {
+      console.log("[DEBUG] No file received for category image upload");
     }
     if (!name) {
       return res.status(400).send({ message: "Name is required" });
@@ -184,7 +190,8 @@ export const updateCategoryController = async (req, res) => {
             : `/${currentCategory.image}`
         );
       }
-      updateData.image = `../../public/uploads/categories/${req.file.filename}`;
+      // FIX: Use correct path for frontend
+      updateData.image = `/uploads/categories/${req.file.filename}`;
     }
     const category = await Category.findByIdAndUpdate(
       req.params.id,
@@ -210,6 +217,57 @@ export const updateCategoryController = async (req, res) => {
       success: false,
       message: "Error updating category",
       error,
+    });
+  }
+};
+
+// Get all categories with shop count
+export const categoriesWithShopCountController = async (req, res) => {
+  try {
+    // Get all top-level categories
+    const categories = await Category.find({ parent: null }).populate({
+      path: "children",
+      populate: { path: "children" },
+    });
+
+    // Get all products with category and seller
+    const products = await Product.find({}, "category seller");
+
+    // Map: categoryId -> Set of sellerIds
+    const categoryShopMap = {};
+    products.forEach((product) => {
+      const catId = product.category?.toString();
+      const sellerId = product.seller?.toString();
+      if (catId && sellerId) {
+        if (!categoryShopMap[catId]) categoryShopMap[catId] = new Set();
+        categoryShopMap[catId].add(sellerId);
+      }
+    });
+
+    // Helper to add shopCount recursively
+    function addShopCount(cat) {
+      const shopCount = categoryShopMap[cat._id.toString()]?.size || 0;
+      const children = cat.children?.map(addShopCount) || [];
+      return {
+        ...cat.toObject(),
+        shopCount,
+        children,
+      };
+    }
+
+    const categoriesWithShopCount = categories.map(addShopCount);
+
+    res.status(200).send({
+      success: true,
+      message: "All Categories with Shop Count",
+      categories: categoriesWithShopCount,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      error,
+      message: "Error while getting categories with shop count",
     });
   }
 };

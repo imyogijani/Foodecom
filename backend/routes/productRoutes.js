@@ -1,5 +1,6 @@
 import express from "express";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
+import upload from "../middlewares/uploadMiddleware.js";
 import {
   addProduct,
   getSellerProducts,
@@ -12,7 +13,7 @@ import {
 const router = express.Router();
 
 // Add new product
-router.post("/add", authenticateToken, addProduct);
+router.post("/add", authenticateToken, upload.single("image"), addProduct);
 
 // Get seller's products
 router.get("/seller-products", authenticateToken, getSellerProducts);

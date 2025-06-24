@@ -6,6 +6,7 @@ import {
   deleteCategoryController,
   updateCategoryController,
   getSubcategoriesController,
+  categoriesWithShopCountController,
 } from "../controllers/categoryController.js";
 import {
   authenticateToken,
@@ -67,5 +68,8 @@ router.delete(
   authorizeAdmin,
   deleteCategoryController
 );
+
+// Get all categories with shop count
+router.get("/get-category-with-shop-count", categoriesWithShopCountController);
 
 export default router;

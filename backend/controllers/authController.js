@@ -127,7 +127,10 @@ const loginController = async (req, res) => {
 //current user controller
 const currentUserController = async (req, res) => {
   try {
-    const user = await userModel.findById(req.userId);
+    let userQuery = userModel.findById(req.userId);
+    // Always populate subscription for shopowners
+    userQuery = userQuery.populate("subscription");
+    const user = await userQuery;
     return res.status(200).send({
       success: true,
       message: "User Fetched successfully🎉",
@@ -144,43 +147,27 @@ const currentUserController = async (req, res) => {
 };
 
 // Update profile controller
-const updateProfileController = async (req, res) => {
+export const updateProfileController = async (req, res) => {
   try {
-    const { names, shopownerName, email, phone, address } = req.body;
-    const user = await userModel.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "User not found",
-      });
+    const userId = req.userId;
+    let updateData = {};
+    // If multipart/form-data, handle file upload
+    if (req.file) {
+      // Save shop image path
+      updateData.shopImage = `/uploads/${req.file.filename}`;
     }
-
-    // Update user fields based on role
-    if (user.role === "shopowner") {
-      user.shopownerName = shopownerName || user.shopownerName;
-    } else if (user.role === "client" || user.role === "admin") {
-      user.names = names || user.names;
-    }
-
-    user.email = email || user.email;
-    user.phone = phone || user.phone;
-    user.address = address || user.address;
-
-    await user.save();
-
-    return res.status(200).send({
-      success: true,
-      message: "Profile updated successfully",
-      user,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).send({
-      success: false,
-      message: "Error updating profile",
-      error: error.message,
-    });
+    // Accept both JSON and multipart
+    const { names, shopownerName, shopName, phone, address } = req.body;
+    if (names !== undefined) updateData.names = names;
+    if (shopownerName !== undefined) updateData.shopownerName = shopownerName;
+    if (shopName !== undefined) updateData.shopName = shopName;
+    if (phone !== undefined) updateData.phone = phone;
+    if (address !== undefined) updateData.address = address;
+    const updatedUser = await userModel.findByIdAndUpdate(userId, updateData, { new: true })
+      .populate("subscription");
+    res.status(200).json({ success: true, user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Failed to update profile", error: err.message });
   }
 };
 
@@ -307,6 +294,5 @@ export {
   registerController,
   loginController,
   currentUserController,
-  updateProfileController,
-  uploadAvatarController,
+  uploadAvatarController
 };
