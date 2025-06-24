@@ -10,7 +10,7 @@ import Home from "./Pages/Home/index";
 import Navbar from "./Pages/Home/Navbar";
 import Menu from "./Pages/Home/Menu";
 import Offers from "./Pages/Home/Offers";
-import Restaurants from "./Pages/Home/Restaurants";
+import Shops from "./Pages/Home/Shops";
 import Footer from "./Components/Footer/index";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Login/Register";
@@ -47,8 +47,8 @@ function LayoutWrapper() {
     };
 
     checkDevice();
-    window.addEventListener('resize', checkDevice);
-    return () => window.removeEventListener('resize', checkDevice);
+    window.addEventListener("resize", checkDevice);
+    return () => window.removeEventListener("resize", checkDevice);
   }, []);
 
   // Define paths where you DON'T want header, navbar, footer
@@ -91,7 +91,7 @@ function LayoutWrapper() {
         <Route path="/" element={<Home />} />
         <Route path="menu" element={<Menu />} />
         <Route path="offer" element={<Offers />} />
-        <Route path="restaurant" element={<Restaurants />} />
+        <Route path="shops" element={<Shops />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="pricing" element={<Pricing />} />

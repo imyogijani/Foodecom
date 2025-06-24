@@ -15,7 +15,7 @@ import burgerKing from "../../images/Bking.png";
 import shaurma from "../../images/shaurma.png";
 import { useCart } from "../../context/CartContext";
 
-export default function Restaurants() {
+export default function Shops() {
   const [activeTab, setActiveTab] = useState("Offers");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -239,9 +239,7 @@ export default function Restaurants() {
               </span>
             </div>
           </div>
-          <div className="hero-image">
-            
-          </div>
+          <div className="hero-image"></div>
         </div>
       </div>
 
