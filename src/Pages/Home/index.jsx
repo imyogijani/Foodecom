@@ -41,7 +41,8 @@ export default function Home() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("/api/category/get-category");
+      // Use the new endpoint to get shop counts
+      const response = await axios.get("/api/category/get-category-with-shop-count");
       const categoriesData = response.data.categories || [];
       setCategories(categoriesData);
       if (categoriesData.length > 0) {
@@ -196,7 +197,7 @@ export default function Home() {
               </div>
               <div className="category-info">
                 <h4>{cat.name}</h4>
-                <p>{cat.restaurantCount || 0} Shops</p>
+                <p>{cat.shopCount || 0} Shops</p>
               </div>
             </div>
           ))}
