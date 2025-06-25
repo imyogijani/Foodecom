@@ -78,13 +78,32 @@ const SellerProfile = () => {
     }
   };
 
+  const handleCancel = () => {
+    setEditMode(false);
+    setShopImage(null);
+    // Reset form to original profile data
+    setForm({
+      names: profile.names || "",
+      shopownerName: profile.shopownerName || "",
+      shopName: profile.shopName || "",
+      email: profile.email || "",
+      phone: profile.phone || "",
+      address: profile.address || "",
+    });
+  };
+
   // Show preview of new shop image if selected
+  const BACKEND_URL = "http://localhost:8080"; // Change if needed for production
   const shopImagePreview = shopImage
     ? URL.createObjectURL(shopImage)
     : profile && profile.shopImage
-    ? profile.shopImage
+    ? profile.shopImage.startsWith("/uploads/")
+      ? `${BACKEND_URL}${profile.shopImage}`
+      : profile.shopImage
     : profile && profile.avatar
-    ? profile.avatar
+    ? profile.avatar.startsWith("/uploads/")
+      ? `${BACKEND_URL}${profile.avatar}`
+      : profile.avatar
     : "/vite.svg";
 
   if (loading) return <div>Loading...</div>;
@@ -157,85 +176,102 @@ const SellerProfile = () => {
             </div>
             <div className="seller-profile-email">{form.email}</div>
           </div>
-          <form onSubmit={handleSave} className="seller-profile-form">
-            {/* Modern styled input row */}
-            {[
-              { label: "Full Name", name: "names", disabled: !editMode },
-              {
-                label: "Shop Owner Name",
-                name: "shopownerName",
-                disabled: !editMode,
-              },
-              { label: "Shop Name", name: "shopName", disabled: !editMode },
-              { label: "Email", name: "email", disabled: true, readOnly: true },
-              { label: "Phone", name: "phone", disabled: !editMode },
-              { label: "Address", name: "address", disabled: !editMode },
-            ].map((field, idx) => (
-              <div key={field.name} className="seller-profile-row">
-                <label className="seller-profile-label">{field.label}</label>
+          {/* Show profile fields in read-only mode if not editing */}
+          {!editMode ? (
+            <>
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Full Name</label>
                 <input
                   className="seller-profile-input"
-                  name={field.name}
-                  value={form[field.name]}
-                  onChange={editMode ? handleChange : undefined}
-                  disabled={field.disabled}
-                  readOnly={field.readOnly}
+                  value={form.names}
+                  disabled
+                  readOnly
                 />
               </div>
-            ))}
-            <div className="seller-profile-row">
-              <label className="seller-profile-label">Subscription Plan</label>
-              <input
-                className="seller-profile-input"
-                value={
-                  profile.subscription && profile.subscription.planName
-                    ? profile.subscription.planName
-                    : "No Plan"
-                }
-                disabled
-                readOnly
-                style={{
-                  fontWeight: 700,
-                  color:
-                    profile.subscription && profile.subscription.planName
-                      ? "#388e3c"
-                      : "#b71c1c",
-                }}
-              />
-            </div>
-            {profile.subscription && profile.subscription.includedFeatures && (
-              <div
-                className="seller-profile-row"
-                style={{ alignItems: "start" }}
-              >
-                <label
-                  className="seller-profile-label"
-                  style={{ marginTop: 6 }}
-                >
-                  Plan Features
-                </label>
-                <ul className="seller-profile-features">
-                  {profile.subscription.includedFeatures.map((f, i) => (
-                    <li key={i}>{f}</li>
-                  ))}
-                </ul>
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Shop Owner Name</label>
+                <input
+                  className="seller-profile-input"
+                  value={form.shopownerName}
+                  disabled
+                  readOnly
+                />
               </div>
-            )}
-            <div className="seller-profile-actions">
-              {editMode ? (
-                <>
-                  <button type="submit" className="btn btn-primary">
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setEditMode(false)}
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Shop Name</label>
+                <input
+                  className="seller-profile-input"
+                  value={form.shopName}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Email</label>
+                <input
+                  className="seller-profile-input"
+                  value={form.email}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Phone</label>
+                <input
+                  className="seller-profile-input"
+                  value={form.phone}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Address</label>
+                <input
+                  className="seller-profile-input"
+                  value={form.address}
+                  disabled
+                  readOnly
+                />
+              </div>
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Subscription Plan</label>
+                <input
+                  className="seller-profile-input"
+                  value={
+                    profile.subscription && profile.subscription.planName
+                      ? profile.subscription.planName
+                      : "No Plan"
+                  }
+                  disabled
+                  readOnly
+                  style={{
+                    fontWeight: 700,
+                    color:
+                      profile.subscription && profile.subscription.planName
+                        ? "#388e3c"
+                        : "#b71c1c",
+                  }}
+                />
+              </div>
+              {profile.subscription && profile.subscription.includedFeatures && (
+                <div
+                  className="seller-profile-row"
+                  style={{ alignItems: "start" }}
+                >
+                  <label
+                    className="seller-profile-label"
+                    style={{ marginTop: 6 }}
                   >
-                    Cancel
-                  </button>
-                </>
-              ) : (
+                    Plan Features
+                  </label>
+                  <ul className="seller-profile-features">
+                    {profile.subscription.includedFeatures.map((f, i) => (
+                      <li key={i}>{f}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className="seller-profile-actions">
                 <button
                   type="button"
                   className="btn btn-primary"
@@ -243,9 +279,83 @@ const SellerProfile = () => {
                 >
                   Edit Profile
                 </button>
+              </div>
+            </>
+          ) : (
+            <form onSubmit={handleSave} className="seller-profile-form">
+              {/* Modern styled input row */}
+              {[
+                { label: "Full Name", name: "names" },
+                { label: "Shop Owner Name", name: "shopownerName" },
+                { label: "Shop Name", name: "shopName" },
+                { label: "Email", name: "email", disabled: true, readOnly: true },
+                { label: "Phone", name: "phone" },
+                { label: "Address", name: "address" },
+              ].map((field, idx) => (
+                <div key={field.name} className="seller-profile-row">
+                  <label className="seller-profile-label">{field.label}</label>
+                  <input
+                    className="seller-profile-input"
+                    name={field.name}
+                    value={form[field.name]}
+                    onChange={field.disabled ? undefined : handleChange}
+                    disabled={field.disabled}
+                    readOnly={field.readOnly}
+                  />
+                </div>
+              ))}
+              <div className="seller-profile-row">
+                <label className="seller-profile-label">Subscription Plan</label>
+                <input
+                  className="seller-profile-input"
+                  value={
+                    profile.subscription && profile.subscription.planName
+                      ? profile.subscription.planName
+                      : "No Plan"
+                  }
+                  disabled
+                  readOnly
+                  style={{
+                    fontWeight: 700,
+                    color:
+                      profile.subscription && profile.subscription.planName
+                        ? "#388e3c"
+                        : "#b71c1c",
+                  }}
+                />
+              </div>
+              {profile.subscription && profile.subscription.includedFeatures && (
+                <div
+                  className="seller-profile-row"
+                  style={{ alignItems: "start" }}
+                >
+                  <label
+                    className="seller-profile-label"
+                    style={{ marginTop: 6 }}
+                  >
+                    Plan Features
+                  </label>
+                  <ul className="seller-profile-features">
+                    {profile.subscription.includedFeatures.map((f, i) => (
+                      <li key={i}>{f}</li>
+                    ))}
+                  </ul>
+                </div>
               )}
-            </div>
-          </form>
+              <div className="seller-profile-actions">
+                <button type="submit" className="btn btn-primary">
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </div>
     </div>

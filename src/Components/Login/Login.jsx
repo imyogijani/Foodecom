@@ -39,10 +39,10 @@ const Login = () => {
   }, []);
 
   const redirectBasedOnRole = (role) => {
-    if (role.toLowerCase() === "admin") {
-      navigate("/");
-    } else if (role.toLowerCase() === "shopowner") {
-      navigate("/");
+    if (role && role.toLowerCase() === "admin") {
+      navigate("/admin/dashboard");
+    } else if (role && role.toLowerCase() === "shopowner") {
+      navigate("/seller/dashboard");
     } else {
       navigate("/");
     }
