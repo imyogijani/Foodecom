@@ -13,7 +13,8 @@ const __dirname = path.dirname(__filename);
 //registration
 const registerController = async (req, res) => {
   try {
-    const { email, password, role, subscriptionId, shopName, ...rest } = req.body;
+    const { email, password, role, subscriptionId, shopName, ...rest } =
+      req.body;
 
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -163,11 +164,17 @@ export const updateProfileController = async (req, res) => {
     if (shopName !== undefined) updateData.shopName = shopName;
     if (phone !== undefined) updateData.phone = phone;
     if (address !== undefined) updateData.address = address;
-    const updatedUser = await userModel.findByIdAndUpdate(userId, updateData, { new: true })
+    const updatedUser = await userModel
+      .findByIdAndUpdate(userId, updateData, { new: true })
       .populate("subscription");
     res.status(200).json({ success: true, user: updatedUser });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Failed to update profile", error: err.message });
+    console.error("Update profile error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+      error: err.message,
+    });
   }
 };
 
@@ -280,13 +287,19 @@ export const clearNotification = async (req, res) => {
   try {
     const user = await userModel.findById(req.userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     user.notification = null;
     await user.save();
     res.json({ success: true, message: "Notification cleared" });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error clearing notification", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error clearing notification",
+      error: error.message,
+    });
   }
 };
 
@@ -294,5 +307,5 @@ export {
   registerController,
   loginController,
   currentUserController,
-  uploadAvatarController
+  uploadAvatarController,
 };

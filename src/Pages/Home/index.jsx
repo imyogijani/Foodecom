@@ -42,7 +42,9 @@ export default function Home() {
   const fetchCategories = async () => {
     try {
       // Use the new endpoint to get shop counts
-      const response = await axios.get("/api/category/get-category-with-shop-count");
+      const response = await axios.get(
+        "/api/category/get-category-with-shop-count"
+      );
       const categoriesData = response.data.categories || [];
       setCategories(categoriesData);
       if (categoriesData.length > 0) {
@@ -140,9 +142,9 @@ export default function Home() {
                   <img
                     src={
                       product.image
-                        ? (product.image.startsWith("/uploads")
-                            ? `http://localhost:8080${product.image}`
-                            : product.image)
+                        ? product.image.startsWith("/uploads")
+                          ? `http://localhost:8080${product.image}`
+                          : product.image
                         : "placeholder.jpg"
                     }
                     alt={product.name}
@@ -189,9 +191,16 @@ export default function Home() {
             <div className="category-card" key={cat._id}>
               <div className="category-image-wrapper">
                 <img
-                  src={cat.image ? `http://localhost:8080${cat.image}` : "/vite.svg"}
+                  src={
+                    cat.image
+                      ? `http://localhost:8080${cat.image}`
+                      : "/vite.svg"
+                  }
                   alt={cat.name}
-                  onError={e => { e.target.onerror = null; e.target.src = "/vite.svg"; }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/vite.svg";
+                  }}
                   className="category-image"
                 />
               </div>

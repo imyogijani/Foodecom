@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from '../models/userModel.js';
+import User from "../models/userModel.js";
 
 export const authenticateToken = async (req, res, next) => {
   try {
@@ -38,7 +38,7 @@ export const authenticateToken = async (req, res, next) => {
 export const authorizeAdmin = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
-    
+
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -46,7 +46,7 @@ export const authorizeAdmin = async (req, res, next) => {
       });
     }
 
-    if (user.role.toLowerCase() !== 'admin') {
+    if (user.role.toLowerCase() !== "admin") {
       return res.status(403).send({
         success: false,
         message: "Access denied. Admin only.",
