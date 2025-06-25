@@ -17,7 +17,7 @@ const navLinks = [
   { name: "Home", path: "/" },
   { name: "Browse Menu", path: "/menu" },
   { name: "Special Offers", path: "/Offer" },
-  { name: "Shops", path: "/Shops" },
+  { name: "Shops", path: "/shops" },
 ];
 
 const Navbar = () => {

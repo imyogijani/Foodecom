@@ -145,7 +145,10 @@ export const getAllShops = async (req, res) => {
 // Get all users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().populate('subscription').select("-password").sort({ createdAt: -1 });
+    const users = await User.find()
+      .populate("subscription")
+      .select("-password")
+      .sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -156,10 +159,13 @@ export const getAllUsers = async (req, res) => {
         role: user.role.toLowerCase(),
         status: user.status || "active",
         createdAt: user.createdAt,
-        subscription: user.role === "shopowner" && user.subscription ? {
-          planName: user.subscription.planName,
-          _id: user.subscription._id
-        } : undefined
+        subscription:
+          user.role === "shopowner" && user.subscription
+            ? {
+                planName: user.subscription.planName,
+                _id: user.subscription._id,
+              }
+            : undefined,
       })),
     });
   } catch (error) {
@@ -203,7 +209,9 @@ export const updateUser = async (req, res) => {
 
     const user = await User.findById(id);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     if (role) {
@@ -217,7 +225,11 @@ export const updateUser = async (req, res) => {
 
     res.json({ success: true, message: "User updated successfully", user });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error updating user", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error updating user",
+      error: error.message,
+    });
   }
 };
 
@@ -246,7 +258,6 @@ export const deleteProduct = async (req, res) => {
 };
 
 // Update user role
-
 
 // Update shopowner subscription plan and features
 export const updateShopownerSubscription = async (req, res) => {
@@ -290,10 +301,16 @@ export const getShopownerDetails = async (req, res) => {
     const { id } = req.params;
     const user = await User.findById(id).populate("subscription");
     if (!user || user.role !== "shopowner") {
-      return res.status(404).json({ success: false, message: "Shopowner not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Shopowner not found" });
     }
     res.json({ success: true, user });
   } catch (err) {
-    res.status(500).json({ success: false, message: "Failed to fetch shopowner details", error: err.message });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch shopowner details",
+      error: err.message,
+    });
   }
 };

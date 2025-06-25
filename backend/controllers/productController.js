@@ -1,18 +1,23 @@
 import path from "path";
- import Product from "../models/productModel.js";
+import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-
 export const addProduct = async (req, res) => {
   try {
-    const { name, description, price, discount, category, subcategory, stock, status } = req.body;
-
-
+    const {
+      name,
+      description,
+      price,
+      discount,
+      category,
+      subcategory,
+      stock,
+      status,
+    } = req.body;
 
     // Validate subcategory if provided
     let subcategoryDoc = null;
@@ -45,19 +50,25 @@ export const addProduct = async (req, res) => {
     }
 
     // --- Dynamic Subscription Feature Enforcement ---
-    const user = await (await import("../models/userModel.js")).default.findById(req.userId).populate("subscription");
+    const user = await (await import("../models/userModel.js")).default
+      .findById(req.userId)
+      .populate("subscription");
     if (user && user.role === "shopowner" && user.subscription) {
       // Parse features from user.subscriptionFeatures (array of strings)
-      const features = Array.isArray(user.subscriptionFeatures) ? user.subscriptionFeatures : [];
+      const features = Array.isArray(user.subscriptionFeatures)
+        ? user.subscriptionFeatures
+        : [];
       // Product limit enforcement
-      const productLimitFeature = features.find(f => f.startsWith("productLimit:"));
+      const productLimitFeature = features.find((f) =>
+        f.startsWith("productLimit:")
+      );
       if (productLimitFeature) {
         const limit = parseInt(productLimitFeature.split(":")[1], 10);
         const productCount = await Product.countDocuments({ seller: user._id });
         if (!isNaN(limit) && productCount >= limit) {
           return res.status(403).json({
             success: false,
-            message: `Your plan allows only ${limit} products. Upgrade your plan to add more.`
+            message: `Your plan allows only ${limit} products. Upgrade your plan to add more.`,
           });
         }
       }
@@ -102,8 +113,8 @@ export const getSellerProducts = async (req, res) => {
     const { populateCategory } = req.query;
     let query = Product.find({ seller: req.userId });
 
-    if (populateCategory === 'true') {
-      query = query.populate('category');
+    if (populateCategory === "true") {
+      query = query.populate("category");
     }
 
     const products = await query.sort({
@@ -148,14 +159,14 @@ export const updateProduct = async (req, res) => {
         });
       }
       updateData.subcategory = subcategory;
-    } else if (subcategory === '') {
+    } else if (subcategory === "") {
       // If subcategory is explicitly set to empty, remove it from the product
       updateData.subcategory = undefined;
     }
 
-    if (discount !== undefined && discount !== null && discount !== '') {
+    if (discount !== undefined && discount !== null && discount !== "") {
       updateData.discount = Number(discount);
-    } else if (discount === '') {
+    } else if (discount === "") {
       updateData.discount = undefined;
     }
     const product = await Product.findOneAndUpdate(
@@ -189,12 +200,12 @@ export const getAllProducts = async (req, res) => {
     const { populateCategory, populateSubcategory } = req.query;
     let query = Product.find({});
 
-    if (populateCategory === 'true') {
-      query = query.populate('category');
+    if (populateCategory === "true") {
+      query = query.populate("category");
     }
 
-    if (populateSubcategory === 'true') {
-      query = query.populate('subcategory');
+    if (populateSubcategory === "true") {
+      query = query.populate("subcategory");
     }
 
     const products = await query.sort({
@@ -217,20 +228,20 @@ export const getAllProducts = async (req, res) => {
 export const deleteAllProducts = async (req, res) => {
   try {
     // Ensure only admin can delete all products
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Access denied. Admins only.' });
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
     }
 
     await Product.deleteMany({});
     res.status(200).json({
       success: true,
-      message: 'All products deleted successfully',
+      message: "All products deleted successfully",
     });
   } catch (error) {
-    console.error('Error deleting all products:', error);
+    console.error("Error deleting all products:", error);
     res.status(500).json({
       success: false,
-      message: 'Error deleting all products',
+      message: "Error deleting all products",
       error: error.message,
     });
   }
