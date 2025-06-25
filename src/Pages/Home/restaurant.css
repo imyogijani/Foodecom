@@ -1281,14 +1281,14 @@
 
 /* Compact Menu Cards - Universal Design */
 .compact-menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
-  justify-items: center;
-  align-items: start;
+  justify-content: flex-start;
+  align-items: flex-start;
   width: 100%;
   padding: 2rem 0;
-  background: #f9f9fb;
+  /* background: #f9f9fb; */
   border-radius: 18px;
 }
 
@@ -1303,7 +1303,7 @@
   background: #fff;
   box-shadow: 0 2px 12px rgba(0,0,0,0.07);
   border: 1.5px solid #e6e6ef;
-  transition: box-shadow 0.3s, transform 0.3s, border 0.3s;
+  transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1), border 0.3s ease, background 0.3s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -1342,25 +1342,32 @@
 }
 
 .compact-menu-card .item-title {
+  font-family: 'Inter', 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif;
   font-size: 1.18rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1a1a2e;
   margin: 0.7rem 0 0.2rem 0;
   text-align: center;
   width: 100%;
   background: none;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   line-height: 1.25;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 .compact-menu-card .item-hover-details {
-  display: none;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1), max-height 0.5s cubic-bezier(0.4,0,0.2,1), padding 0.5s cubic-bezier(0.4,0,0.2,1);
   width: 100%;
   background: #f7f7f7;
   color: #222;
   border-radius: 0 0 16px 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 1.1rem 0.7rem 1.2rem 0.7rem;
+  padding: 0 0.7rem;
   text-align: center;
   position: static;
   z-index: 1;
@@ -1369,7 +1376,11 @@
 }
 
 .compact-menu-card:hover .item-hover-details {
-  display: block;
+  opacity: 1;
+  max-height: 200px;
+  transform: translateY(0);
+  pointer-events: auto;
+  padding: 1.1rem 0.7rem 1.2rem 0.7rem;
 }
 
 .compact-menu-card .item-hover-details .item-description {
@@ -1804,4 +1815,12 @@
   .restaurant-name {
     font-size: 0.7rem;
   }
+}
+
+.item-title-wrapper {
+  height: 3.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
