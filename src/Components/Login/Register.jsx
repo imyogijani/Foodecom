@@ -182,28 +182,6 @@ const Register = () => {
                   />
                 </div>
               </div>
-              {loadingSubscriptions ? (
-                <p>Loading subscription plans...</p>
-              ) : (
-                <div className="form-group">
-                  <div className="input-group">
-                    <select
-                      name="subscriptionId"
-                      value={formData.subscriptionId}
-                      onChange={handleChange}
-                      required={formData.role === "shopowner"}
-                      className="form-input"
-                    >
-                      <option value="">Select a Subscription Plan</option>
-                      {subscriptions.map((plan) => (
-                        <option key={plan._id} value={plan._id}>
-                          {plan.planName} - ₹{plan.monthlyPrice} / month
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              )}
             </>
           )}
 
