@@ -40,9 +40,9 @@ const Login = () => {
 
   const redirectBasedOnRole = (role) => {
     if (role.toLowerCase() === "admin") {
-      navigate("/admin/dashboard");
+      navigate("/");
     } else if (role.toLowerCase() === "shopowner") {
-      navigate("/seller/dashboard");
+      navigate("/");
     } else {
       navigate("/");
     }
