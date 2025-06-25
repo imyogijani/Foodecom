@@ -1,19 +1,64 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
-import {
-  restaurantInfo,
-  menuCategories,
-  getItemsByCategory,
-  getAllMenuItems,
-} from "../../data/menuData";
 import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
+
+// Minimal E-mall sample data
+const mallInfo = {
+  name: "E-Mall World Shopping Center",
+  description: "Your one-stop destination for all shopping needs",
+  rating: 4.5,
+  reviews: 2500,
+  minOrder: "$0.00",
+  deliveryTime: "1-3 Business Days",
+  phone: "+1-800-EMALL",
+  website: "https://e-mallworld.com",
+  address: "Global Online Shopping Mall",
+};
+
+const mallCategories = [
+  "Offers",
+  "Electronics",
+  "Clothing",
+  "Home Appliances",
+  "Books",
+  "Toys",
+];
+
+const mallItemsByCategory = {
+  Offers: [
+    { id: "offer-1", title: "10% Off Electronics", image: "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg?auto=compress&w=400", discount: "-10%", store: "ElectroStore", badge: "NEW" },
+    { id: "offer-2", title: "Buy 1 Get 1 Free Clothing", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", discount: "B1G1", store: "FashionHub", badge: "HOT" },
+  ],
+  Electronics: [
+    { id: "el-1", title: "Smartphone X", desc: "Latest smartphone with advanced features", image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&w=400", price: "$499", isPopular: true },
+    { id: "el-2", title: "Wireless Headphones", desc: "Noise-cancelling over-ear headphones", image: "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&w=400", price: "$99" },
+  ],
+  Clothing: [
+    { id: "cl-1", title: "Men's T-Shirt", desc: "100% cotton, various sizes", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", price: "$19" },
+    { id: "cl-2", title: "Women's Dress", desc: "Elegant evening dress", image: "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&w=400", price: "$49" },
+  ],
+  "Home Appliances": [
+    { id: "ha-1", title: "Blender Pro", desc: "Multi-speed kitchen blender", image: "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg?auto=compress&w=400", price: "$59" },
+  ],
+  Books: [
+    { id: "bk-1", title: "Bestseller Novel", desc: "A thrilling mystery novel", image: "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&w=400", price: "$12" },
+  ],
+  Toys: [
+    { id: "ty-1", title: "Building Blocks Set", desc: "Creative play for kids", image: "https://images.pexels.com/photos/3661350/pexels-photo-3661350.jpeg?auto=compress&w=400", price: "$25" },
+  ],
+};
+
+const getItemsByCategory = (category) => mallItemsByCategory[category] || [];
+const getAllMallItems = () => Object.values(mallItemsByCategory).flat();
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState("Pizzas");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   // Simulate loading state
   useEffect(() => {
@@ -49,7 +94,7 @@ export default function Menu() {
             <div className="discount-badge">{offer.discount}</div>
             {offer.badge && <div className="special-badge">{offer.badge}</div>}
             <div className="offer-info">
-              <span>{offer.restaurant}</span>
+              <span>{offer.store}</span>
               <h4>{offer.title}</h4>
               <button className="plus-icon" aria-label="Add to cart">
                 +
@@ -61,107 +106,25 @@ export default function Menu() {
     );
   };
 
-  const renderChiliRating = (rating) => {
-    const chilis = Math.min(rating || 3, 5);
-    return Array.from({ length: 5 }, (_, index) => (
-      <span
-        key={index}
-        className={`chili ${index < chilis ? "filled" : "empty"}`}
-      >
-        🌶️
-      </span>
-    ));
-  };
-
   const renderMenuItems = (items) => {
     if (!items) return null;
     return (
       <div className="compact-menu-grid">
         {items.map((item) => (
-          <div className="compact-menu-card" key={item.id}>
+          <div
+            className="compact-menu-card"
+            key={item.id}
+            onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
+            style={{ cursor: "pointer" }}
+          >
             <div className="card-content">
-              <div className="item-info">
-                <h4 className="item-title">{item.title}</h4>
-                <div className="chili-rating">
-                  {renderChiliRating(item.spiceLevel || 3)}
-                </div>
-                <p className="item-description">
-                  {item.desc && item.desc.length > 60
-                    ? item.desc.substring(0, 60) + "..."
-                    : item.desc}
-                </p>
-
-                {item.sizes ? (
-                  <div className="size-row">
-                    {item.sizes.slice(0, 3).map((size, index) => (
-                      <button
-                        key={index}
-                        className={`compact-size-btn ${size.name.toLowerCase()}`}
-                        onClick={() =>
-                          addToCart({
-                            id: `${item.id}-${size.name}`,
-                            name: `${item.title} (${size.name})`,
-                            price: parseFloat(size.price.replace("₹", "")),
-                            image: item.image,
-                          })
-                        }
-                      >
-                        {size.name}{" "}
-                        <span className="size-price">{size.price}</span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="simple-price">
-                    <span className="price-tag">{item.price}</span>
-                  </div>
-                )}
-
-                {item.xlOption && (
-                  <div className="xl-option">
-                    <button
-                      className="xl-btn"
-                      onClick={() =>
-                        addToCart({
-                          id: `${item.id}-XL`,
-                          name: `${item.title} (XL)`,
-                          price: parseFloat(
-                            item.xlOption.price.replace("₹", "")
-                          ),
-                          image: item.image,
-                        })
-                      }
-                    >
-                      {item.xlOption.name}{" "}
-                      <span className="xl-price">{item.xlOption.price}</span>
-                    </button>
-                  </div>
-                )}
+              <div className="circular-image">
+                <img src={item.image} alt={item.title} loading="lazy" />
               </div>
-
-              <div className="item-image-container">
-                <div className="circular-image">
-                  <img src={item.image} alt={item.title} loading="lazy" />
-                </div>
-                {!item.sizes && (
-                  <button
-                    className="add-btn"
-                    aria-label="Add to cart"
-                    onClick={() =>
-                      addToCart({
-                        id: item.id,
-                        name: item.title,
-                        price: parseFloat(
-                          (typeof item.price === 'string' ? item.price : '0')
-                            .replace(/[₹INR\s]/g, "")
-                        ),
-                        image: item.image,
-                      })
-                    }
-                  >
-                    +
-                  </button>
-                )}
+              <h4 className="item-title">{item.title}</h4>
+              <div className="item-hover-details">
+                <div className="item-description">{item.desc}</div>
+                <div className="item-price">{item.price}</div>
               </div>
             </div>
           </div>
@@ -195,8 +158,8 @@ export default function Menu() {
     );
   };
 
-  const menuCats = menuCategories || [];
-  const allMenuItems = getAllMenuItems() || [];
+  const menuCats = mallCategories || [];
+  const allMenuItems = getAllMallItems() || [];
 
   return (
     <div className="restaurant-page">
@@ -204,7 +167,7 @@ export default function Menu() {
       <div className="restaurant-hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>{restaurantInfo?.name}</h1>
+            <h1>{mallInfo?.name}</h1>
             <div className="hero-tags">
               <span className="tag">Full Menu Available</span>
               <span className="tag">All Categories</span>
@@ -219,7 +182,7 @@ export default function Menu() {
       {/* Menu Section */}
       <div className="restaurant-menu">
         <div className="menu-header">
-          <h2>Complete Menu from {restaurantInfo?.name}</h2>
+          <h2>Complete Menu from {mallInfo?.name}</h2>
           <div className="search-bar">
             <input
               type="text"
@@ -276,16 +239,16 @@ export default function Menu() {
             <div className="info-item">
               <span className="label">Rating:</span>
               <span className="value">
-                ⭐ {restaurantInfo?.rating} ({restaurantInfo?.reviews} reviews)
+                ⭐ {mallInfo?.rating} ({mallInfo?.reviews} reviews)
               </span>
             </div>
             <div className="info-item">
               <span className="label">Minimum Order:</span>
-              <span className="value">{restaurantInfo?.minOrder}</span>
+              <span className="value">{mallInfo?.minOrder}</span>
             </div>
             <div className="info-item">
               <span className="label">Delivery Time:</span>
-              <span className="value">{restaurantInfo?.deliveryTime}</span>
+              <span className="value">{mallInfo?.deliveryTime}</span>
             </div>
           </div>
 
@@ -293,11 +256,11 @@ export default function Menu() {
             <h3>📞 Contact</h3>
             <div className="info-item">
               <span className="label">Phone:</span>
-              <span className="value">{restaurantInfo?.phone}</span>
+              <span className="value">{mallInfo?.phone}</span>
             </div>
             <div className="info-item">
               <span className="label">Website:</span>
-              <span className="value">{restaurantInfo?.website}</span>
+              <span className="value">{mallInfo?.website}</span>
             </div>
             <div className="info-item">
               <span className="label">Location:</span>

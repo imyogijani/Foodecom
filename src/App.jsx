@@ -34,6 +34,7 @@ import UserProfile from "./Components/UserProfile/UserProfile";
 import { CartProvider } from "./context/CartContext";
 import CartFloatingButton from "./Components/CartFloatingButton";
 import SellerProfile from "./Pages/Seller/SellerProfile";
+import ProductDetail from "./Pages/Home/ProductDetail";
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
@@ -94,6 +95,7 @@ function LayoutWrapper() {
         <Route path="menu" element={<Menu />} />
         <Route path="offer" element={<Offers />} />
         <Route path="shops" element={<Shops />} />
+        <Route path="product/:id" element={<ProductDetail />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="pricing" element={<Pricing />} />

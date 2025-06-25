@@ -1,12 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
-import {
-  restaurantInfo,
-  menuCategories,
-  getItemsByCategory,
-  reviews,
-} from "../../data/menuData";
 import McD from "../../images/McD.png";
 import papajohn from "../../images/Papajohns.png";
 import kfc from "../../images/KFC.png";
@@ -14,12 +8,73 @@ import texasChicken from "../../images/Tex.png";
 import burgerKing from "../../images/Bking.png";
 import shaurma from "../../images/shaurma.png";
 import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
+
+// Minimal E-mall sample data
+const mallInfo = {
+  name: "E-Mall World Shopping Center",
+  minOrder: "$0.00",
+  deliveryTime: "1-3 Business Days",
+  phone: "+1-800-EMALL",
+  website: "https://e-mallworld.com",
+  address: "Global Online Shopping Mall",
+  operationalHours: {
+    monday: "12:00 AM–3:00 AM, 8:00 AM–3:00 AM",
+    tuesday: "8:00 AM–3:00 AM",
+    wednesday: "8:00 AM–3:00 AM",
+    thursday: "8:00 AM–3:00 AM",
+    friday: "8:00 AM–3:00 AM",
+    saturday: "8:00 AM–3:00 AM",
+    sunday: "8:00 AM–12:00 AM",
+  },
+};
+
+const mallCategories = [
+  "Offers",
+  "Electronics",
+  "Clothing",
+  "Home Appliances",
+  "Books",
+  "Toys",
+];
+
+const mallItemsByCategory = {
+  Offers: [
+    { id: "offer-1", title: "10% Off Electronics", image: "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg?auto=compress&w=400", discount: "-10%", store: "ElectroStore", badge: "NEW" },
+    { id: "offer-2", title: "Buy 1 Get 1 Free Clothing", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", discount: "B1G1", store: "FashionHub", badge: "HOT" },
+  ],
+  Electronics: [
+    { id: "el-1", title: "Smartphone X", desc: "Latest smartphone with advanced features", image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&w=400", price: "$499", isPopular: true },
+    { id: "el-2", title: "Wireless Headphones", desc: "Noise-cancelling over-ear headphones", image: "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&w=400", price: "$99" },
+  ],
+  Clothing: [
+    { id: "cl-1", title: "Men's T-Shirt", desc: "100% cotton, various sizes", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", price: "$19" },
+    { id: "cl-2", title: "Women's Dress", desc: "Elegant evening dress", image: "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&w=400", price: "$49" },
+  ],
+  "Home Appliances": [
+    { id: "ha-1", title: "Blender Pro", desc: "Multi-speed kitchen blender", image: "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg?auto=compress&w=400", price: "$59" },
+  ],
+  Books: [
+    { id: "bk-1", title: "Bestseller Novel", desc: "A thrilling mystery novel", image: "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&w=400", price: "$12" },
+  ],
+  Toys: [
+    { id: "ty-1", title: "Building Blocks Set", desc: "Creative play for kids", image: "https://images.pexels.com/photos/3661350/pexels-photo-3661350.jpeg?auto=compress&w=400", price: "$25" },
+  ],
+};
+
+const getItemsByCategory = (category) => mallItemsByCategory[category] || [];
+
+const reviews = [
+  { id: 1, name: "Alice", rating: 5, date: "2024-06-01", verified: true, text: "Great selection and fast delivery!" },
+  { id: 2, name: "Bob", rating: 4, date: "2024-06-02", verified: false, text: "Good prices on electronics." },
+];
 
 export default function Shops() {
   const [activeTab, setActiveTab] = useState("Offers");
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { addToCart, removeFromCart, cartItems } = useCart();
+  const navigate = useNavigate();
 
   const similarRestaurants = [
     { name: "McDonald's London", img: McD },
@@ -55,7 +110,7 @@ export default function Shops() {
             <div className="discount-badge">{offer.discount}</div>
             {offer.badge && <div className="special-badge">{offer.badge}</div>}
             <div className="offer-info">
-              <span>{offer.restaurant}</span>
+              <span>{offer.store}</span>
               <h4>{offer.title}</h4>
               <button
                 className="plus-icon"
@@ -80,107 +135,24 @@ export default function Shops() {
     );
   };
 
-  const renderChiliRating = (rating) => {
-    const chilis = Math.min(rating || 3, 5);
-    return Array.from({ length: 5 }, (_, index) => (
-      <span
-        key={index}
-        className={`chili ${index < chilis ? "filled" : "empty"}`}
-      >
-        🌶️
-      </span>
-    ));
-  };
-
   const renderMenuItems = (items) => {
     return (
       <div className="compact-menu-grid">
         {items.map((item) => (
-          <div className="compact-menu-card" key={item.id}>
+          <div
+            className="compact-menu-card"
+            key={item.id}
+            onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
+            style={{ cursor: "pointer" }}
+          >
             <div className="card-content">
-              <div className="item-info">
-                <h4 className="item-title">{item.title}</h4>
-                <div className="chili-rating">
-                  {renderChiliRating(item.spiceLevel || 3)}
-                </div>
-                <p className="item-description">
-                  {item.desc && item.desc.length > 60
-                    ? item.desc.substring(0, 60) + "..."
-                    : item.desc}
-                </p>
-
-                {item.sizes ? (
-                  <div className="size-row">
-                    {item.sizes.slice(0, 3).map((size, index) => (
-                      <button
-                        key={index}
-                        className={`compact-size-btn ${size.name.toLowerCase()}`}
-                        onClick={() =>
-                          addToCart({
-                            id: `${item.id}-${size.name}`,
-                            name: `${item.title} (${size.name})`,
-                            price: parseFloat(size.price.replace("₹", "")),
-                            image: item.image,
-                          })
-                        }
-                      >
-                        {size.name}{" "}
-                        <span className="size-price">{size.price}</span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="simple-price">
-                    <span className="price-tag">{item.price}</span>
-                  </div>
-                )}
-
-                {item.xlOption && (
-                  <div className="xl-option">
-                    <button
-                      className="xl-btn"
-                      onClick={() =>
-                        addToCart({
-                          id: `${item.id}-XL`,
-                          name: `${item.title} (XL)`,
-                          price: parseFloat(
-                            item.xlOption.price.replace("₹", "")
-                          ),
-                          image: item.image,
-                        })
-                      }
-                    >
-                      {item.xlOption.name}{" "}
-                      <span className="xl-price">{item.xlOption.price}</span>
-                    </button>
-                  </div>
-                )}
+              <div className="circular-image">
+                <img src={item.image} alt={item.title} loading="lazy" />
               </div>
-
-              <div className="item-image-container">
-                <div className="circular-image">
-                  <img src={item.image} alt={item.title} loading="lazy" />
-                </div>
-                {!item.sizes && (
-                  <button
-                    className="add-btn"
-                    onClick={() =>
-                      addToCart({
-                        id: item.id,
-                        name: item.title,
-                        price: parseFloat(
-                          (item.price || "0")
-                            .toString()
-                            .replace(/[₹INR\s]/g, "")
-                        ),
-                        image: item.image,
-                      })
-                    }
-                    aria-label="Add to cart"
-                  >
-                    +
-                  </button>
-                )}
+              <h4 className="item-title">{item.title}</h4>
+              <div className="item-hover-details">
+                <div className="item-description">{item.desc}</div>
+                <div className="item-price">{item.price}</div>
               </div>
             </div>
           </div>
@@ -229,13 +201,13 @@ export default function Shops() {
       <div className="restaurant-hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>{restaurantInfo.name}</h1>
+            <h1>{mallInfo.name}</h1>
             <div className="hero-tags">
               <span className="tag">
-                Minimum Order: {restaurantInfo.minOrder}
+                Minimum Order: {mallInfo.minOrder}
               </span>
               <span className="tag">
-                Delivery in {restaurantInfo.deliveryTime}
+                Delivery in {mallInfo.deliveryTime}
               </span>
             </div>
           </div>
@@ -246,7 +218,7 @@ export default function Shops() {
       {/* Menu Section */}
       <div className="restaurant-menu">
         <div className="menu-header">
-          <h2>All Offers from {restaurantInfo.name}</h2>
+          <h2>All Offers from {mallInfo.name}</h2>
           <div className="search-bar">
             <input
               type="text"
@@ -259,7 +231,7 @@ export default function Shops() {
         </div>
 
         <div className="menu-tabs">
-          {menuCategories.map((cat) => (
+          {mallCategories.map((cat) => (
             <button
               key={cat}
               className={`menu-tab ${activeTab === cat ? "active" : ""}`}
@@ -281,43 +253,43 @@ export default function Shops() {
             <div className="info-item">
               <span className="label">Monday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.monday}
+                {mallInfo.operationalHours.monday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Tuesday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.tuesday}
+                {mallInfo.operationalHours.tuesday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Wednesday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.wednesday}
+                {mallInfo.operationalHours.wednesday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Thursday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.thursday}
+                {mallInfo.operationalHours.thursday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Friday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.friday}
+                {mallInfo.operationalHours.friday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Saturday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.saturday}
+                {mallInfo.operationalHours.saturday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Sunday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.sunday}
+                {mallInfo.operationalHours.sunday}
               </span>
             </div>
             <div className="info-item highlight">
@@ -337,11 +309,11 @@ export default function Shops() {
             </div>
             <div className="info-item">
               <span className="label">📱 Phone number:</span>
-              <span className="value">{restaurantInfo.phone}</span>
+              <span className="value">{mallInfo.phone}</span>
             </div>
             <div className="info-item">
               <span className="label">🌐 Website:</span>
-              <span className="value">{restaurantInfo.website}</span>
+              <span className="value">{mallInfo.website}</span>
             </div>
           </div>
 
@@ -350,43 +322,43 @@ export default function Shops() {
             <div className="info-item">
               <span className="label">Monday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.monday}
+                {mallInfo.operationalHours.monday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Tuesday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.tuesday}
+                {mallInfo.operationalHours.tuesday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Wednesday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.wednesday}
+                {mallInfo.operationalHours.wednesday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Thursday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.thursday}
+                {mallInfo.operationalHours.thursday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Friday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.friday}
+                {mallInfo.operationalHours.friday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Saturday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.saturday}
+                {mallInfo.operationalHours.saturday}
               </span>
             </div>
             <div className="info-item">
               <span className="label">Sunday:</span>
               <span className="value">
-                {restaurantInfo.operationalHours.sunday}
+                {mallInfo.operationalHours.sunday}
               </span>
             </div>
           </div>
@@ -398,13 +370,13 @@ export default function Shops() {
         <div className="map-container">
           <div className="map-info">
             <div className="restaurant-location-card">
-              <h3>📍 {restaurantInfo.name}</h3>
+              <h3>📍 {mallInfo.name}</h3>
               <p>South London</p>
-              <p>{restaurantInfo.address}</p>
+              <p>{mallInfo.address}</p>
               <div className="location-tags">
-                <span className="tag">📞 Phone: {restaurantInfo.phone}</span>
+                <span className="tag">📞 Phone: {mallInfo.phone}</span>
                 <span className="tag">
-                  🌐 Website: {restaurantInfo.website}
+                  🌐 Website: {mallInfo.website}
                 </span>
               </div>
             </div>
@@ -412,7 +384,7 @@ export default function Shops() {
           <div className="map-placeholder">
             <div className="map-overlay">
               <p>🗺️ Interactive Map</p>
-              <p>{restaurantInfo.name} Location</p>
+              <p>{mallInfo.name} Location</p>
             </div>
           </div>
         </div>
@@ -449,7 +421,7 @@ export default function Shops() {
                   {renderStars(review.rating)}
                 </div>
               </div>
-              <p className="review-comment">{review.comment}</p>
+              <p className="review-comment">{review.text}</p>
               <div className="review-actions">
                 <button className="helpful-btn">
                   👍 Helpful ({review.helpful})
@@ -459,13 +431,13 @@ export default function Shops() {
           ))}
         </div>
         <div className="overall-rating">
-          <span className="rating-number-large">{restaurantInfo.rating}</span>
+          <span className="rating-number-large">{mallInfo.rating}</span>
           <div className="rating-details">
             <div className="rating-stars-large">
-              {renderStars(Math.floor(restaurantInfo.rating))}
+              {renderStars(Math.floor(mallInfo.rating))}
             </div>
             <span className="rating-count">
-              {restaurantInfo.reviews.toLocaleString()} reviews
+              {mallInfo.reviews.toLocaleString()} reviews
             </span>
           </div>
         </div>

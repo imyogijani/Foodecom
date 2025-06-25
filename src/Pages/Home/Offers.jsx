@@ -1,23 +1,36 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import "./restaurant.css";
-import {
-  restaurantInfo,
-  offerItems,
-  getAllMenuItems,
-} from "../../data/menuData";
 import { useCart } from "../../context/CartContext";
+import { useNavigate } from "react-router-dom";
+
+// Minimal E-mall sample data
+const mallInfo = {
+  name: "E-Mall World Shopping Center",
+  minOrder: "$0.00",
+};
+
+const offerItems = [
+  { id: "offer-1", title: "10% Off Electronics", image: "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg?auto=compress&w=400", discount: "-10%", store: "ElectroStore", badge: "NEW", price: "$450", originalPrice: "$500" },
+  { id: "offer-2", title: "Buy 1 Get 1 Free Clothing", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", discount: "B1G1", store: "FashionHub", badge: "HOT", price: "$19", originalPrice: "$38" },
+];
+
+const getAllMallItems = () => [
+  { id: "el-1", title: "Smartphone X", desc: "Latest smartphone", image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&w=400", price: "$499", isPopular: true, spiceLevel: 0 },
+  { id: "cl-1", title: "Men's T-Shirt", desc: "100% cotton", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", price: "$19", isPopular: true, spiceLevel: 0 },
+];
 
 export default function Offers() {
   const [searchQuery, setSearchQuery] = useState("");
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const filterOffers = (offers) => {
     if (!searchQuery) return offers;
     return offers.filter(
       (offer) =>
         offer.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        offer.restaurant.toLowerCase().includes(searchQuery.toLowerCase())
+        offer.store.toLowerCase().includes(searchQuery.toLowerCase())
     );
   };
 
@@ -30,9 +43,9 @@ export default function Offers() {
   };
 
   // Get special offer items from all menu items
-  const specialOfferItems = getAllMenuItems()
+  const specialOfferItems = getAllMallItems()
     .filter(
-      (item) => item.badge === "SPECIAL" || item.promoText || item.isPopular
+      (item) => item.isPopular
     )
     .slice(0, 6);
 
@@ -42,7 +55,7 @@ export default function Offers() {
       <div className="restaurant-hero">
         <div className="hero-content">
           <div className="hero-text">
-            <h1>{restaurantInfo.name}</h1>
+            <h1>{mallInfo.name}</h1>
             <div className="hero-tags">
               <span className="tag">Limited Time Offers</span>
               <span className="tag">Great Savings</span>
@@ -56,7 +69,7 @@ export default function Offers() {
       {/* Offers Section */}
       <div className="restaurant-menu">
         <div className="menu-header">
-          <h2>All Special Offers from {restaurantInfo.name}</h2>
+          <h2>All Special Offers from {mallInfo.name}</h2>
           <div className="search-bar">
             <input
               type="text"
@@ -81,7 +94,7 @@ export default function Offers() {
                     <div className="special-badge">{offer.badge}</div>
                   )}
                   <div className="offer-info">
-                    <span>{offer.restaurant}</span>
+                    <span>{offer.store}</span>
                     <h4>{offer.title}</h4>
                     <div className="offer-pricing">
                       <span className="offer-price">{offer.price}</span>
@@ -120,113 +133,20 @@ export default function Offers() {
             <h3 className="menu-category-title">Popular Items</h3>
             <div className="compact-menu-grid">
               {specialOfferItems.map((item) => (
-                <div className="compact-menu-card" key={item.id}>
+                <div
+                  className="compact-menu-card"
+                  key={item.id}
+                  onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
+                  style={{ cursor: "pointer" }}
+                >
                   <div className="card-content">
-                    <div className="item-info">
-                      <h4 className="item-title">{item.title}</h4>
-                      <div className="chili-rating">
-                        {Array.from({ length: 5 }, (_, index) => (
-                          <span
-                            key={index}
-                            className={`chili ${
-                              index < (item.spiceLevel || 3)
-                                ? "filled"
-                                : "empty"
-                            }`}
-                          >
-                            🌶️
-                          </span>
-                        ))}
-                      </div>
-                      <p className="item-description">
-                        {item.desc && item.desc.length > 60
-                          ? item.desc.substring(0, 60) + "..."
-                          : item.desc}
-                      </p>
-
-                      {item.sizes ? (
-                        <div className="size-row">
-                          {item.sizes.slice(0, 3).map((size, index) => (
-                            <button
-                              key={index}
-                              className={`compact-size-btn ${size.name.toLowerCase()}`}
-                              onClick={() =>
-                                addToCart({
-                                  id: item.id,
-                                  name: item.title,
-                                  price: parseFloat(
-                                    (size.price || "0")
-                                      .toString()
-                                      .replace(/[₹INR\s]/g, "")
-                                  ),
-                                  image: item.image,
-                                })
-                              }
-                            >
-                              {size.name}{" "}
-                              <span className="size-price">{size.price}</span>
-                            </button>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="simple-price">
-                          <span className="price-tag">{item.price}</span>
-                        </div>
-                      )}
-
-                      {item.xlOption && (
-                        <div className="xl-option">
-                          <button
-                            className="xl-btn"
-                            onClick={() =>
-                              addToCart({
-                                id: item.id,
-                                name: item.title,
-                                price: parseFloat(
-                                  (item.xlOption.price || "0")
-                                    .toString()
-                                    .replace(/[₹INR\s]/g, "")
-                                ),
-                                image: item.image,
-                              })
-                            }
-                          >
-                            {item.xlOption.name}{" "}
-                            <span className="xl-price">
-                              {item.xlOption.price}
-                            </span>
-                          </button>
-                        </div>
-                      )}
+                    <div className="circular-image">
+                      <img src={item.image} alt={item.title} loading="lazy" />
                     </div>
-
-                    <div className="item-image-container">
-                      <div className="circular-image">
-                        <img src={item.image} alt={item.title} loading="lazy" />
-                      </div>
-                      {!item.sizes && (
-                        <button
-                          className="add-btn"
-                          aria-label="Add to cart"
-                          onClick={() =>
-                            addToCart({
-                              id: item.id,
-                              name: item.title,
-                              price: parseFloat(
-                                (item.price || "0")
-                                  .toString()
-                                  .replace(/[₹INR\s]/g, "")
-                              ),
-                              image: item.image,
-                            })
-                          }
-                        >
-                          +
-                        </button>
-                      )}
-                      {item.promoText && (
-                        <div className="promo-overlay">{item.promoText}</div>
-                      )}
+                    <h4 className="item-title">{item.title}</h4>
+                    <div className="item-hover-details">
+                      <div className="item-description">{item.desc}</div>
+                      <div className="item-price">{item.price}</div>
                     </div>
                   </div>
                 </div>
@@ -263,7 +183,7 @@ export default function Offers() {
             <h3>📋 Terms & Conditions</h3>
             <div className="info-item">
               <span className="label">Minimum Order:</span>
-              <span className="value">{restaurantInfo.minOrder}</span>
+              <span className="value">{mallInfo.minOrder}</span>
             </div>
             <div className="info-item">
               <span className="label">Delivery Area:</span>
