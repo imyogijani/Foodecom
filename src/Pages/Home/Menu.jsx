@@ -121,7 +121,9 @@ export default function Menu() {
               <div className="circular-image">
                 <img src={item.image} alt={item.title} loading="lazy" />
               </div>
-              <h4 className="item-title">{item.title}</h4>
+              <div className="item-title-wrapper">
+                <h4 className="item-title">{item.title}</h4>
+              </div>
               <div className="item-hover-details">
                 <div className="item-description">{item.desc}</div>
                 <div className="item-price">{item.price}</div>
