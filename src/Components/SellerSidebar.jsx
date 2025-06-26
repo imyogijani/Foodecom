@@ -55,8 +55,12 @@ const SellerSidebar = ({ onClose }) => {
               <li key={link.path}>
                 <Link
                   to={link.path}
-                  className={`admin-nav-link${idx === 0 ? ' dashboard-link' : ''} ${
-                    location.pathname.includes(link.path) || isSubLinkActive(link.subLinks) ? "active" : ""
+                  className={`admin-nav-link ${
+                    (idx === 0
+                      ? location.pathname === link.path
+                      : location.pathname.includes(link.path) || isSubLinkActive(link.subLinks))
+                      ? 'active'
+                      : ''
                   }`}
                 >
                   <span className="admin-nav-icon">{link.icon}</span>
