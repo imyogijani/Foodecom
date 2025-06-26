@@ -35,6 +35,29 @@ export const authenticateToken = async (req, res, next) => {
   }
 };
 
+export const fetchUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+    
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Fetch User Error:", error);
+    return res.status(500).send({
+      success: false,
+      error,
+      message: "Failed to fetch user",
+    });
+  }
+};
+
 export const authorizeAdmin = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
@@ -53,6 +76,7 @@ export const authorizeAdmin = async (req, res, next) => {
       });
     }
 
+    req.user = user;
     next();
   } catch (error) {
     console.error("Admin Authorization Error:", error);

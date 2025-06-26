@@ -24,6 +24,7 @@ import Users from "./Pages/admin/Users";
 import Subscriptions from "./Pages/admin/Subscriptions";
 import Categories from "./Pages/admin/Categories";
 import AdminMenu from "./Pages/admin/Menu";
+import AdminDeals from "./Pages/admin/AdminDeals";
 import SellerDashboard from "./Pages/Seller/SellerDashboard";
 import SellerProducts from "./Pages/Seller/SellerProducts";
 import AddProduct from "./Pages/Seller/AddProduct";
@@ -34,6 +35,7 @@ import UserProfile from "./Components/UserProfile/UserProfile";
 import { CartProvider } from "./context/CartContext";
 import CartFloatingButton from "./Components/CartFloatingButton";
 import SellerProfile from "./Pages/Seller/SellerProfile";
+import SellerDeals from "./Pages/Seller/SellerDeals";
 import ProductDetail from "./Pages/Home/ProductDetail";
 
 function LayoutWrapper() {
@@ -64,6 +66,7 @@ function LayoutWrapper() {
     "/admin/users",
     "/admin/subscriptions",
     "/admin/categories",
+    "/admin/deals",
     "/admin/menu",
     "/seller",
     "/seller/dashboard",
@@ -71,7 +74,8 @@ function LayoutWrapper() {
     "/seller/products/add",
     "/seller/orders",
     "/seller/customers",
-    "/seller/profile", // <--- add this line
+    "/seller/deals",
+    "/seller/profile",
   ];
 
   const hideLayout = hideLayoutPaths.includes(location.pathname.toLowerCase());
@@ -122,6 +126,7 @@ function LayoutWrapper() {
           <Route path="users" element={<Users />} />
           <Route path="subscriptions" element={<Subscriptions />} />
           <Route path="categories" element={<Categories />} />
+          <Route path="deals" element={<AdminDeals />} />
           <Route path="menu" element={<AdminMenu />} />
         </Route>
 
@@ -139,6 +144,7 @@ function LayoutWrapper() {
           <Route path="products/add" element={<AddProduct />} />
           <Route path="orders" element={<SellerOrders />} />
           <Route path="customers" element={<SellerCustomers />} />
+          <Route path="deals" element={<SellerDeals />} />
           <Route path="profile" element={<SellerProfile />} />
         </Route>
         {/* Add more routes as needed */}

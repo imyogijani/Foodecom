@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 
 import "./AdminHeader.css";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import NotificationBell from "../NotificationBell";
 
 const AdminHeader = () => {
   const { theme, toggleTheme } = useTheme();
@@ -43,6 +44,7 @@ const AdminHeader = () => {
           </ul>
         </div>
         <div className="nav-right">
+          <NotificationBell role="admin" />
           <button onClick={handleLogout} className="logout-btn">
             Logout
           </button>

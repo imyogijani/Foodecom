@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useTheme } from "../../ThemeContext";
 import { toast } from "react-toastify";
+import { useTheme } from "../../ThemeContext";
+import NotificationBell from "../NotificationBell";
 import "./AdminHeader.css";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 
@@ -40,6 +41,7 @@ const SellerHeader = () => {
           </ul>
         </div>
         <div className="nav-right">
+          <NotificationBell role="seller" />
           <button onClick={handleLogout} className="logout-btn">
             Logout
           </button>

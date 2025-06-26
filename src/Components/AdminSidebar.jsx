@@ -27,6 +27,7 @@ const adminLinks = [
   },
   { name: "Orders", path: "/admin/orders", icon: <FaShoppingCart /> },
   { name: "Users", path: "/admin/users", icon: <FaUsers /> },
+  { name: "Deals", path: "/admin/deals", icon: <FaBox /> },
   { name: "Subscriptions", path: "/admin/subscriptions", icon: <FaBox /> },
   { name: "Menu", path: "/admin/menu", icon: <FaBox /> },
 ];
