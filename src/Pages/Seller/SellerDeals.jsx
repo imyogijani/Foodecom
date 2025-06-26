@@ -4,21 +4,18 @@ import { FaPlus, FaEye, FaEdit, FaTrash, FaCalendarAlt, FaPercentage, FaTag, FaS
 import axios from '../../utils/axios';
 import './SellerDeals.css';
 
+const initialDeals = [
+  // Example initial data
+  // { id: 1, title: '50% Off Pizza', description: 'Get 50% off on all pizzas!', discount: 50, status: 'pending' }
+];
+
 const SellerDeals = () => {
-  const [deals, setDeals] = useState([]);
+  const [deals, setDeals] = useState(initialDeals);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newDeal, setNewDeal] = useState({
-    title: '',
-    description: '',
-    productId: '',
-    discountPercentage: '',
-    startDate: '',
-    endDate: '',
-    maxQuantity: '',
-    termsAndConditions: ''
-  });
+  const [form, setForm] = useState({ id: null, title: '', description: '', discount: '', status: 'pending' });
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     fetchDeals();
@@ -57,64 +54,34 @@ const SellerDeals = () => {
     }
   };
 
-  const handleCreateDeal = async (e) => {
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('/api/deals/create', newDeal, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      if (response.data) {
-        toast.success('Deal created and sent for approval');
-        setShowCreateModal(false);
-        setNewDeal({
-          title: '',
-          description: '',
-          productId: '',
-          discountPercentage: '',
-          startDate: '',
-          endDate: '',
-          maxQuantity: '',
-          termsAndConditions: ''
-        });
-        fetchDeals();
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Error creating deal');
-      console.log(error);
+    if (editing) {
+      setDeals(deals.map(d => d.id === form.id ? { ...form, discount: Number(form.discount) } : d));
+      setEditing(false);
+    } else {
+      setDeals([
+        ...deals,
+        { ...form, id: Date.now(), discount: Number(form.discount), status: 'pending' }
+      ]);
     }
+    setForm({ id: null, title: '', description: '', discount: '', status: 'pending' });
   };
 
-  const handleEndDeal = async (dealId) => {
-    if (window.confirm('Are you sure you want to end this deal?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.post(`/api/deals/${dealId}/end`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success('Deal ended successfully');
-        fetchDeals();
-      } catch (error) {
-        toast.error('Error ending deal');
-        console.log(error);
-      }
-    }
+  const handleEdit = (deal) => {
+    setForm(deal);
+    setEditing(true);
   };
 
-  const handleDeleteDeal = async (dealId) => {
-    if (window.confirm('Are you sure you want to delete this deal?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(`/api/deals/${dealId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success('Deal deleted successfully');
-        fetchDeals();
-      } catch (error) {
-        toast.error('Error deleting deal');
-        console.log(error);
-      }
+  const handleDelete = (id) => {
+    setDeals(deals.filter(d => d.id !== id));
+    if (editing && form.id === id) {
+      setEditing(false);
+      setForm({ id: null, title: '', description: '', discount: '', status: 'pending' });
     }
   };
 
@@ -210,7 +177,7 @@ const SellerDeals = () => {
                   <>
                     <button
                       className="btn btn-danger"
-                      onClick={() => handleDeleteDeal(deal._id)}
+                      onClick={() => handleDelete(deal._id)}
                     >
                       <FaTrash /> Delete
                     </button>
@@ -242,7 +209,7 @@ const SellerDeals = () => {
               </button>
             </div>
             
-            <form onSubmit={handleCreateDeal}>
+            <form onSubmit={handleSubmit}>
               <div className="modal-body">
                 <div className="form-row">
                   <div className="form-group">
@@ -250,8 +217,9 @@ const SellerDeals = () => {
                     <input
                       type="text"
                       className="form-control"
-                      value={newDeal.title}
-                      onChange={(e) => setNewDeal({...newDeal, title: e.target.value})}
+                      name="title"
+                      value={form.title}
+                      onChange={handleChange}
                       required
                       placeholder="Enter deal title"
                     />
@@ -261,8 +229,9 @@ const SellerDeals = () => {
                     <label>Product *</label>
                     <select
                       className="form-control"
-                      value={newDeal.productId}
-                      onChange={(e) => setNewDeal({...newDeal, productId: e.target.value})}
+                      name="productId"
+                      value={form.productId}
+                      onChange={handleChange}
                       required
                     >
                       <option value="">Select a product</option>
@@ -280,8 +249,9 @@ const SellerDeals = () => {
                   <textarea
                     className="form-control"
                     rows="3"
-                    value={newDeal.description}
-                    onChange={(e) => setNewDeal({...newDeal, description: e.target.value})}
+                    name="description"
+                    value={form.description}
+                    onChange={handleChange}
                     required
                     placeholder="Describe your deal"
                   />
@@ -293,8 +263,9 @@ const SellerDeals = () => {
                     <input
                       type="number"
                       className="form-control"
-                      value={newDeal.discountPercentage}
-                      onChange={(e) => setNewDeal({...newDeal, discountPercentage: e.target.value})}
+                      name="discountPercentage"
+                      value={form.discountPercentage}
+                      onChange={handleChange}
                       min="1"
                       max="90"
                       required
@@ -307,8 +278,9 @@ const SellerDeals = () => {
                     <input
                       type="number"
                       className="form-control"
-                      value={newDeal.maxQuantity}
-                      onChange={(e) => setNewDeal({...newDeal, maxQuantity: e.target.value})}
+                      name="maxQuantity"
+                      value={form.maxQuantity}
+                      onChange={handleChange}
                       min="1"
                       placeholder="Limit quantity (optional)"
                     />
@@ -321,8 +293,9 @@ const SellerDeals = () => {
                     <input
                       type="date"
                       className="form-control"
-                      value={newDeal.startDate}
-                      onChange={(e) => setNewDeal({...newDeal, startDate: e.target.value})}
+                      name="startDate"
+                      value={form.startDate}
+                      onChange={handleChange}
                       required
                       min={new Date().toISOString().split('T')[0]}
                     />
@@ -333,10 +306,11 @@ const SellerDeals = () => {
                     <input
                       type="date"
                       className="form-control"
-                      value={newDeal.endDate}
-                      onChange={(e) => setNewDeal({...newDeal, endDate: e.target.value})}
+                      name="endDate"
+                      value={form.endDate}
+                      onChange={handleChange}
                       required
-                      min={newDeal.startDate || new Date().toISOString().split('T')[0]}
+                      min={form.startDate || new Date().toISOString().split('T')[0]}
                     />
                   </div>
                 </div>
@@ -346,8 +320,9 @@ const SellerDeals = () => {
                   <textarea
                     className="form-control"
                     rows="2"
-                    value={newDeal.termsAndConditions}
-                    onChange={(e) => setNewDeal({...newDeal, termsAndConditions: e.target.value})}
+                    name="termsAndConditions"
+                    value={form.termsAndConditions}
+                    onChange={handleChange}
                     placeholder="Any special terms or conditions"
                   />
                 </div>
@@ -355,15 +330,9 @@ const SellerDeals = () => {
               
               <div className="modal-actions">
                 <button type="submit" className="btn btn-primary">
-                  Create Deal
+                  {editing ? 'Update' : 'Create'} Deal
                 </button>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setShowCreateModal(false)}
-                >
-                  Cancel
-                </button>
+                {editing && <button type="button" className="btn btn-secondary" onClick={() => { setEditing(false); setForm({ id: null, title: '', description: '', discountPercentage: '', startDate: '', endDate: '', maxQuantity: '', termsAndConditions: '', status: 'pending' }); }}>Cancel</button>}
               </div>
             </form>
           </div>

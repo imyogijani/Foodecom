@@ -136,17 +136,6 @@ const Navbar = () => {
           </div>
 
           <div className="nav-right">
-            {localStorage.getItem("token") && user && user.role === "admin" && (
-              <button
-                className="dashboard-button"
-                title="Admin Dashboard"
-                onClick={() => navigate("/admin/dashboard")}
-                style={{ marginRight: "12px" }}
-              >
-                <FaStore />
-                <span style={{ marginLeft: 6 }}>Admin Dashboard</span>
-              </button>
-            )}
             {localStorage.getItem("token") ? (
               <>
                 <div className="user-menu-container">
@@ -183,19 +172,30 @@ const Navbar = () => {
                         </div>
                       </div>
                       <div className="menu-divider"></div>
+                      {user?.role === "admin" && (
+                        <button
+                          className="menu-item dashboard-dropdown"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            navigate("/admin/dashboard");
+                          }}
+                        >
+                          <FaStore />Dashboard
+                        </button>
+                      )}
                       {user?.role === "shopowner" && (
                         <button
-                          className="menu-item"
+                          className="menu-item dashboard-dropdown"
                           onClick={() => {
                             setShowUserMenu(false);
                             navigate("/seller/dashboard");
                           }}
                         >
-                          <FaCog /> Seller Dashboard
+                          <FaCog />Dashboard
                         </button>
                       )}
                       <button
-                        className="menu-item"
+                        className="menu-item dashboard-dropdown"
                         onClick={() => {
                           setShowUserMenu(false);
                           setShowProfile(true);
@@ -204,7 +204,7 @@ const Navbar = () => {
                         <FaCog /> Profile Settings
                       </button>
                       <button
-                        className="menu-item logout"
+                        className="menu-item dashboard-dropdown logout"
                         onClick={handleLogout}
                       >
                         <FaSignOutAlt /> Logout

@@ -4,8 +4,13 @@ import { FaCheck, FaTimes, FaEye, FaSpinner, FaCalendarAlt, FaPercentage, FaTag 
 import axios from '../../utils/axios';
 import './AdminDeals.css';
 
+const initialDeals = [
+  // Example initial data
+  // { id: 1, title: '50% Off Pizza', description: 'Get 50% off on all pizzas!', discount: 50, sellerId: 123, status: 'pending' }
+];
+
 const AdminDeals = () => {
-  const [deals, setDeals] = useState([]);
+  const [deals, setDeals] = useState(initialDeals);
   const [loading, setLoading] = useState(true);
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [showModal, setShowModal] = useState(false);
