@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import BottomCard from "./BottomCard";
 import StatsBanner from "./StatsBanner";
 import { useCart } from "../../context/CartContext";
+import DealsList from './DealsList';
 
 export default function Home() {
   const { addToCart } = useCart();
@@ -247,6 +248,7 @@ export default function Home() {
       </div>
 
       <BottomCard />
+      <DealsList />
     </>
   );
 }

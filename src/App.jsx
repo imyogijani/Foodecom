@@ -37,6 +37,7 @@ import CartFloatingButton from "./Components/CartFloatingButton";
 import SellerProfile from "./Pages/Seller/SellerProfile";
 import SellerDeals from "./Pages/Seller/SellerDeals";
 import ProductDetail from "./Pages/Home/ProductDetail";
+import { DealsProvider } from './context/DealsContext';
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
@@ -158,23 +159,25 @@ function LayoutWrapper() {
 
 function App() {
   return (
-    <CartProvider>
-      <BrowserRouter>
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="light"
-        />
-        <LayoutWrapper />
-      </BrowserRouter>
-    </CartProvider>
+    <DealsProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+          <LayoutWrapper />
+        </BrowserRouter>
+      </CartProvider>
+    </DealsProvider>
   );
 }
 

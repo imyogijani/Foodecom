@@ -1,369 +1,113 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { FaCheck, FaTimes, FaEye, FaSpinner, FaCalendarAlt, FaPercentage, FaTag } from 'react-icons/fa';
-import axios from '../../utils/axios';
-import './AdminDeals.css';
+import React, { useState } from 'react';
+import { FaCheck, FaTimes } from 'react-icons/fa';
+import { useDeals } from '../../context/DealsContext';
 
-const initialDeals = [
-  // Example initial data
-  // { id: 1, title: '50% Off Pizza', description: 'Get 50% off on all pizzas!', discount: 50, sellerId: 123, status: 'pending' }
-];
+const statusOptions = ['pending', 'approved', 'rejected'];
 
-const AdminDeals = () => {
-  const [deals, setDeals] = useState(initialDeals);
-  const [loading, setLoading] = useState(true);
-  const [selectedDeal, setSelectedDeal] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [rejectModal, setRejectModal] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState('');
+function AdminDeals() {
+  const { deals, approveDeal, rejectDeal } = useDeals();
   const [filter, setFilter] = useState('pending');
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [dealToReject, setDealToReject] = useState(null);
 
-  useEffect(() => {
-    fetchDeals();
-  }, [filter]);
+  const filteredDeals = deals.filter(d => filter === 'all' ? true : d.status === filter);
 
-  const fetchDeals = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`/api/deals/admin/all?status=${filter}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setDeals(response.data.deals);
-    } catch (error) {
-      toast.error('Error fetching deals');
-      console.log(error);
-    } finally {
-      setLoading(false);
+  const handleApprove = (id) => {
+    if (window.confirm('Approve this deal?')) {
+      approveDeal(id);
     }
   };
 
-  const handleApproveDeal = async (dealId) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(`/api/deals/admin/${dealId}/approve`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success('Deal approved successfully');
-      fetchDeals();
-      setShowModal(false);
-    } catch (error) {
-      toast.error('Error approving deal');
-      console.log(error);
+  const handleReject = (deal) => {
+    setDealToReject(deal);
+    setShowRejectModal(true);
+  };
+
+  const confirmReject = () => {
+    if (dealToReject) {
+      rejectDeal(dealToReject.id);
+      setShowRejectModal(false);
+      setDealToReject(null);
     }
   };
 
-  const handleRejectDeal = async () => {
-    if (!rejectionReason.trim()) {
-      toast.error('Please provide a rejection reason');
-      return;
-    }
-
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(`/api/deals/admin/${selectedDeal._id}/reject`, {
-        rejectionReason,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      toast.success('Deal rejected successfully');
-      fetchDeals();
-      setRejectModal(false);
-      setRejectionReason('');
-    } catch (error) {
-      toast.error('Error rejecting deal');
-      console.log(error);
-    }
+  const cancelReject = () => {
+    setShowRejectModal(false);
+    setDealToReject(null);
   };
-
-  const openRejectModal = (deal) => {
-    setSelectedDeal(deal);
-    setRejectModal(true);
-  };
-
-  const openDealModal = (deal) => {
-    setSelectedDeal(deal);
-    setShowModal(true);
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'pending': return '#ffa500';
-      case 'approved': return '#28a745';
-      case 'rejected': return '#dc3545';
-      case 'active': return '#007bff';
-      case 'expired': return '#6c757d';
-      case 'ended': return '#6c757d';
-      default: return '#6c757d';
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="loading-container">
-        <FaSpinner className="spinner" />
-        <p>Loading deals...</p>
-      </div>
-    );
-  }
 
   return (
-    <div className="admin-deals">
-      <div className="admin-header">
-        <h1>Deal Management</h1>
-        <p className="admin-subtitle">Manage and approve seller deal requests</p>
+    <div style={{ maxWidth: 800, margin: '0 auto', padding: 32 }}>
+      <h2 style={{ marginBottom: 24, color: '#222', fontWeight: 700 }}>Admin Deal Management</h2>
+      <div style={{ marginBottom: 24, display: 'flex', gap: 12 }}>
+        {statusOptions.map(status => (
+          <button
+            key={status}
+            onClick={() => setFilter(status)}
+            style={{
+              background: filter === status ? '#fc8a06' : '#eee',
+              color: filter === status ? '#fff' : '#333',
+              border: 'none',
+              borderRadius: 8,
+              padding: '8px 20px',
+              fontWeight: 600,
+              fontSize: 15,
+              cursor: 'pointer',
+            }}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
+        <button
+          onClick={() => setFilter('all')}
+          style={{
+            background: filter === 'all' ? '#fc8a06' : '#eee',
+            color: filter === 'all' ? '#fff' : '#333',
+            border: 'none',
+            borderRadius: 8,
+            padding: '8px 20px',
+            fontWeight: 600,
+            fontSize: 15,
+            cursor: 'pointer',
+          }}
+        >
+          All
+        </button>
       </div>
-
-      <div className="deals-controls">
-        <div className="filter-tabs">
-          {['pending', 'approved', 'rejected', 'active', 'expired'].map((status) => (
-            <button
-              key={status}
-              className={`filter-tab ${filter === status ? 'active' : ''}`}
-              onClick={() => setFilter(status)}
-            >
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {deals.length === 0 ? (
-        <div className="no-deals">
-          <p>No {filter} deals found</p>
-        </div>
-      ) : (
-        <div className="deals-grid">
-          {deals.map((deal) => (
-            <div key={deal._id} className="deal-card">
-              <div className="deal-header">
-                <h3 className="deal-title">{deal.title}</h3>
-                <span 
-                  className="deal-status"
-                  style={{ backgroundColor: getStatusColor(deal.status) }}
-                >
-                  {deal.status}
-                </span>
-              </div>
-              
-              <div className="deal-content">
-                <p className="deal-description">{deal.description}</p>
-                
-                <div className="deal-details">
-                  <div className="detail-item">
-                    <FaTag className="detail-icon" />
-                    <span>Product: {deal.product?.name}</span>
-                  </div>
-                  
-                  <div className="detail-item">
-                    <FaPercentage className="detail-icon" />
-                    <span>Discount: {deal.discountPercentage}%</span>
-                  </div>
-                  
-                  <div className="detail-item">
-                    <FaCalendarAlt className="detail-icon" />
-                    <span>{formatDate(deal.startDate)} - {formatDate(deal.endDate)}</span>
-                  </div>
-                  
-                  <div className="price-info">
-                    <span className="original-price">₹{deal.originalPrice}</span>
-                    <span className="deal-price">₹{deal.dealPrice}</span>
-                  </div>
-                </div>
-                
-                <div className="seller-info">
-                  <strong>Seller:</strong> {deal.seller?.names}
-                </div>
-              </div>
-              
-              <div className="deal-actions">
-                <button
-                  className="btn btn-info"
-                  onClick={() => openDealModal(deal)}
-                >
-                  <FaEye /> View Details
-                </button>
-                
-                {deal.status === 'pending' && (
-                  <>
-                    <button
-                      className="btn btn-success"
-                      onClick={() => handleApproveDeal(deal._id)}
-                    >
-                      <FaCheck /> Approve
-                    </button>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => openRejectModal(deal)}
-                    >
-                      <FaTimes /> Reject
-                    </button>
-                  </>
-                )}
-              </div>
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {filteredDeals.length === 0 && <li>No deals found.</li>}
+        {filteredDeals.map(deal => (
+          <li key={deal.id} style={{ border: '1px solid #fc8a06', borderRadius: 12, padding: 18, marginBottom: 18, background: '#fff9ed', boxShadow: '0 2px 8px rgba(252,138,6,0.06)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <strong style={{ fontSize: 18, color: '#222' }}>{deal.title}</strong>
+              <span style={{ background: deal.status === 'approved' ? '#28a745' : deal.status === 'pending' ? '#ffa500' : '#dc3545', color: '#fff', borderRadius: 8, padding: '2px 12px', fontSize: 13, fontWeight: 600 }}>{deal.status}</span>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* Deal Details Modal */}
-      {showModal && selectedDeal && (
-        <div className="modal-overlay">
-          <div className="modal-content deal-modal">
-            <div className="modal-header">
-              <h2>Deal Details</h2>
-              <button className="close-btn" onClick={() => setShowModal(false)}>
-                &times;
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <div className="deal-full-details">
-                <div className="detail-row">
-                  <label>Title:</label>
-                  <span>{selectedDeal.title}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Description:</label>
-                  <span>{selectedDeal.description}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Product:</label>
-                  <span>{selectedDeal.product?.name}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Seller:</label>
-                  <span>{selectedDeal.seller?.names} ({selectedDeal.seller?.email})</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Original Price:</label>
-                  <span>₹{selectedDeal.originalPrice}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Discount:</label>
-                  <span>{selectedDeal.discountPercentage}%</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Deal Price:</label>
-                  <span className="highlight">₹{selectedDeal.dealPrice}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Duration:</label>
-                  <span>{formatDate(selectedDeal.startDate)} to {formatDate(selectedDeal.endDate)}</span>
-                </div>
-                
-                <div className="detail-row">
-                  <label>Status:</label>
-                  <span 
-                    className="status-badge"
-                    style={{ backgroundColor: getStatusColor(selectedDeal.status) }}
-                  >
-                    {selectedDeal.status}
-                  </span>
-                </div>
-                
-                {selectedDeal.maxQuantity && (
-                  <div className="detail-row">
-                    <label>Max Quantity:</label>
-                    <span>{selectedDeal.maxQuantity}</span>
-                  </div>
-                )}
-                
-                <div className="detail-row">
-                  <label>Created:</label>
-                  <span>{formatDate(selectedDeal.createdAt)}</span>
-                </div>
-              </div>
-            </div>
-            
-            {selectedDeal.status === 'pending' && (
-              <div className="modal-actions">
-                <button
-                  className="btn btn-success"
-                  onClick={() => handleApproveDeal(selectedDeal._id)}
-                >
-                  <FaCheck /> Approve Deal
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => {
-                    setShowModal(false);
-                    openRejectModal(selectedDeal);
-                  }}
-                >
-                  <FaTimes /> Reject Deal
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close
-                </button>
+            <div style={{ color: '#444', marginBottom: 8 }}>{deal.description}</div>
+            <div style={{ color: '#e57a00', fontWeight: 600, marginBottom: 10 }}>Discount: {deal.discount}%</div>
+            <div style={{ color: '#888', fontSize: 13, marginBottom: 10 }}>Seller ID: {deal.sellerId}</div>
+            {deal.status === 'pending' && (
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button onClick={() => handleApprove(deal.id)} style={{ background: '#28a745', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 18px', cursor: 'pointer', fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center' }}><FaCheck style={{ marginRight: 6 }} /> Approve</button>
+                <button onClick={() => handleReject(deal)} style={{ background: '#dc3545', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 18px', cursor: 'pointer', fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center' }}><FaTimes style={{ marginRight: 6 }} /> Reject</button>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Rejection Modal */}
-      {rejectModal && (
-        <div className="modal-overlay">
-          <div className="modal-content reject-modal">
-            <div className="modal-header">
-              <h2>Reject Deal</h2>
-              <button className="close-btn" onClick={() => setRejectModal(false)}>
-                &times;
-              </button>
-            </div>
-            
-            <div className="modal-body">
-              <p>Please provide a reason for rejecting this deal:</p>
-              <textarea
-                className="form-control"
-                rows="4"
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Enter rejection reason..."
-              />
-            </div>
-            
-            <div className="modal-actions">
-              <button
-                className="btn btn-danger"
-                onClick={handleRejectDeal}
-                disabled={!rejectionReason.trim()}
-              >
-                <FaTimes /> Reject Deal
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={() => {
-                  setRejectModal(false);
-                  setRejectionReason('');
-                }}
-              >
-                Cancel
-              </button>
+          </li>
+        ))}
+      </ul>
+      {showRejectModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#fff', padding: 28, borderRadius: 12, minWidth: 320, boxShadow: '0 4px 24px rgba(0,0,0,0.15)' }}>
+            <h3 style={{ marginBottom: 18, color: '#dc3545', fontWeight: 700 }}>Reject Deal</h3>
+            <p>Are you sure you want to reject the deal <b>{dealToReject?.title}</b>?</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 18 }}>
+              <button onClick={confirmReject} style={{ background: '#dc3545', color: '#fff', border: 'none', borderRadius: 6, padding: '10px 22px', cursor: 'pointer', fontWeight: 600, fontSize: 15 }}>Reject</button>
+              <button onClick={cancelReject} style={{ background: '#eee', color: '#333', border: 'none', borderRadius: 6, padding: '10px 22px', cursor: 'pointer', fontWeight: 600, fontSize: 15 }}>Cancel</button>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-};
+}
 
 export default AdminDeals;
