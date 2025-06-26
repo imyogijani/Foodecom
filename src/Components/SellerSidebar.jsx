@@ -51,11 +51,11 @@ const SellerSidebar = ({ onClose }) => {
         <h2 className="admin-title">E-Mall Seller</h2>
         <nav>
           <ul className="admin-nav-list">
-            {sellerLinks.map((link) => (
+            {sellerLinks.map((link, idx) => (
               <li key={link.path}>
                 <Link
                   to={link.path}
-                  className={`admin-nav-link ${
+                  className={`admin-nav-link${idx === 0 ? ' dashboard-link' : ''} ${
                     location.pathname.includes(link.path) || isSubLinkActive(link.subLinks) ? "active" : ""
                   }`}
                 >

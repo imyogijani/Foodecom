@@ -294,3 +294,23 @@ aside button {
     font-size: 0.875rem;
   }
 }
+
+.dashboard-link {
+  background: var(--primary-color, #007bff);
+  color: #fff !important;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 0.7rem 1.2rem;
+  margin-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.dashboard-link:hover, .dashboard-link.active {
+  background: #0056b3;
+  color: #fff !important;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+}

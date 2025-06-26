@@ -136,6 +136,17 @@ const Navbar = () => {
           </div>
 
           <div className="nav-right">
+            {localStorage.getItem("token") && user && user.role === "admin" && (
+              <button
+                className="dashboard-button"
+                title="Admin Dashboard"
+                onClick={() => navigate("/admin/dashboard")}
+                style={{ marginRight: "12px" }}
+              >
+                <FaStore />
+                <span style={{ marginLeft: 6 }}>Admin Dashboard</span>
+              </button>
+            )}
             {localStorage.getItem("token") ? (
               <>
                 <div className="user-menu-container">
@@ -172,6 +183,17 @@ const Navbar = () => {
                         </div>
                       </div>
                       <div className="menu-divider"></div>
+                      {user?.role === "shopowner" && (
+                        <button
+                          className="menu-item"
+                          onClick={() => {
+                            setShowUserMenu(false);
+                            navigate("/seller/dashboard");
+                          }}
+                        >
+                          <FaCog /> Seller Dashboard
+                        </button>
+                      )}
                       <button
                         className="menu-item"
                         onClick={() => {
