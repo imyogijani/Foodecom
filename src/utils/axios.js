@@ -24,9 +24,15 @@ instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+      const publicPaths = ["/", "/menu", "/offer", "/shops", "/product", "/login", "/register", "/pricing"];
+      const currentPath = window.location.pathname;
+      const isPublicPath = publicPaths.some(path => currentPath.startsWith(path));
+
+      if (!isPublicPath) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   }

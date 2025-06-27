@@ -104,14 +104,7 @@ function LayoutWrapper() {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="pricing" element={<Pricing />} />
-        <Route
-          path="cart"
-          element={
-            <ProtectedRoute allowedRoles={["client, admin, shopowner"]}>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="cart" element={<Cart />} />
         <Route
           path="admin"
           element={
