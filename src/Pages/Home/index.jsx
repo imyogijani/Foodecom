@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import BottomCard from "./BottomCard";
 import StatsBanner from "./StatsBanner";
 import { useCart } from "../../context/CartContext";
-import DealsList from './DealsList';
+import DealsList from "./DealsList";
 
 export default function Home() {
   const { addToCart } = useCart();
@@ -18,6 +18,23 @@ export default function Home() {
   const [subcategories, setSubcategories] = useState({});
   const [restaurants, setRestaurants] = useState([]);
   const [deals, setDeals] = useState([]);
+  const [sortBy, setSortBy] = useState("");
+
+  // Filter and sort products
+  const filteredProducts = React.useMemo(() => {
+    let filtered = products;
+    if (activeCategory) {
+      filtered = filtered.filter(
+        (p) => p.category && p.category.name === activeCategory
+      );
+    }
+    if (sortBy === "low") {
+      filtered = [...filtered].sort((a, b) => a.price - b.price);
+    } else if (sortBy === "high") {
+      filtered = [...filtered].sort((a, b) => b.price - a.price);
+    }
+    return filtered;
+  }, [products, activeCategory, sortBy]);
 
   const handleGetStarted = () => {
     alert("Get Started clicked!");
@@ -84,7 +101,8 @@ export default function Home() {
       setRestaurants(response.data.restaurants);
     } catch (error) {
       console.error("Restaurant fetch error:", error);
-      toast.error("Error fetching restaurants");
+      // toast.error("Error fetching restaurants"); // Under development, don't show error
+      setRestaurants([]);
     }
   };
 
@@ -94,7 +112,8 @@ export default function Home() {
       setDeals(response.data.deals);
     } catch (error) {
       console.error("Deals fetch error:", error);
-      toast.error("Error fetching deals");
+      // toast.error("Error fetching deals"); // Under development, don't show error
+      setDeals([]);
     }
   };
 
@@ -113,76 +132,9 @@ export default function Home() {
       </div>
       <StatsBanner />
 
-      {/* === Top Deals Section === */}
-      <div className="top-deals-container">
-        <div className="top-deals-header">
-          <h3>
-            Up to <span>–40%</span> 🎉 E-mall World exclusive deals
-          </h3>
-          <div className="category-tabs">
-            {categories.map((cat) => (
-              <button
-                key={cat._id}
-                onClick={() => setActiveCategory(cat.name)}
-                className={cat.name === activeCategory ? "active" : ""}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Horizontal scroll wrapper */}
-        <div className="deal-cards-wrapper">
-          <div className="deal-cards">
-            {loading ? (
-              <p>Loading products...</p>
-            ) : (
-              products.map((product) => (
-                <div className="deal-card" key={product._id}>
-                  <img
-                    src={
-                      product.image
-                        ? product.image.startsWith("/uploads")
-                          ? `http://localhost:8080${product.image}`
-                          : product.image
-                        : "placeholder.jpg"
-                    }
-                    alt={product.name}
-                  />
-                  <div className="badge">
-                    {product.discountPercentage
-                      ? `-${product.discountPercentage}%`
-                      : ""}
-                  </div>
-                  <div className="overlay">
-                    <span>
-                      {product.shopId ? product.shopId.shopName : "N/A"}
-                    </span>
-                    <h4>{product.name}</h4>
-                  </div>
-                  <button
-                    className="plus-icon"
-                    onClick={() =>
-                      addToCart({
-                        id: product._id,
-                        name: product.name,
-                        price: product.price,
-                        image:
-                          product.images && product.images.length > 0
-                            ? product.images[0]
-                            : "placeholder.jpg",
-                      })
-                    }
-                  >
-                    +
-                  </button>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+      {/* --- REMOVE PRODUCT SECTION FROM HOME --- */}
+      {/* === Featured Products Section === */}
+      {/* (Moved to Shops page) */}
 
       {/* === Popular Categories Section === */}
       <div className="popular-categories">
@@ -214,16 +166,90 @@ export default function Home() {
         </div>
       </div>
 
+      {/* === Exclusive Deals Section === */}
+      <div className="exclusive-deals-container" style={{margin: "1rem 3rem" }}>
+        <div className="exclusive-deals-header">
+          <h3>
+            Up to <span>–40%</span> 🎉 E-mall World Exclusive Deals
+          </h3>
+        </div>
+        <div className="deal-cards-wrapper">
+          <div className="deal-cards">
+            {loading ? (
+              <p>Loading deals...</p>
+            ) : deals.length === 0 ? (
+              <div
+                className="under-development-section"
+                style={{
+                  padding: "32px",
+                  textAlign: "center",
+                  background: "#f8f9fa",
+                  borderRadius: 12,
+                  color: "#888",
+                  fontWeight: 600,
+                  fontSize: 20,
+                  margin: "32px 0",
+                }}
+              >
+                🚧 This section is under development 🚧
+              </div>
+            ) : (
+              deals.map((deal) => (
+                <div className="deal-card" key={deal._id}>
+                  <img
+                    src={
+                      deal.image
+                        ? deal.image.startsWith("/uploads")
+                          ? `http://localhost:8080${deal.image}`
+                          : deal.image
+                        : "placeholder.jpg"
+                    }
+                    alt={deal.title || deal.name}
+                  />
+                  <div className="badge">
+                    {deal.discountPercentage
+                      ? `-${deal.discountPercentage}%`
+                      : ""}
+                  </div>
+                  <div className="overlay">
+                    <span>{deal.shopId ? deal.shopId.shopName : "N/A"}</span>
+                    <h4>{deal.title || deal.name}</h4>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* === Popular Restaurants Section === */}
       <div className="popular_restaurants">
         <h3>Popular Shops</h3>
         <div className="restaurant-grid">
-          {restaurants.map((restaurant) => (
-            <div className="restaurant-card" key={restaurant._id}>
-              <img src={restaurant.image} alt={restaurant.name} />
-              <p>{restaurant.name}</p>
+          {restaurants.length === 0 ? (
+            <div
+              className="under-development-section"
+              style={{
+                padding: "32px",
+                textAlign: "center",
+                background: "#f8f9fa",
+                borderRadius: 12,
+                color: "#888",
+                fontWeight: 600,
+                fontSize: 20,
+                margin: "32px 0",
+              }}
+            >
+              🚧 This section is under development 🚧
             </div>
-          ))}
+          ) : (
+            restaurants.map((restaurant) => (
+              <div className="restaurant-card" key={restaurant._id}>
+                <img src={restaurant.image} alt={restaurant.name} />
+                <p>{restaurant.name}</p>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

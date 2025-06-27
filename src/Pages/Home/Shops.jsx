@@ -9,6 +9,7 @@ import burgerKing from "../../images/Bking.png";
 import shaurma from "../../images/shaurma.png";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import axios from "../../utils/axios";
 
 // Minimal E-mall sample data
 const mallInfo = {
@@ -27,6 +28,7 @@ const mallInfo = {
     saturday: "8:00 AM–3:00 AM",
     sunday: "8:00 AM–12:00 AM",
   },
+  reviews: 1240, // <-- Added to prevent undefined error
 };
 
 const mallCategories = [
@@ -40,33 +42,113 @@ const mallCategories = [
 
 const mallItemsByCategory = {
   Offers: [
-    { id: "offer-1", title: "10% Off Electronics", image: "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg?auto=compress&w=400", discount: "-10%", store: "ElectroStore", badge: "NEW" },
-    { id: "offer-2", title: "Buy 1 Get 1 Free Clothing", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", discount: "B1G1", store: "FashionHub", badge: "HOT" },
+    {
+      id: "offer-1",
+      title: "10% Off Electronics",
+      image:
+        "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg?auto=compress&w=400",
+      discount: "-10%",
+      store: "ElectroStore",
+      badge: "NEW",
+    },
+    {
+      id: "offer-2",
+      title: "Buy 1 Get 1 Free Clothing",
+      image:
+        "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400",
+      discount: "B1G1",
+      store: "FashionHub",
+      badge: "HOT",
+    },
   ],
   Electronics: [
-    { id: "el-1", title: "Smartphone X", desc: "Latest smartphone with advanced features", image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&w=400", price: "$499", isPopular: true },
-    { id: "el-2", title: "Wireless Headphones", desc: "Noise-cancelling over-ear headphones", image: "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&w=400", price: "$99" },
+    {
+      id: "el-1",
+      title: "Smartphone X",
+      desc: "Latest smartphone with advanced features",
+      image:
+        "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&w=400",
+      price: "$499",
+      isPopular: true,
+    },
+    {
+      id: "el-2",
+      title: "Wireless Headphones",
+      desc: "Noise-cancelling over-ear headphones",
+      image:
+        "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&w=400",
+      price: "$99",
+    },
   ],
   Clothing: [
-    { id: "cl-1", title: "Men's T-Shirt", desc: "100% cotton, various sizes", image: "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400", price: "$19" },
-    { id: "cl-2", title: "Women's Dress", desc: "Elegant evening dress", image: "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&w=400", price: "$49" },
+    {
+      id: "cl-1",
+      title: "Men's T-Shirt",
+      desc: "100% cotton, various sizes",
+      image:
+        "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400",
+      price: "$19",
+    },
+    {
+      id: "cl-2",
+      title: "Women's Dress",
+      desc: "Elegant evening dress",
+      image:
+        "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&w=400",
+      price: "$49",
+    },
   ],
   "Home Appliances": [
-    { id: "ha-1", title: "Blender Pro", desc: "Multi-speed kitchen blender", image: "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg?auto=compress&w=400", price: "$59" },
+    {
+      id: "ha-1",
+      title: "Blender Pro",
+      desc: "Multi-speed kitchen blender",
+      image:
+        "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg?auto=compress&w=400",
+      price: "$59",
+    },
   ],
   Books: [
-    { id: "bk-1", title: "Bestseller Novel", desc: "A thrilling mystery novel", image: "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&w=400", price: "$12" },
+    {
+      id: "bk-1",
+      title: "Bestseller Novel",
+      desc: "A thrilling mystery novel",
+      image:
+        "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&w=400",
+      price: "$12",
+    },
   ],
   Toys: [
-    { id: "ty-1", title: "Building Blocks Set", desc: "Creative play for kids", image: "https://images.pexels.com/photos/3661350/pexels-photo-3661350.jpeg?auto=compress&w=400", price: "$25" },
+    {
+      id: "ty-1",
+      title: "Building Blocks Set",
+      desc: "Creative play for kids",
+      image:
+        "https://images.pexels.com/photos/3661350/pexels-photo-3661350.jpeg?auto=compress&w=400",
+      price: "$25",
+    },
   ],
 };
 
 const getItemsByCategory = (category) => mallItemsByCategory[category] || [];
 
 const reviews = [
-  { id: 1, name: "Alice", rating: 5, date: "2024-06-01", verified: true, text: "Great selection and fast delivery!" },
-  { id: 2, name: "Bob", rating: 4, date: "2024-06-02", verified: false, text: "Good prices on electronics." },
+  {
+    id: 1,
+    name: "Alice",
+    rating: 5,
+    date: "2024-06-01",
+    verified: true,
+    text: "Great selection and fast delivery!",
+  },
+  {
+    id: 2,
+    name: "Bob",
+    rating: 4,
+    date: "2024-06-02",
+    verified: false,
+    text: "Good prices on electronics.",
+  },
 ];
 
 export default function Shops() {
@@ -75,6 +157,12 @@ export default function Shops() {
   const [isLoading, setIsLoading] = useState(false);
   const { addToCart, removeFromCart, cartItems } = useCart();
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const similarRestaurants = [
     { name: "McDonald's London", img: McD },
@@ -91,6 +179,46 @@ export default function Shops() {
     const timer = setTimeout(() => setIsLoading(false), 500);
     return () => clearTimeout(timer);
   }, [activeTab]);
+
+  useEffect(() => {
+    // Fetch products and categories for product section
+    const fetchProductsAndCategories = async () => {
+      try {
+        const [catRes, prodRes] = await Promise.all([
+          axios.get("/api/category/get-category-with-shop-count"),
+          axios.get(
+            "/api/products?populateCategory=true&populateSubcategory=true"
+          ),
+        ]);
+        const categoriesData = catRes.data.categories || [];
+        setCategories(categoriesData);
+        if (categoriesData.length > 0)
+          setActiveCategory(categoriesData[0].name);
+        setProducts(prodRes.data.products || []);
+      } catch (err) {
+        setCategories([]);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProductsAndCategories();
+  }, []);
+
+  const filteredProducts = React.useMemo(() => {
+    let filtered = products;
+    if (activeCategory) {
+      filtered = filtered.filter(
+        (p) => p.category && p.category.name === activeCategory
+      );
+    }
+    if (sortBy === "low") {
+      filtered = [...filtered].sort((a, b) => a.price - b.price);
+    } else if (sortBy === "high") {
+      filtered = [...filtered].sort((a, b) => b.price - a.price);
+    }
+    return filtered;
+  }, [products, activeCategory, sortBy]);
 
   const filterItems = (items) => {
     if (!searchQuery) return items;
@@ -203,12 +331,8 @@ export default function Shops() {
           <div className="hero-text">
             <h1>{mallInfo.name}</h1>
             <div className="hero-tags">
-              <span className="tag">
-                Minimum Order: {mallInfo.minOrder}
-              </span>
-              <span className="tag">
-                Delivery in {mallInfo.deliveryTime}
-              </span>
+              <span className="tag">Minimum Order: {mallInfo.minOrder}</span>
+              <span className="tag">Delivery in {mallInfo.deliveryTime}</span>
             </div>
           </div>
           <div className="hero-image"></div>
@@ -245,6 +369,190 @@ export default function Shops() {
         <div className="menu-content">{renderContent()}</div>
       </div>
 
+      {/* Product Section */}
+      <div
+        className="featured-products-container"
+        style={{ margin: "1rem 3rem" }}
+      >
+        <h3 style={{ marginBottom: 16 }}>Featured Products</h3>
+        <div
+          style={{
+            display: "flex",
+            gap: 16,
+            marginBottom: 24,
+            flexWrap: "wrap",
+          }}
+        >
+          <select
+            value={activeCategory}
+            onChange={(e) => setActiveCategory(e.target.value)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              fontWeight: 500,
+            }}
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat.name}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <select
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 8,
+              border: "1px solid #ccc",
+              fontWeight: 500,
+            }}
+            defaultValue=""
+          >
+            <option value="">Sort by</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+          </select>
+        </div>
+        <div className="product-cards-wrapper">
+          <div
+            className="product-cards"
+            style={{
+              display: "grid",
+              gap: "2em",
+              gridTemplateColumns: "repeat(3, 1fr) auto",
+            }}
+          >
+            {loading ? (
+              <p>Loading products...</p>
+            ) : filteredProducts.length === 0 ? (
+              <div
+                className="under-development-section"
+                style={{
+                  padding: "32px",
+                  textAlign: "center",
+                  background: "#f8f9fa",
+                  borderRadius: 12,
+                  color: "#888",
+                  fontWeight: 600,
+                  fontSize: 20,
+                  margin: "32px 0",
+                  width: "100%",
+                }}
+              >
+                🚧 This section is under development 🚧
+              </div>
+            ) : (
+              filteredProducts.map((product) => (
+                <div
+                  className="deal-card product-modern-card"
+                  key={product._id}
+                  style={{
+                    width: 'min(230px, 90vw)',
+                    background: 'linear-gradient(135deg, #f8fafc 0%, #e9e9f7 100%)',
+                    borderRadius: 18,
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
+                    padding: 0,
+                    position: 'relative',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    border: 'none',
+                    marginBottom: 18,
+                    overflow: 'hidden',
+                    transition: 'box-shadow 0.2s',
+                    flex: '1 1 180px',
+                    minWidth: 160,
+                    maxWidth: 260,
+                  }}
+                >
+                  <div style={{ width: '100%', background: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '18px 0 10px 0', borderTopLeftRadius: 18, borderTopRightRadius: 18 }}>
+                    <img
+                      src={
+                        product.image
+                          ? product.image.startsWith("/uploads")
+                            ? `http://localhost:8080${product.image}`
+                            : product.image
+                          : "placeholder.jpg"
+                      }
+                      alt={product.name}
+                      style={{ width: '100%', height: 110, objectFit: 'contain', borderRadius: 10, background: '#f6f6f6', maxWidth: 140, minWidth: 80 }}
+                    />
+                  </div>
+                  <div
+                    className="badge"
+                    style={{
+                      position: "absolute",
+                      top: 12,
+                      left: 12,
+                      background: "#fc8a06",
+                      color: "#fff",
+                      borderRadius: 6,
+                      padding: "2px 10px",
+                      fontWeight: 600,
+                      fontSize: 13,
+                    }}
+                  >
+                    {product.discountPercentage
+                      ? `-${product.discountPercentage}%`
+                      : ""}
+                  </div>
+                  <div className="overlay">
+                    <h4
+                      style={{
+                        fontWeight: 700,
+                        fontSize: 18,
+                        margin: "8px 0 4px",
+                      }}
+                    >
+                      {product.name}
+                    </h4>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        color: "#03081f",
+                        fontSize: 16,
+                        marginBottom: 4,
+                      }}
+                    >
+                      ₹{product.price}
+                    </div>
+                  </div>
+                  <button
+                    className="plus-icon"
+                    style={{
+                      marginTop: "auto",
+                      background: "#fc8a06",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: 8,
+                      padding: "8px 18px",
+                      fontWeight: 700,
+                      fontSize: 18,
+                      cursor: "pointer",
+                    }}
+                    onClick={() =>
+                      addToCart({
+                        id: product._id,
+                        name: product.name,
+                        price: product.price,
+                        image:
+                          product.images && product.images.length > 0
+                            ? product.images[0]
+                            : "placeholder.jpg",
+                      })
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Delivery Information */}
       <div className="delivery-info-section">
         <div className="delivery-info-grid">
@@ -252,15 +560,11 @@ export default function Shops() {
             <h3>🚚 Delivery Information</h3>
             <div className="info-item">
               <span className="label">Monday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.monday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.monday}</span>
             </div>
             <div className="info-item">
               <span className="label">Tuesday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.tuesday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.tuesday}</span>
             </div>
             <div className="info-item">
               <span className="label">Wednesday:</span>
@@ -276,9 +580,7 @@ export default function Shops() {
             </div>
             <div className="info-item">
               <span className="label">Friday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.friday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.friday}</span>
             </div>
             <div className="info-item">
               <span className="label">Saturday:</span>
@@ -288,9 +590,7 @@ export default function Shops() {
             </div>
             <div className="info-item">
               <span className="label">Sunday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.sunday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.sunday}</span>
             </div>
             <div className="info-item highlight">
               <span className="label">⏱️ Estimated delivery:</span>
@@ -321,15 +621,11 @@ export default function Shops() {
             <h3>⏰ Operational Times</h3>
             <div className="info-item">
               <span className="label">Monday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.monday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.monday}</span>
             </div>
             <div className="info-item">
               <span className="label">Tuesday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.tuesday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.tuesday}</span>
             </div>
             <div className="info-item">
               <span className="label">Wednesday:</span>
@@ -345,9 +641,7 @@ export default function Shops() {
             </div>
             <div className="info-item">
               <span className="label">Friday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.friday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.friday}</span>
             </div>
             <div className="info-item">
               <span className="label">Saturday:</span>
@@ -357,9 +651,7 @@ export default function Shops() {
             </div>
             <div className="info-item">
               <span className="label">Sunday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.sunday}
-              </span>
+              <span className="value">{mallInfo.operationalHours.sunday}</span>
             </div>
           </div>
         </div>
@@ -375,9 +667,7 @@ export default function Shops() {
               <p>{mallInfo.address}</p>
               <div className="location-tags">
                 <span className="tag">📞 Phone: {mallInfo.phone}</span>
-                <span className="tag">
-                  🌐 Website: {mallInfo.website}
-                </span>
+                <span className="tag">🌐 Website: {mallInfo.website}</span>
               </div>
             </div>
           </div>

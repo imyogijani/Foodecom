@@ -87,6 +87,31 @@ export default function Header() {
           </div>
         </div>
 
+        {/* Main Navigation Links */}
+        <div className="d-flex align-items-center" style={{ gap: 24, marginLeft: 32 }}>
+          <Link
+            to="/"
+            style={{
+              color: theme === "light" ? "#222" : "#fff",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
+          >
+            Home
+          </Link>
+          <Link
+            to="/shops"
+            style={{
+              color: theme === "light" ? "#222" : "#fff",
+              textDecoration: "none",
+              fontWeight: 600,
+            }}
+          >
+            Shops
+          </Link>
+          {/* Add more links as needed */}
+        </div>
+
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
     </>

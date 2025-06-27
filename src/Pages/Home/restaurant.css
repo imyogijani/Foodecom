@@ -1050,17 +1050,26 @@
   .restaurants-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+  .featured-products-container .product-cards-wrapper .product-cards{
+    grid-template-columns: repeat(3, 1fr) auto;
+  }
 }
 
 @media (max-width: 768px) {
   .restaurants-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+  .featured-products-container .product-cards-wrapper .product-cards{
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 480px) {
   .restaurants-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .featured-products-container .product-cards-wrapper .product-cards{
+    grid-template-columns: repeat(2, 1fr) ;
   }
 }
 
@@ -1327,18 +1336,24 @@
   background: #f3f3f7;
   border-radius: 0;
   overflow: hidden;
+  /* Make image container responsive and centered */
+  min-height: 120px;
+  max-height: 180px;
+  height: auto;
 }
 
 .compact-menu-card .circular-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 160px;
+  max-height: 160px;
+  min-width: 80px;
+  min-height: 80px;
+  object-fit: contain;
   border-radius: 0;
   transition: filter 0.2s;
-}
-
-.compact-menu-card:hover .circular-image img {
-  filter: brightness(0.96) contrast(1.08);
+  margin: 0 auto;
+  display: block;
 }
 
 .compact-menu-card .item-title {
