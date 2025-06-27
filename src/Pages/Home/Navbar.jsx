@@ -45,6 +45,9 @@ const Navbar = () => {
     fetchUserData();
   }, []);
 
+  // Only show user menu/profile for client role
+  const shouldShowUserMenu = user && user.role === "client";
+
   // Handle mobile menu and body scroll lock
   useEffect(() => {
     if (showMobileMenu) {
@@ -136,7 +139,7 @@ const Navbar = () => {
           </div>
 
           <div className="nav-right">
-            {localStorage.getItem("token") ? (
+            {localStorage.getItem("token") && shouldShowUserMenu ? (
               <>
                 <div className="user-menu-container">
                   <button
@@ -155,9 +158,7 @@ const Navbar = () => {
                     <div className="user-menu animate-dropdown">
                       <div className="user-info">
                         <img
-                          src={
-                            avatarError ? MaleUser : user?.avatar || MaleUser
-                          }
+                          src={avatarError ? MaleUser : user?.avatar || MaleUser}
                           alt={user?.name || "User avatar"}
                           className="menu-avatar"
                           onError={handleAvatarError}
@@ -172,28 +173,6 @@ const Navbar = () => {
                         </div>
                       </div>
                       <div className="menu-divider"></div>
-                      {user?.role === "admin" && (
-                        <button
-                          className="menu-item dashboard-dropdown"
-                          onClick={() => {
-                            setShowUserMenu(false);
-                            navigate("/admin/dashboard");
-                          }}
-                        >
-                          <FaStore />Dashboard
-                        </button>
-                      )}
-                      {user?.role === "shopowner" && (
-                        <button
-                          className="menu-item dashboard-dropdown"
-                          onClick={() => {
-                            setShowUserMenu(false);
-                            navigate("/seller/dashboard");
-                          }}
-                        >
-                          <FaCog />Dashboard
-                        </button>
-                      )}
                       <button
                         className="menu-item dashboard-dropdown"
                         onClick={() => {
@@ -272,7 +251,7 @@ const Navbar = () => {
         </div>
 
         <div className="mobile-nav-actions">
-          {localStorage.getItem("token") ? (
+          {localStorage.getItem("token") && shouldShowUserMenu ? (
             <>
               <button
                 className="nav-pill-link"

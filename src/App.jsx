@@ -38,6 +38,7 @@ import SellerProfile from "./Pages/Seller/SellerProfile";
 import SellerDeals from "./Pages/Seller/SellerDeals";
 import ProductDetail from "./Pages/Home/ProductDetail";
 import { DealsProvider } from './context/DealsContext';
+import SubscriptionReview from "./Pages/SubscriptionReview";
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
@@ -99,6 +100,7 @@ function LayoutWrapper() {
         <Route path="/" element={<Home />} />
         <Route path="menu" element={<Menu />} />
         <Route path="offer" element={<Offers />} />
+        <Route path="subscription/review" element={<SubscriptionReview />} />
         <Route path="shops" element={<Shops />} />
         <Route path="product/:id" element={<ProductDetail />} />
         <Route path="login" element={<Login />} />

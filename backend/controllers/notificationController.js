@@ -1,25 +1,25 @@
-import Notification from '../models/notificationModel.js';
+import Notification from "../models/notificationModel.js";
 
 // Get all notifications for a user
 export const getNotifications = async (req, res) => {
   try {
     const { page = 1, limit = 20, unreadOnly = false } = req.query;
     const filter = { recipient: req.user._id };
-    
-    if (unreadOnly === 'true') {
+
+    if (unreadOnly === "true") {
       filter.isRead = false;
     }
 
     const notifications = await Notification.find(filter)
-      .populate('sender', 'names email')
+      .populate("sender", "names email")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
     const total = await Notification.countDocuments(filter);
-    const unreadCount = await Notification.countDocuments({ 
-      recipient: req.user._id, 
-      isRead: false 
+    const unreadCount = await Notification.countDocuments({
+      recipient: req.user._id,
+      isRead: false,
     });
 
     res.status(200).json({
@@ -32,7 +32,7 @@ export const getNotifications = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -48,17 +48,17 @@ export const markAsRead = async (req, res) => {
     );
 
     if (!notification) {
-      return res.status(404).json({ message: 'Notification not found' });
+      return res.status(404).json({ message: "Notification not found" });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Notification marked as read',
+      message: "Notification marked as read",
       notification,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -72,11 +72,11 @@ export const markAllAsRead = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'All notifications marked as read',
+      message: "All notifications marked as read",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -91,16 +91,16 @@ export const deleteNotification = async (req, res) => {
     });
 
     if (!notification) {
-      return res.status(404).json({ message: 'Notification not found' });
+      return res.status(404).json({ message: "Notification not found" });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Notification deleted',
+      message: "Notification deleted",
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -118,7 +118,7 @@ export const getUnreadCount = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -129,7 +129,37 @@ export const createNotification = async (notificationData) => {
     await notification.save();
     return notification;
   } catch (error) {
-    console.error('Error creating notification:', error);
+    console.error("Error creating notification:", error);
+    throw error;
+  }
+};
+
+// Utility: Send subscription plan change notification
+export const sendSubscriptionChangeNotification = async ({
+  userId,
+  oldPlan,
+  newPlan,
+  newFeatures,
+}) => {
+  try {
+    const notification = new Notification({
+      title: "Subscription Plan Changed",
+      message: `Your subscription has been updated from ${oldPlan} to ${newPlan}. Click to review your new plan features!`,
+      type: "system",
+      recipient: userId,
+      relatedModel: "users",
+      priority: "high",
+      actionUrl: `/subscription/review?plan=${encodeURIComponent(newPlan)}`,
+      metadata: {
+        oldPlan,
+        newPlan,
+        newFeatures,
+      },
+    });
+    await notification.save();
+    return notification;
+  } catch (error) {
+    console.error("Error creating subscription change notification:", error);
     throw error;
   }
 };

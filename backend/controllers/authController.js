@@ -303,6 +303,35 @@ export const clearNotification = async (req, res) => {
   }
 };
 
+// Seller accepts updated plan (from review page)
+export const acceptPlanUpdateController = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { planName } = req.body;
+    const user = await userModel.findById(userId);
+    if (!user || user.role !== "shopowner") {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+    const plan = await Subscription.findOne({ planName });
+    if (!plan) {
+      return res.status(404).json({ message: "Plan not found" });
+    }
+    user.subscription = plan._id;
+    user.subscriptionFeatures = plan.includedFeatures;
+    user.subscriptionStartDate = new Date();
+    await user.save();
+    return res.status(200).json({
+      success: true,
+      message: "Plan updated successfully",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Error updating plan",
+      error: error.message,
+    });
+  }
+};
+
 export {
   registerController,
   loginController,

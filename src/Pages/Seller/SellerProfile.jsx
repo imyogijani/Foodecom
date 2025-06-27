@@ -324,7 +324,7 @@ const SellerProfile = () => {
                   }}
                 />
               </div>
-              {profile.subscription && profile.subscription.includedFeatures && (
+              {profile.subscriptionFeatures && profile.subscriptionFeatures.length > 0 && (
                 <div
                   className="seller-profile-row"
                   style={{ alignItems: "start" }}
@@ -336,7 +336,7 @@ const SellerProfile = () => {
                     Plan Features
                   </label>
                   <ul className="seller-profile-features">
-                    {profile.subscription.includedFeatures.map((f, i) => (
+                    {profile.subscriptionFeatures.map((f, i) => (
                       <li key={i}>{f}</li>
                     ))}
                   </ul>

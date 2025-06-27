@@ -39,7 +39,13 @@ const Login = () => {
   }, []);
 
   const redirectBasedOnRole = (role) => {
-    navigate('/');
+    if (role === "admin") {
+      navigate("/admin/dashboard");
+    } else if (role === "shopowner") {
+      navigate("/seller/dashboard");
+    } else {
+      navigate("/");
+    }
   };
 
   const handleChange = (e) => {

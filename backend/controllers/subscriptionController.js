@@ -51,6 +51,19 @@ export const getSubscriptionById = async (req, res) => {
   }
 };
 
+// Get a subscription plan by name (for review page)
+export const getSubscriptionByName = async (req, res) => {
+  try {
+    const { planName } = req.params;
+    const plan = await Subscription.findOne({ planName });
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+    // Optionally, you can fetch old plan info if needed
+    res.status(200).json({ plan });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching plan", error: error.message });
+  }
+};
+
 // Update a subscription plan
 export const updateSubscription = async (req, res) => {
   try {
@@ -65,14 +78,16 @@ export const updateSubscription = async (req, res) => {
     }
     // Notify all shopowners with this subscription
     const User = (await import("../models/userModel.js")).default;
-    await User.updateMany(
-      { subscription: req.params.id },
-      {
-        $set: {
-          notification: `A new version of your subscription plan ('${planName}') is available. Please review the changes.`,
-        },
-      }
-    );
+    const { sendSubscriptionChangeNotification } = await import("./notificationController.js");
+    const affectedUsers = await User.find({ subscription: req.params.id });
+    for (const user of affectedUsers) {
+      await sendSubscriptionChangeNotification({
+        userId: user._id,
+        oldPlan: planName, // If you have old plan name, use it here
+        newPlan: planName,
+        newFeatures: includedFeatures,
+      });
+    }
     res.status(200).json({
       message: "Subscription plan updated successfully",
       subscription: updatedSubscription,

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FaBell, FaTimes } from 'react-icons/fa';
-import axios from '../utils/axios';
-import './NotificationBell.css';
+import React, { useState, useEffect, useRef } from "react";
+import { FaBell, FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import axios from "../utils/axios";
+import "./NotificationBell.css";
 
 const NotificationBell = ({ role }) => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -24,45 +25,55 @@ const NotificationBell = ({ role }) => {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
+  // Listen for notification changes from other tabs/pages
+  useEffect(() => {
+    const handler = () => {
+      fetchUnreadCount();
+      if (showDropdown) fetchNotifications();
+    };
+    window.addEventListener("notification-updated", handler);
+    return () => window.removeEventListener("notification-updated", handler);
+  }, [showDropdown]);
+
   const fetchUnreadCount = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) return;
-      
-      const response = await axios.get('/api/notifications/unread-count', {
+
+      const response = await axios.get("/api/notifications/unread-count", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (response.data.success) {
         setUnreadCount(response.data.unreadCount);
       }
     } catch (error) {
       // Silently fail for notifications
-      console.error('Error fetching unread count:', error);
+      console.error("Error fetching unread count:", error);
     }
   };
 
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) return;
-      
-      const response = await axios.get('/api/notifications?limit=10', {
+
+      const response = await axios.get("/api/notifications?limit=10", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (response.data.success) {
         setNotifications(response.data.notifications);
       }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
     } finally {
       setLoading(false);
     }
@@ -70,43 +81,40 @@ const NotificationBell = ({ role }) => {
 
   const markAsRead = async (notificationId) => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.put(`/api/notifications/${notificationId}/read`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `/api/notifications/${notificationId}/read`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
       // Update local state
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif._id === notificationId 
-            ? { ...notif, isRead: true }
-            : notif
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif._id === notificationId ? { ...notif, isRead: true } : notif
         )
       );
-      
+
       // Update unread count
       fetchUnreadCount();
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error("Error marking notification as read:", error);
     }
   };
 
   const deleteNotification = async (notificationId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.delete(`/api/notifications/${notificationId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
-      // Update local state
-      setNotifications(prev => 
-        prev.filter(notif => notif._id !== notificationId)
-      );
-      
-      // Update unread count
-      fetchUnreadCount();
+      setNotifications((prev) => prev.filter((notif) => notif._id !== notificationId));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+      window.dispatchEvent(new Event("notification-updated")); // Notify all tabs
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      console.error("Error deleting notification:", error);
     }
   };
 
@@ -118,8 +126,8 @@ const NotificationBell = ({ role }) => {
     const now = new Date();
     const notifTime = new Date(dateString);
     const diffInMinutes = Math.floor((now - notifTime) / (1000 * 60));
-    
-    if (diffInMinutes < 1) return 'Just now';
+
+    if (diffInMinutes < 1) return "Just now";
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
     return `${Math.floor(diffInMinutes / 1440)}d ago`;
@@ -131,11 +139,11 @@ const NotificationBell = ({ role }) => {
         <FaBell />
         {unreadCount > 0 && (
           <span className="badge">
-            {unreadCount > 99 ? '99+' : unreadCount}
+            {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
-      
+
       {showDropdown && (
         <div className="notification-dropdown">
           <div className="notification-header">
@@ -144,7 +152,7 @@ const NotificationBell = ({ role }) => {
               <span className="unread-indicator">{unreadCount} unread</span>
             )}
           </div>
-          
+
           <div className="notification-list">
             {loading ? (
               <div className="notification-loading">Loading...</div>
@@ -154,10 +162,10 @@ const NotificationBell = ({ role }) => {
               </div>
             ) : (
               notifications.slice(0, 10).map((notification) => (
-                <div 
-                  key={notification._id} 
+                <div
+                  key={notification._id}
                   className={`notification-item ${
-                    notification.isRead ? 'read' : 'unread'
+                    notification.isRead ? "read" : "unread"
                   }`}
                 >
                   <div className="notification-content">
@@ -170,8 +178,27 @@ const NotificationBell = ({ role }) => {
                     <div className="notification-time">
                       {formatTime(notification.createdAt)}
                     </div>
+                    {/* Add review button for subscription_change notifications */}
+                    {notification.type === "subscription_change" && notification.metadata?.newPlan && (
+                      <Link
+                        to={`/subscription/review?plan=${encodeURIComponent(notification.metadata.newPlan)}&notif=${notification._id}`}
+                        className="review-plan-btn"
+                        style={{
+                          display: 'inline-block',
+                          marginTop: 8,
+                          padding: '6px 16px',
+                          background: '#fc8a06',
+                          color: '#fff',
+                          borderRadius: 6,
+                          fontWeight: 600,
+                          textDecoration: 'none',
+                        }}
+                      >
+                        Review Plan
+                      </Link>
+                    )}
                   </div>
-                  
+
                   <div className="notification-actions">
                     {!notification.isRead && (
                       <button
@@ -194,12 +221,10 @@ const NotificationBell = ({ role }) => {
               ))
             )}
           </div>
-          
+
           {notifications.length > 0 && (
             <div className="notification-footer">
-              <button className="view-all-btn">
-                View all notifications
-              </button>
+              <button className="view-all-btn">View all notifications</button>
             </div>
           )}
         </div>
@@ -209,4 +234,3 @@ const NotificationBell = ({ role }) => {
 };
 
 export default NotificationBell;
-

@@ -12,8 +12,11 @@ const SellerNotification = () => {
         const response = await axios.get("/api/auth/current-user", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (response.data.user && response.data.user.notification) {
+        // If notification is a string, do not show. If it's an object (new notification system), show.
+        if (response.data.user && typeof response.data.user.notification === 'object' && response.data.user.notification !== null) {
           setNotification(response.data.user.notification);
+        } else {
+          setNotification(null);
         }
       } catch (error) {
         // Optionally handle error
@@ -25,7 +28,8 @@ const SellerNotification = () => {
   const handleDismiss = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.patch("/api/v1/auth/clear-notification", {}, {
+      // Use the notification DELETE endpoint instead of the old PATCH endpoint
+      await axios.delete(`/api/notifications/${notification._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setNotification(null);
@@ -38,7 +42,7 @@ const SellerNotification = () => {
 
   return (
     <div style={{ background: '#fff3cd', color: '#856404', padding: '16px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ffeeba', position: 'relative' }}>
-      <span>{notification}</span>
+      <span>{notification.message || notification.title || 'Notification'}</span>
       <button onClick={handleDismiss} style={{ position: 'absolute', right: 12, top: 12, background: 'none', border: 'none', fontSize: 18, cursor: 'pointer', color: '#856404' }}>&times;</button>
     </div>
   );

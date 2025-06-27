@@ -58,24 +58,47 @@ export const addProduct = async (req, res) => {
       const features = Array.isArray(user.subscriptionFeatures)
         ? user.subscriptionFeatures
         : [];
-      // Product limit enforcement
+      // Product limit enforcement (generalized for any plan, overall count)
       const productLimitFeature = features.find((f) =>
         f.startsWith("productLimit:")
       );
-      if (productLimitFeature) {
-        const limit = parseInt(productLimitFeature.split(":")[1], 10);
-        const productCount = await Product.countDocuments({ seller: user._id });
-        if (!isNaN(limit) && productCount >= limit) {
-          return res.status(403).json({
-            success: false,
-            message: `Your plan allows only ${limit} products. Upgrade your plan to add more.`,
+      if (!productLimitFeature) {
+        console.error(`Shopowner ${user._id} has no productLimit feature in subscriptionFeatures!`);
+        return res.status(403).json({
+          success: false,
+          message: "Your subscription plan does not allow adding products. Please contact support.",
+        });
+      }
+      const limit = parseInt(productLimitFeature.split(":")[1], 10);
+      // Count ALL products for this seller, regardless of category
+      const productCount = await Product.countDocuments({ seller: user._id });
+      if (!isNaN(limit) && productCount >= limit) {
+        // Prevent duplicate notifications
+        const Notification = (await import("../models/notificationModel.js")).default;
+        const existing = await Notification.findOne({
+          recipient: user._id,
+          type: "system",
+          title: "Product Limit Reached",
+          isRead: false
+        });
+        if (!existing) {
+          const { createNotification } = await import(
+            "../controllers/notificationController.js"
+          );
+          await createNotification({
+            title: "Product Limit Reached",
+            message: `You have reached your plan's product limit (${limit}). Upgrade your plan to add more products.`,
+            type: "system",
+            recipient: user._id,
+            relatedModel: "products",
+            priority: "high",
           });
         }
+        return res.status(403).json({
+          success: false,
+          message: `Your plan allows only ${limit} products. Upgrade your plan to add more.`,
+        });
       }
-      // Example: Analytics access enforcement (template for future features)
-      // if (!features.includes("analytics")) {
-      //   // Optionally restrict analytics access elsewhere in the code
-      // }
       // Add more feature checks here as needed
     }
 

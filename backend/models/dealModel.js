@@ -94,17 +94,18 @@ dealSchema.index({ status: 1, startDate: 1, endDate: 1 });
 dealSchema.index({ product: 1 });
 
 // Virtual for checking if deal is currently active
-dealSchema.virtual('isActive').get(function() {
+dealSchema.virtual("isActive").get(function () {
   const now = new Date();
-  return this.status === 'active' && 
-         this.startDate <= now && 
-         this.endDate >= now;
+  return (
+    this.status === "active" && this.startDate <= now && this.endDate >= now
+  );
 });
 
 // Pre-save middleware to calculate deal price
-dealSchema.pre('save', function(next) {
+dealSchema.pre("save", function (next) {
   if (this.originalPrice && this.discountPercentage) {
-    this.dealPrice = this.originalPrice - (this.originalPrice * this.discountPercentage / 100);
+    this.dealPrice =
+      this.originalPrice - (this.originalPrice * this.discountPercentage) / 100;
   }
   next();
 });

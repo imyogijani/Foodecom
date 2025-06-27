@@ -8,6 +8,7 @@ import {
   uploadAvatarController,
   verifyToken,
   clearNotification,
+  acceptPlanUpdateController,
 } from "../controllers/authController.js";
 import upload from "../middlewares/uploadMiddleware.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
@@ -46,6 +47,9 @@ router.post(
 
 // Clear notification || PATCH
 router.patch("/clear-notification", authenticateToken, clearNotification);
+
+// Seller accepts updated plan
+router.patch("/accept-plan-update", authenticateToken, acceptPlanUpdateController);
 
 // Serve avatar images
 router.get("/uploads/avatars/:filename", (req, res) => {

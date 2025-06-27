@@ -14,7 +14,16 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ["deal_request", "deal_ended", "deal_approved", "deal_rejected", "system", "order", "user_activity"],
+      enum: [
+        "deal_request",
+        "deal_ended",
+        "deal_approved",
+        "deal_rejected",
+        "system",
+        "order",
+        "user_activity",
+        "subscription_change",
+      ],
       default: "system",
     },
     recipient: {
