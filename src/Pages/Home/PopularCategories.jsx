@@ -36,7 +36,7 @@ export default function PopularCategories() {
         {categories.map((cat) => (
           <div className="category-card" key={cat.id}>
             <img src={cat.imageUrl} alt={cat.name} />
-            <h5>{cat.name}</h5>
+            <h4>{cat.name}</h4>
             <p>{cat.restaurants} Restaurants</p>
           </div>
         ))}

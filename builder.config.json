@@ -41,5 +41,6 @@
     "npx *",
     "sleep *",
     "netlify *"
-  ]
+  ],
+  "command": "npm run dev"
 }

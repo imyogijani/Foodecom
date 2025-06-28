@@ -1,9 +1,10 @@
 import React from "react";
 import "./StatsBanner.css";
+import "./HomeLayout.css";
 
 export default function StatsBanner() {
   return (
-    <div className="stats-banner">
+    <>
       <div className="stat">
         <h2>546+</h2>
         <p>Registered Riders</p>
@@ -23,6 +24,6 @@ export default function StatsBanner() {
         <h2>17,457+</h2>
         <p>Food items</p>
       </div>
-    </div>
+    </>
   );
 } 

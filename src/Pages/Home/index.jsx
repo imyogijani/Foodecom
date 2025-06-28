@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import "./Home.css";
+import "./HomeLayout.css";
 import shoppingImage from "../../images/shopping-hero.svg";
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
@@ -118,7 +119,7 @@ export default function Home() {
   };
 
   return (
-    <>
+    <div className="home-layout-container">
       <div className="hero-section">
         <div className="hero-content">
           <div className="hero-text">
@@ -130,14 +131,13 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <StatsBanner />
+      
+      <div className="stats-banner">
+        <StatsBanner />
+      </div>
 
-      {/* --- REMOVE PRODUCT SECTION FROM HOME --- */}
-      {/* === Featured Products Section === */}
-      {/* (Moved to Shops page) */}
-
-      {/* === Popular Categories Section === */}
-      <div className="popular-categories">
+      {/* Popular Categories Section */}
+      <div className="home-section popular-categories">
         <h3>E-mall World Popular Categories 🥳</h3>
         <div className="category-grid">
           {categories.map((cat) => (
@@ -166,8 +166,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === Exclusive Deals Section === */}
-      <div className="exclusive-deals-container" style={{margin: "1rem 3rem" }}>
+      {/* Exclusive Deals Section */}
+      <div className="home-section exclusive-deals-container">
         <div className="exclusive-deals-header">
           <h3>
             Up to <span>–40%</span> 🎉 E-mall World Exclusive Deals
@@ -222,8 +222,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* === Popular Restaurants Section === */}
-      <div className="popular_restaurants">
+      {/* Popular Restaurants Section */}
+      <div className="home-section popular_restaurants">
         <h3>Popular Shops</h3>
         <div className="restaurant-grid">
           {restaurants.length === 0 ? (
@@ -254,7 +254,7 @@ export default function Home() {
       </div>
 
       {/* Partner Banner Section */}
-      <div className="partner-banner-row">
+      <div className="home-section-wide partner-banner-row">
         <div className="partner-banner-box">
           <p className="top-label">Earn more with lower fees</p>
           <h4 className="subtitle">Signup as a business</h4>
@@ -273,8 +273,13 @@ export default function Home() {
         </div>
       </div>
 
-      <BottomCard />
-      <DealsList />
-    </>
+      <div className="home-section bottom-card-outer">
+        <BottomCard />
+      </div>
+      
+      <div className="home-section-narrow deals-list-container">
+        <DealsList />
+      </div>
+    </div>
   );
 }

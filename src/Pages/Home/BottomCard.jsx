@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./BottomCard.css";
+import "./HomeLayout.css";
 import image1 from "../../images/image1.png";
 import offer1 from "../../images/image2.png";
 import offer2 from "../../images/image.png";
@@ -100,7 +101,7 @@ export default function BottomCard() {
   };
 
   return (
-    <div className="bottom-card-outer">
+    <>
       <h2 className="bottom-card-title">Know more about us!</h2>
       <div className="bottom-card-tabs">
         {faqTabs.map((tab, idx) => (
@@ -155,6 +156,6 @@ export default function BottomCard() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,12 +1,13 @@
 import React from 'react';
 import { useDeals } from '../../context/DealsContext';
+import './HomeLayout.css';
 
 function DealsList() {
   const { deals } = useDeals();
   const approvedDeals = deals.filter(d => d.status === 'approved');
 
   return (
-    <div style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
+    <>
       <h2>Available Deals</h2>
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {approvedDeals.length === 0 && <li>No deals available.</li>}
@@ -18,7 +19,7 @@ function DealsList() {
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 }
 

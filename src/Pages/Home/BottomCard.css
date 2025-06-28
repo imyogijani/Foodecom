@@ -1,13 +1,4 @@
-.bottom-card-outer {
-  width: 100%;
-  background: #f7f7f7;
-  border-radius: 20px;
-  margin: 48px 0;
-  padding: 32px 0 32px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+/* BottomCard specific styles - Layout handled by HomeLayout.css */
 
 .bottom-card-title {
   font-size: 2rem;
@@ -15,16 +6,14 @@
   color: #181818;
   margin-bottom: 24px;
   text-align: left;
-  width: 90%;
-  max-width: 1200px;
+  width: 100%;
 }
 
 .bottom-card-tabs {
   display: flex;
   gap: 24px;
   margin-bottom: 32px;
-  width: 90%;
-  max-width: 1200px;
+  width: 100%;
 }
 
 .bottom-card-tab {
@@ -39,6 +28,7 @@
   transition: background 0.2s, color 0.2s;
   outline: none;
 }
+
 .bottom-card-tab.active {
   background: #fc8a06;
   color: #fff;
@@ -54,8 +44,7 @@
   flex-direction: row;
   gap: 32px;
   padding: 40px 32px 32px 32px;
-  width: 90%;
-  max-width: 1200px;
+  width: 100%;
   align-items: flex-start;
   justify-content: space-between;
 }
@@ -71,6 +60,7 @@
   padding: 0;
   margin: 0;
 }
+
 .faq-list li {
   font-size: 1.08rem;
   color: #181818;
@@ -96,6 +86,7 @@
   flex-direction: column;
   align-items: center;
 }
+
 .steps-row {
   display: flex;
   flex-direction: row;
@@ -103,6 +94,7 @@
   margin-bottom: 18px;
   justify-content: center;
 }
+
 .step-card {
   background: #f3f3f3;
   border-radius: 16px;
@@ -116,26 +108,31 @@
   text-align: center;
   transition: box-shadow 0.2s;
 }
+
 .step-card:hover {
   box-shadow: 0 6px 24px rgba(252, 138, 6, 0.13);
 }
+
 .step-img {
   width: 64px;
   height: 64px;
   object-fit: contain;
   margin-bottom: 16px;
 }
+
 .step-title {
   font-size: 1.1rem;
   font-weight: 700;
   color: #181818;
   margin-bottom: 6px;
 }
+
 .step-desc {
   font-size: 0.98rem;
   color: #444;
   font-weight: 500;
 }
+
 .bottom-card-desc {
   font-size: 1rem;
   color: #222;
@@ -144,17 +141,24 @@
   max-width: 600px;
 }
 
-@media (max-width: 1200px) {
-  .bottom-card-container {
-    width: 95%;
-  }
-  
-  .bottom-card-title,
-  .bottom-card-tabs {
-    width: 95%;
-  }
+.faq-answer {
+  margin-top: 8px;
+  background: #fff7ea;
+  color: #181818;
+  font-size: 0.98rem;
+  border-radius: 12px;
+  padding: 10px 18px;
+  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.06);
+  font-weight: 500;
+  animation: fadeInFaq 0.2s;
 }
 
+@keyframes fadeInFaq {
+  from { opacity: 0; transform: translateY(-8px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* Responsive styles */
 @media (max-width: 992px) {
   .bottom-card-container {
     flex-direction: column;
@@ -178,62 +182,50 @@
 }
 
 @media (max-width: 768px) {
-  .bottom-card-outer {
-    padding: 24px 0;
-    margin: 32px 0;
-  }
-
   .bottom-card-title {
     font-size: 1.75rem;
     margin-bottom: 20px;
   }
 
   .bottom-card-tabs {
-    gap: 12px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
+    gap: 16px;
+    margin-bottom: 24px;
   }
 
   .bottom-card-tab {
-    padding: 8px 20px;
+    padding: 8px 24px;
     font-size: 0.9rem;
-    white-space: nowrap;
   }
 
   .step-card {
-    flex: 1 1 100%;
-    min-width: 0;
+    flex: 1 1 calc(50% - 16px);
+    min-width: 240px;
+    padding: 20px 16px 16px 16px;
   }
 
   .bottom-card-desc {
-    font-size: 0.95rem;
-    padding: 0 16px;
+    font-size: 0.9rem;
   }
 }
 
 @media (max-width: 480px) {
-  .bottom-card-outer {
-    padding: 20px 0;
-    margin: 24px 0;
-  }
-
   .bottom-card-title {
     font-size: 1.5rem;
     margin-bottom: 16px;
   }
 
   .bottom-card-tabs {
-    gap: 8px;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
   .bottom-card-tab {
-    padding: 6px 16px;
+    padding: 6px 20px;
     font-size: 0.85rem;
   }
 
   .bottom-card-container {
-    padding: 24px 16px;
+    padding: 24px 20px 20px 20px;
   }
 
   .faq-list li {
@@ -242,7 +234,8 @@
   }
 
   .step-card {
-    padding: 16px 12px;
+    flex: 1 1 100%;
+    min-width: 200px;
   }
 
   .step-title {
@@ -252,22 +245,4 @@
   .step-desc {
     font-size: 0.9rem;
   }
-}
-
-/* Add to the end of: c:\AksharRaj\Foodecom\src\Pages\Home\BottomCard.css */
-.faq-answer {
-  margin-top: 8px;
-  background: #fff7ea;
-  color: #181818;
-  font-size: 0.98rem;
-  border-radius: 12px;
-  padding: 10px 18px;
-  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.06);
-  font-weight: 500;
-  animation: fadeInFaq 0.2s;
-}
-
-@keyframes fadeInFaq {
-  from { opacity: 0; transform: translateY(-8px);}
-  to { opacity: 1; transform: translateY(0);}
 }

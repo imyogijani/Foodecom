@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
+import "./HomeLayout.css";
 import McD from "../../images/McD.png";
 import papajohn from "../../images/Papajohns.png";
 import kfc from "../../images/KFC.png";
@@ -163,6 +164,7 @@ export default function Shops() {
   const [activeCategory, setActiveCategory] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [loading, setLoading] = useState(true);
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const similarRestaurants = [
     { name: "McDonald's London", img: McD },
@@ -233,30 +235,36 @@ export default function Shops() {
     return (
       <div className="offers-grid">
         {items.map((offer) => (
-          <div className="offer-card" key={offer.id}>
-            <img src={offer.image} alt={offer.title} loading="lazy" />
-            <div className="discount-badge">{offer.discount}</div>
-            {offer.badge && <div className="special-badge">{offer.badge}</div>}
-            <div className="offer-info">
-              <span>{offer.store}</span>
-              <h4>{offer.title}</h4>
+          <div
+            className="offer-card compact-menu-card"
+            key={offer.id}
+            onClick={() => navigate(`/product/${offer.id}`, { state: { item: offer } })}
+            onMouseEnter={() => setHoveredItem(offer.id)}
+            onMouseLeave={() => setHoveredItem(null)}
+            style={{ position: "relative" }}
+          >
+            <div className="card-content">
+              <div className="circular-image">
+                <img src={offer.image} alt={offer.title} loading="lazy" />
+                {offer.badge && <div className="popular-badge">{offer.badge}</div>}
+              </div>
+              <div className="item-title-wrapper">
+                <h4 className="item-title">{offer.title}</h4>
+              </div>
               <button
-                className="plus-icon"
-                onClick={() =>
-                  addToCart({
-                    id: offer.id,
-                    name: offer.title,
-                    price: parseFloat(
-                      (offer.price || "0").toString().replace(/[₹INR\s]/g, "")
-                    ),
-                    image: offer.image,
-                  })
-                }
-                aria-label="Add to cart"
+                className="add-to-cart-btn"
+                onClick={e => { e.stopPropagation(); addToCart({ ...offer, quantity: 1, addedAt: new Date().toISOString() }); }}
+                aria-label={`Add ${offer.title} to cart`}
               >
                 +
               </button>
             </div>
+            {hoveredItem === offer.id && (
+              <div className="product-popup">
+                <p className="popup-price">{offer.price}</p>
+                <p className="popup-desc">{offer.discount} {offer.store}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -271,18 +279,32 @@ export default function Shops() {
             className="compact-menu-card"
             key={item.id}
             onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
-            style={{ cursor: "pointer" }}
+            onMouseEnter={() => setHoveredItem(item.id)}
+            onMouseLeave={() => setHoveredItem(null)}
+            style={{ position: "relative" }}
           >
             <div className="card-content">
               <div className="circular-image">
                 <img src={item.image} alt={item.title} loading="lazy" />
+                {item.isPopular && <div className="popular-badge">🔥 Popular</div>}
               </div>
-              <h4 className="item-title">{item.title}</h4>
-              <div className="item-hover-details">
-                <div className="item-description">{item.desc}</div>
-                <div className="item-price">{item.price}</div>
+              <div className="item-title-wrapper">
+                <h4 className="item-title">{item.title}</h4>
               </div>
+              <button
+                className="add-to-cart-btn"
+                onClick={e => { e.stopPropagation(); addToCart({ ...item, quantity: 1, addedAt: new Date().toISOString() }); }}
+                aria-label={`Add ${item.title} to cart`}
+              >
+                +
+              </button>
             </div>
+            {hoveredItem === item.id && (
+              <div className="product-popup">
+                <p className="popup-price">{item.price}</p>
+                <p className="popup-desc">{item.desc}</p>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -324,7 +346,7 @@ export default function Shops() {
   // Optionally, you can show a summary using cartItems from useCart if needed
 
   return (
-    <div className="restaurant-page">
+    <div className="home-layout-container restaurant-page">
       {/* Hero Section */}
       <div className="restaurant-hero">
         <div className="hero-content">
@@ -370,10 +392,7 @@ export default function Shops() {
       </div>
 
       {/* Product Section */}
-      <div
-        className="featured-products-container"
-        style={{ margin: "1rem 3rem" }}
-      >
+      <div className="featured-products-container">
         <h3 style={{ marginBottom: 16 }}>Featured Products</h3>
         <div
           style={{
@@ -416,14 +435,7 @@ export default function Shops() {
           </select>
         </div>
         <div className="product-cards-wrapper">
-          <div
-            className="product-cards"
-            style={{
-              display: "grid",
-              gap: "2em",
-              gridTemplateColumns: "repeat(3, 1fr) auto",
-            }}
-          >
+          <div className="product-cards">
             {loading ? (
               <p>Loading products...</p>
             ) : filteredProducts.length === 0 ? (
@@ -446,106 +458,44 @@ export default function Shops() {
             ) : (
               filteredProducts.map((product) => (
                 <div
-                  className="deal-card product-modern-card"
+                  className="compact-menu-card"
                   key={product._id}
-                  style={{
-                    width: 'min(230px, 90vw)',
-                    background: 'linear-gradient(135deg, #f8fafc 0%, #e9e9f7 100%)',
-                    borderRadius: 18,
-                    boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
-                    padding: 0,
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    border: 'none',
-                    marginBottom: 18,
-                    overflow: 'hidden',
-                    transition: 'box-shadow 0.2s',
-                    flex: '1 1 180px',
-                    minWidth: 160,
-                    maxWidth: 260,
-                  }}
+                  onClick={() => navigate(`/product/${product._id}`, { state: { item: product } })}
+                  onMouseEnter={() => setHoveredItem(product._id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{ position: "relative" }}
                 >
-                  <div style={{ width: '100%', background: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '18px 0 10px 0', borderTopLeftRadius: 18, borderTopRightRadius: 18 }}>
-                    <img
-                      src={
-                        product.image
-                          ? product.image.startsWith("/uploads")
-                            ? `http://localhost:8080${product.image}`
-                            : product.image
-                          : "placeholder.jpg"
-                      }
-                      alt={product.name}
-                      style={{ width: '100%', height: 110, objectFit: 'contain', borderRadius: 10, background: '#f6f6f6', maxWidth: 140, minWidth: 80 }}
-                    />
-                  </div>
-                  <div
-                    className="badge"
-                    style={{
-                      position: "absolute",
-                      top: 12,
-                      left: 12,
-                      background: "#fc8a06",
-                      color: "#fff",
-                      borderRadius: 6,
-                      padding: "2px 10px",
-                      fontWeight: 600,
-                      fontSize: 13,
-                    }}
-                  >
-                    {product.discountPercentage
-                      ? `-${product.discountPercentage}%`
-                      : ""}
-                  </div>
-                  <div className="overlay">
-                    <h4
-                      style={{
-                        fontWeight: 700,
-                        fontSize: 18,
-                        margin: "8px 0 4px",
-                      }}
-                    >
-                      {product.name}
-                    </h4>
-                    <div
-                      style={{
-                        fontWeight: 600,
-                        color: "#03081f",
-                        fontSize: 16,
-                        marginBottom: 4,
-                      }}
-                    >
-                      ₹{product.price}
+                  <div className="card-content">
+                    <div className="circular-image">
+                      <img
+                        src={
+                          product.image
+                            ? product.image.startsWith("/uploads")
+                              ? `http://localhost:8080${product.image}`
+                              : product.image
+                            : "placeholder.jpg"
+                        }
+                        alt={product.name}
+                        loading="lazy"
+                      />
                     </div>
+                    <div className="item-title-wrapper">
+                      <h4 className="item-title">{product.name}</h4>
+                    </div>
+                    <button
+                      className="add-to-cart-btn"
+                      onClick={e => { e.stopPropagation(); addToCart({ ...product, quantity: 1, addedAt: new Date().toISOString() }); }}
+                      aria-label={`Add ${product.name} to cart`}
+                    >
+                      +
+                    </button>
                   </div>
-                  <button
-                    className="plus-icon"
-                    style={{
-                      marginTop: "auto",
-                      background: "#fc8a06",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: 8,
-                      padding: "8px 18px",
-                      fontWeight: 700,
-                      fontSize: 18,
-                      cursor: "pointer",
-                    }}
-                    onClick={() =>
-                      addToCart({
-                        id: product._id,
-                        name: product.name,
-                        price: product.price,
-                        image:
-                          product.images && product.images.length > 0
-                            ? product.images[0]
-                            : "placeholder.jpg",
-                      })
-                    }
-                  >
-                    +
-                  </button>
+                  {hoveredItem === product._id && (
+                    <div className="product-popup">
+                      <p className="popup-price">₹{product.price}</p>
+                      <p className="popup-desc">{product.desc}</p>
+                    </div>
+                  )}
                 </div>
               ))
             )}

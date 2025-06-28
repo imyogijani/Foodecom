@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import "./restaurant.css";
+import "./HomeLayout.css";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
@@ -24,6 +25,7 @@ export default function Offers() {
   const [searchQuery, setSearchQuery] = useState("");
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const filterOffers = (offers) => {
     if (!searchQuery) return offers;
@@ -50,7 +52,7 @@ export default function Offers() {
     .slice(0, 6);
 
   return (
-    <div className="restaurant-page">
+    <div className="home-layout-container restaurant-page">
       {/* Hero Section */}
       <div className="restaurant-hero">
         <div className="hero-content">
@@ -87,42 +89,36 @@ export default function Offers() {
             <h3 className="menu-category-title">Featured Offers</h3>
             <div className="offers-grid">
               {filterOffers(offerItems).map((offer) => (
-                <div className="offer-card" key={offer.id}>
-                  <img src={offer.image} alt={offer.title} loading="lazy" />
-                  <div className="discount-badge">{offer.discount}</div>
-                  {offer.badge && (
-                    <div className="special-badge">{offer.badge}</div>
-                  )}
-                  <div className="offer-info">
-                    <span>{offer.store}</span>
-                    <h4>{offer.title}</h4>
-                    <div className="offer-pricing">
-                      <span className="offer-price">{offer.price}</span>
-                      {offer.originalPrice && (
-                        <span className="original-price">
-                          {offer.originalPrice}
-                        </span>
-                      )}
+                <div
+                  className="offer-card compact-menu-card"
+                  key={offer.id}
+                  onClick={() => navigate(`/product/${offer.id}`, { state: { item: offer } })}
+                  onMouseEnter={() => setHoveredItem(offer.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{ position: "relative" }}
+                >
+                  <div className="card-content">
+                    <div className="circular-image">
+                      <img src={offer.image} alt={offer.title} loading="lazy" />
+                      {offer.badge && <div className="popular-badge">{offer.badge}</div>}
+                    </div>
+                    <div className="item-title-wrapper">
+                      <h4 className="item-title">{offer.title}</h4>
                     </div>
                     <button
-                      className="plus-icon"
-                      aria-label="Add to cart"
-                      onClick={() =>
-                        addToCart({
-                          id: offer.id,
-                          name: offer.title,
-                          price: parseFloat(
-                            (offer.price || "0")
-                              .toString()
-                              .replace(/[₹INR\s]/g, "")
-                          ),
-                          image: offer.image,
-                        })
-                      }
+                      className="add-to-cart-btn"
+                      onClick={e => { e.stopPropagation(); addToCart({ ...offer, quantity: 1, addedAt: new Date().toISOString() }); }}
+                      aria-label={`Add ${offer.title} to cart`}
                     >
                       +
                     </button>
                   </div>
+                  {hoveredItem === offer.id && (
+                    <div className="product-popup">
+                      <p className="popup-price">{offer.price}</p>
+                      <p className="popup-desc">{offer.discount} {offer.store}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -137,18 +133,32 @@ export default function Offers() {
                   className="compact-menu-card"
                   key={item.id}
                   onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
-                  style={{ cursor: "pointer" }}
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{ position: "relative" }}
                 >
                   <div className="card-content">
                     <div className="circular-image">
                       <img src={item.image} alt={item.title} loading="lazy" />
+                      {item.isPopular && <div className="popular-badge">🔥 Popular</div>}
                     </div>
-                    <h4 className="item-title">{item.title}</h4>
-                    <div className="item-hover-details">
-                      <div className="item-description">{item.desc}</div>
-                      <div className="item-price">{item.price}</div>
+                    <div className="item-title-wrapper">
+                      <h4 className="item-title">{item.title}</h4>
                     </div>
+                    <button
+                      className="add-to-cart-btn"
+                      onClick={e => { e.stopPropagation(); addToCart({ ...item, quantity: 1, addedAt: new Date().toISOString() }); }}
+                      aria-label={`Add ${item.title} to cart`}
+                    >
+                      +
+                    </button>
                   </div>
+                  {hoveredItem === item.id && (
+                    <div className="product-popup">
+                      <p className="popup-price">{item.price}</p>
+                      <p className="popup-desc">{item.desc}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -198,26 +208,6 @@ export default function Offers() {
               <span className="value">
                 Cannot be combined with other offers
               </span>
-            </div>
-          </div>
-
-          <div className="delivery-info-card">
-            <h3>💡 How to Use</h3>
-            <div className="info-item">
-              <span className="label">Step 1:</span>
-              <span className="value">Browse available offers</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Step 2:</span>
-              <span className="value">Add items to your cart</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Step 3:</span>
-              <span className="value">Discount applied automatically</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Step 4:</span>
-              <span className="value">Complete your order</span>
             </div>
           </div>
         </div>

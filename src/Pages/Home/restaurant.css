@@ -378,23 +378,25 @@
 
 .offer-card {
   position: relative;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: var(--white);
+  background: white;
   box-shadow: var(--card-shadow);
-  animation: slideUp 0.6s ease-out;
+  height: 280px;
+  display: flex;
+  flex-direction: column;
 }
 
 .offer-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-6px);
   box-shadow: var(--hover-shadow);
 }
 
 .offer-card img {
   width: 100%;
-  height: 200px;
+  height: 180px;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -405,78 +407,83 @@
 
 .discount-badge {
   position: absolute;
-  top: 0;
-  right: 12px;
-  background: var(--dark-blue);
-  color: var(--white);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  border-radius: 0 0 12px 12px;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #ff4757, #ff3742);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
   z-index: 2;
 }
 
 .special-badge {
   position: absolute;
   top: 12px;
-  left: 12px;
-  background: var(--popular-color);
-  color: var(--white);
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  border-radius: 12px;
-  text-transform: uppercase;
+  right: 12px;
+  background: linear-gradient(135deg, var(--yellow), #ff9f43);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
   z-index: 2;
-  animation: pulse 2s infinite;
 }
 
 .offer-info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   padding: 1rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-  color: var(--white);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
 }
 
 .offer-info span {
-  font-size: 0.8rem;
-  opacity: 0.9;
-  display: block;
-  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
 .offer-info h4 {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  margin: 0;
+  color: var(--dark-blue);
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .plus-icon {
   position: absolute;
-  right: 1rem;
   bottom: 1rem;
-  background: var(--dark-blue);
-  color: var(--white);
-  width: 28px;
-  height: 28px;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
+  background: linear-gradient(135deg, var(--yellow), #ff9f43);
+  color: white;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  z-index: 3;
+  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
 }
 
 .plus-icon:hover {
-  background: var(--yellow);
-  transform: scale(1.1) rotate(90deg);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(252, 138, 6, 0.4);
 }
 
 /* Menu Items - Enhanced */
@@ -1277,10 +1284,6 @@
     height: 150px;
   }
 
-  .restaurants-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   /* Ensure content doesn't get hidden by any floating elements */
   .menu-content,
   .compact-menu-grid {
@@ -1288,142 +1291,266 @@
   }
 }
 
-/* Compact Menu Cards - Universal Design */
+/* Enhanced Compact Menu Grid Styles */
 .compact-menu-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: flex-start;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
   width: 100%;
-  padding: 2rem 0;
-  /* background: #f9f9fb; */
-  border-radius: 18px;
 }
 
 .compact-menu-card {
-  position: relative;
-  width: 100%;
-  max-width: 210px;
-  min-width: 160px;
-  margin: 0;
+  background: var(--white);
   border-radius: 16px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
-  border: 1.5px solid #e6e6ef;
-  transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1), border 0.3s ease, background 0.3s ease;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  overflow: visible;
+  position: relative;
+  border: 1px solid var(--gray-200);
+  min-height: 280px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 0;
-  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  z-index: 1;
 }
 
 .compact-menu-card:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.13);
-  border: 1.5px solid var(--yellow, #ffd600);
-  transform: translateY(-8px) scale(1.045);
+  transform: translateY(-8px);
+  box-shadow: var(--hover-shadow);
+  border-color: var(--yellow);
+  z-index: 2;
+}
+
+.compact-menu-card .card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  position: relative;
+  padding-bottom: 3.5rem; /* Add space for the + button */
 }
 
 .compact-menu-card .circular-image {
+  position: relative;
   width: 100%;
-  aspect-ratio: 1/1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f3f7;
-  border-radius: 0;
+  height: 160px;
+  border-radius: 12px;
   overflow: hidden;
-  /* Make image container responsive and centered */
-  min-height: 120px;
-  max-height: 180px;
-  height: auto;
+  margin-bottom: 1rem;
+  background: var(--gray-100);
 }
 
 .compact-menu-card .circular-image img {
   width: 100%;
   height: 100%;
-  max-width: 160px;
-  max-height: 160px;
-  min-width: 80px;
-  min-height: 80px;
-  object-fit: contain;
-  border-radius: 0;
-  transition: filter 0.2s;
-  margin: 0 auto;
-  display: block;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.compact-menu-card:hover .circular-image img {
+  transform: scale(1.05);
+}
+
+.compact-menu-card .popular-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, var(--popular-color), #ff8a50);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+  z-index: 2;
+}
+
+.compact-menu-card .item-title-wrapper {
+  flex: 1;
+  margin-bottom: 0; /* Remove bottom margin since we have padding-bottom on card-content */
+  text-align: center;
+  padding: 0 0.5rem; /* Add horizontal padding to prevent text from touching edges */
 }
 
 .compact-menu-card .item-title {
-  font-family: 'Inter', 'Montserrat', 'Poppins', 'Segoe UI', Arial, sans-serif;
-  font-size: 1.18rem;
-  font-weight: 500;
-  color: #1a1a2e;
-  margin: 0.7rem 0 0.2rem 0;
-  text-align: center;
-  width: 100%;
-  background: none;
-  letter-spacing: 0.02em;
-  line-height: 1.25;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.04);
-}
-
-.compact-menu-card .item-hover-details {
-  opacity: 0;
-  max-height: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark-blue);
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  transform: translateY(16px);
-  pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.4,0,0.2,1), max-height 0.5s cubic-bezier(0.4,0,0.2,1), padding 0.5s cubic-bezier(0.4,0,0.2,1);
-  width: 100%;
-  background: #f7f7f7;
-  color: #222;
-  border-radius: 0 0 16px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-  padding: 0 0.7rem;
-  text-align: center;
-  position: static;
-  z-index: 1;
-  font-size: 1.01rem;
-  font-weight: 400;
+  min-height: 2.6rem; /* Ensure consistent height for title area */
 }
 
-.compact-menu-card:hover .item-hover-details {
-  opacity: 1;
-  max-height: 200px;
-  transform: translateY(0);
-  pointer-events: auto;
-  padding: 1.1rem 0.7rem 1.2rem 0.7rem;
+.compact-menu-card .item-description {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.compact-menu-card .item-hover-details .item-description {
-  font-size: 1.01rem;
-  margin-bottom: 0.5rem;
-  color: #222;
-  font-weight: 400;
-  line-height: 1.5;
-  letter-spacing: 0.01em;
+.compact-menu-card .item-price-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
 }
 
-.compact-menu-card .item-hover-details .item-price {
-  font-size: 1.18rem;
+.compact-menu-card .item-price {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--yellow, #ffd600);
-  letter-spacing: 0.01em;
-  margin-top: 0.2rem;
+  color: var(--yellow);
+  margin: 0;
 }
 
-/* Focus styles for accessibility */
-.compact-size-btn:focus,
-.xl-btn:focus,
-.add-btn:focus {
-  outline: 2px solid #fc8a06;
-  outline-offset: 2px;
+.compact-menu-card .add-to-cart-btn {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--yellow), #ff9f43);
+  color: white;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
+  z-index: 3;
 }
 
-/* Light theme only - no dark mode */
+.compact-menu-card .add-to-cart-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(252, 138, 6, 0.4);
+  background: linear-gradient(135deg, #ff9f43, var(--yellow));
+}
+
+/* Enhanced Offer Cards */
+.offer-card {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+  box-shadow: var(--card-shadow);
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.offer-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--hover-shadow);
+}
+
+.offer-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.offer-card:hover img {
+  transform: scale(1.05);
+}
+
+.discount-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #ff4757, #ff3742);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+  z-index: 2;
+}
+
+.special-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: linear-gradient(135deg, var(--yellow), #ff9f43);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
+  z-index: 2;
+}
+
+.offer-info {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.offer-info span {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.offer-info h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--dark-blue);
+  margin: 0 0 1rem 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.plus-icon {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--yellow), #ff9f43);
+  color: white;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
+}
+
+.plus-icon:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(252, 138, 6, 0.4);
+}
 
 /* Print styles */
 @media print {
@@ -1838,4 +1965,219 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+}
+
+/* Responsive styles for enhanced menu cards */
+@media (max-width: 1200px) {
+  .compact-menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .compact-menu-card {
+    min-height: 260px;
+  }
+  
+  .compact-menu-card .circular-image {
+    height: 150px;
+  }
+}
+
+@media (max-width: 992px) {
+  .compact-menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  
+  .compact-menu-card {
+    min-height: 250px;
+  }
+  
+  .compact-menu-card .circular-image {
+    height: 140px;
+  }
+  
+  .compact-menu-card .item-title {
+    font-size: 1rem;
+  }
+  
+  .compact-menu-card .add-to-cart-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .compact-menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.875rem;
+  }
+  
+  .compact-menu-card {
+    min-height: 240px;
+  }
+  
+  .compact-menu-card .circular-image {
+    height: 120px;
+  }
+  
+  .compact-menu-card .item-title {
+    font-size: 0.95rem;
+    min-height: 2.4rem;
+  }
+  
+  .compact-menu-card .add-to-cart-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    bottom: 0.75rem;
+    right: 0.75rem;
+  }
+  
+  .compact-menu-card .card-content {
+    padding-bottom: 3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .compact-menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .compact-menu-card {
+    min-height: 220px;
+  }
+  
+  .compact-menu-card .circular-image {
+    height: 100px;
+  }
+  
+  .compact-menu-card .item-title {
+    font-size: 0.9rem;
+    min-height: 2.2rem;
+  }
+  
+  .compact-menu-card .add-to-cart-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .compact-menu-card .card-content {
+    padding-bottom: 2.5rem;
+    padding: 0.75rem;
+  }
+  
+  .compact-menu-card .item-title-wrapper {
+    padding: 0 0.25rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .compact-menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 0.625rem;
+  }
+  
+  .compact-menu-card {
+    min-height: 200px;
+  }
+  
+  .compact-menu-card .circular-image {
+    height: 90px;
+  }
+  
+  .compact-menu-card .item-title {
+    font-size: 0.85rem;
+    min-height: 2rem;
+  }
+  
+  .compact-menu-card .add-to-cart-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+    bottom: 0.5rem;
+    right: 0.5rem;
+  }
+  
+  .compact-menu-card .card-content {
+    padding-bottom: 2rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Product Popup Styles */
+.product-popup {
+  position: absolute;
+  top: 10px;
+  left: 100%;
+  margin-left: 10px;
+  width: 180px;
+  background: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: var(--hover-shadow);
+  z-index: 10;
+  animation: fadeIn 0.2s ease-out;
+  pointer-events: none;
+}
+
+/* Handle edge case where popup might go off-screen */
+.compact-menu-card:nth-child(3n) .product-popup,
+.compact-menu-card:nth-child(3n+1) .product-popup {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+/* Ensure popup doesn't interfere with grid spacing */
+.compact-menu-card {
+  margin: 0;
+  z-index: 1;
+}
+
+.compact-menu-card:hover {
+  z-index: 2;
+}
+
+.popup-price {
+  font-weight: 700;
+  color: var(--yellow);
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+}
+
+.popup-desc {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  line-height: 1.3;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive styles for product popup */
+@media (max-width: 768px) {
+  .product-popup {
+    display: none; /* Hide popup on mobile for better UX */
+  }
+  
+  .compact-menu-card {
+    overflow: hidden; /* Reset overflow for mobile */
+  }
 }
