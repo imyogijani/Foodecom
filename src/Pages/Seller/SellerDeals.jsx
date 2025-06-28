@@ -150,8 +150,10 @@ const SellerDeals = () => {
   return (
     <div className="seller-deals">
       <div className="admin-header">
-        <h1>My Deals</h1>
-        <p className="admin-subtitle">Create and manage your special offers</p>
+        <div>
+          <h1>My Deals</h1>
+          <p className="admin-subtitle">Create and manage your special offers</p>
+        </div>
         <button 
           className="add-deal-btn"
           onClick={() => setShowCreateModal(true)}

@@ -148,8 +148,10 @@ const SellerOrders = () => {
   return (
     <div className="admin-orders">
       <div className="admin-header">
-        <h1>Orders</h1>
-        <p className="admin-subtitle">Manage your food orders</p>
+        <div>
+          <h1>Orders</h1>
+          <p className="admin-subtitle">Manage your food orders</p>
+        </div>
       </div>
       <div className="orders-container">
         <div className="filters-section">

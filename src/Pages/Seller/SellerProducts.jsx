@@ -124,8 +124,10 @@ const SellerProducts = () => {
   return (
     <div className="admin-products">
       <div className="admin-header">
-        <h1>Products</h1>
-        <p className="admin-subtitle">Manage your products and inventory</p>
+        <div>
+          <h1>Products</h1>
+          <p className="admin-subtitle">Manage your products and inventory</p>
+        </div>
         <Link to="/seller/products/add" className="add-product-btn">
           <FaPlus style={{ marginRight: "0.5rem" }} />
           Add New Product

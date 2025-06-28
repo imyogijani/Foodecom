@@ -213,8 +213,10 @@ const AddProduct = () => {
   return (
     <div className="admin-products">
       <div className="admin-header">
-        <h1>Add New Product</h1>
-        <p className="admin-subtitle">Create a new product listing</p>
+        <div>
+          <h1>Add New Product</h1>
+          <p className="admin-subtitle">Create a new product listing</p>
+        </div>
       </div>
       <div className="products-container">
         <form onSubmit={handleSubmit} className="add-product-form">

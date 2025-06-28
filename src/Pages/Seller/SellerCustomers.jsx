@@ -61,8 +61,10 @@ const SellerCustomers = () => {
   return (
     <div className="admin-users">
       <div className="admin-header">
-        <h1>Customers</h1>
-        <p className="admin-subtitle">View and manage your customers</p>
+        <div>
+          <h1>Customers</h1>
+          <p className="admin-subtitle">View and manage your customers</p>
+        </div>
       </div>
       <div className="customers-container">
         {/* Search Bars with Apply/Reset */}
