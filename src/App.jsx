@@ -48,7 +48,7 @@ import CartFloatingButton from "./Components/CartFloatingButton";
 import SellerProfile from "./Pages/Seller/SellerProfile";
 import SellerDeals from "./Pages/Seller/SellerDeals";
 import ProductDetail from "./Pages/Home/ProductDetail";
-import { DealsProvider } from './context/DealsContext';
+import { DealsProvider } from "./context/DealsContext";
 import SubscriptionReview from "./Pages/SubscriptionReview";
 
 function LayoutWrapper() {
@@ -116,18 +116,18 @@ function LayoutWrapper() {
         <Route path="product/:id" element={<ProductDetail />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/cookies" element={<Cookies />} />
-          <Route path="/modern-slavery" element={<ModernSlavery />} />
-          <Route path="/help" element={<Help />} />
-          <Route path="/add-restaurant" element={<AddRestaurant />} />
-          <Route path="/signup-deliver" element={<SignupDeliver />} />
-          <Route path="/create-business" element={<CreateBusinessAccount />} />
-          <Route path="/email-policy" element={<EmailPolicy />} />
-          <Route path="/do-not-sell" element={<DoNotSell />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/modern-slavery" element={<ModernSlavery />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/add-restaurant" element={<AddRestaurant />} />
+        <Route path="/signup-deliver" element={<SignupDeliver />} />
+        <Route path="/create-business" element={<CreateBusinessAccount />} />
+        <Route path="/email-policy" element={<EmailPolicy />} />
+        <Route path="/do-not-sell" element={<DoNotSell />} />
         <Route
           path="admin"
           element={
@@ -164,7 +164,7 @@ function LayoutWrapper() {
           <Route path="deals" element={<SellerDeals />} />
           <Route path="profile" element={<SellerProfile />} />
         </Route>
-          <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
         {/* Add more routes as needed */}
       </Routes>
       {!hideLayout && <Footer />}
