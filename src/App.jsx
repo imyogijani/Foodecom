@@ -15,6 +15,17 @@ import Footer from "./Components/Footer/index";
 import Login from "./Components/Login/Login";
 import Register from "./Components/Login/Register";
 import Pricing from "./Components/Login/Pricing";
+import Terms from "./Pages/terms";
+import Privacy from "./Pages/privacy";
+import Cookies from "./Pages/cookies";
+import ModernSlavery from "./Pages/modern-slavery";
+import Help from "./Pages/help";
+import AddRestaurant from "./Pages/add-restaurant";
+import SignupDeliver from "./Pages/signup-deliver";
+import CreateBusinessAccount from "./Pages/create-business";
+import EmailPolicy from "./Pages/email-policy";
+import DoNotSell from "./Pages/do-not-sell";
+import NotFound from "./Pages/NotFound";
 import AdminLayout from "./Components/AdminLayout";
 import SellerLayout from "./Components/SellerLayout";
 import Dashboard from "./Pages/admin/Dashboard";
@@ -105,8 +116,18 @@ function LayoutWrapper() {
         <Route path="product/:id" element={<ProductDetail />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="pricing" element={<Pricing />} />
-        <Route path="cart" element={<Cart />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/cookies" element={<Cookies />} />
+          <Route path="/modern-slavery" element={<ModernSlavery />} />
+          <Route path="/help" element={<Help />} />
+          <Route path="/add-restaurant" element={<AddRestaurant />} />
+          <Route path="/signup-deliver" element={<SignupDeliver />} />
+          <Route path="/create-business" element={<CreateBusinessAccount />} />
+          <Route path="/email-policy" element={<EmailPolicy />} />
+          <Route path="/do-not-sell" element={<DoNotSell />} />
         <Route
           path="admin"
           element={
@@ -143,6 +164,7 @@ function LayoutWrapper() {
           <Route path="deals" element={<SellerDeals />} />
           <Route path="profile" element={<SellerProfile />} />
         </Route>
+          <Route path="*" element={<NotFound />} />
         {/* Add more routes as needed */}
       </Routes>
       {!hideLayout && <Footer />}

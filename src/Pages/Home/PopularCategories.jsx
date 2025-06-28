@@ -1,30 +1,41 @@
 // Demo page
 // src/Components/Home/PopularCategories.jsx
-import React from 'react';
-import cat1 from '../../images/cat1.png';
-import cat2 from '../../images/cat2.png';
-import cat3 from '../../images/cat3.png';
-import cat4 from '../../images/cat4.png';
-import cat5 from '../../images/cat5.png';
-import cat6 from '../../images/cat6.png';
-
-const categories = [
-  { name: "Burgers & Fast food", restaurants: 21, img: cat1 },
-  { name: "Salads", restaurants: 32, img: cat2 },
-  { name: "Pasta & Casuals", restaurants: 4, img: cat3 },
-  { name: "Pizza", restaurants: 8, img: cat4 },
-  { name: "Breakfast", restaurants: 4, img: cat5 },
-  { name: "Soups", restaurants: 32, img: cat6 },
-];
+import React, { useState, useEffect } from "react";
 
 export default function PopularCategories() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories"); // Replace with your actual API endpoint
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+        const data = await response.json();
+        setCategories(data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (loading) return <div>Loading categories...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
     <div className="popular-categories">
       <h3>E-Mall World Popular Categories 🥳</h3>
       <div className="category-grid">
-        {categories.map((cat, index) => (
-          <div className="category-card" key={index}>
-            <img src={cat.img} alt={cat.name} />
+        {categories.map((cat) => (
+          <div className="category-card" key={cat.id}>
+            <img src={cat.imageUrl} alt={cat.name} />
             <h5>{cat.name}</h5>
             <p>{cat.restaurants} Restaurants</p>
           </div>

@@ -3,56 +3,6 @@ import { FaEye, FaListAlt } from "react-icons/fa";
 import "../../App.css";
 import "./SellerCustomers.css";
 
-const tempCustomers = [
-  {
-    id: "CUST001",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    city: "New York",
-    totalOrders: 1,
-    totalSpent: 36.95,
-    lastOrder: "2024-03-15",
-    orders: [
-      {
-        id: "ORD001",
-        date: "2024-03-15",
-        items: 3,
-        orderDetails: [
-          { name: "Classic Burger", quantity: 2, rate: 12.99, total: 25.98 },
-          { name: "French Fries", quantity: 1, rate: 4.99, total: 4.99 },
-          { name: "Coca Cola", quantity: 2, rate: 2.99, total: 5.98 }
-        ],
-        status: "Delivered",
-        total: 36.95
-      }
-    ]
-  },
-  {
-    id: "CUST002",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    phone: "+1 (555) 234-5678",
-    city: "Los Angeles",
-    totalOrders: 1,
-    totalSpent: 25.97,
-    lastOrder: "2024-03-14",
-    orders: [
-      {
-        id: "ORD002",
-        date: "2024-03-14",
-        items: 2,
-        orderDetails: [
-          { name: "Margherita Pizza", quantity: 1, rate: 15.99, total: 15.99 },
-          { name: "Garlic Bread", quantity: 2, rate: 4.99, total: 9.98 }
-        ],
-        status: "Preparing",
-        total: 25.97
-      }
-    ]
-  }
-];
-
 const SellerCustomers = () => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -98,7 +48,7 @@ const SellerCustomers = () => {
   };
 
   // Filter customers by id or name and city
-  const filteredCustomers = tempCustomers.filter((customer) => {
+  const filteredCustomers = [].filter((customer) => {
     const matchesText =
       customer.id.toLowerCase().includes(appliedSearchText.toLowerCase()) ||
       customer.name.toLowerCase().includes(appliedSearchText.toLowerCase());
@@ -162,7 +112,10 @@ const SellerCustomers = () => {
             <tbody>
               {filteredCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan="9" style={{ textAlign: "center", color: "#888" }}>
+                  <td
+                    colSpan="9"
+                    style={{ textAlign: "center", color: "#888" }}
+                  >
                     No customers found.
                   </td>
                 </tr>
@@ -209,18 +162,38 @@ const SellerCustomers = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2>Customer Details - {selectedCustomer.name}</h2>
-              <button className="close-btn" onClick={closeViewModal}>&times;</button>
+              <button className="close-btn" onClick={closeViewModal}>
+                &times;
+              </button>
             </div>
             <div className="modal-body">
               <div className="customer-info">
-                <p><strong>Customer ID:</strong> {selectedCustomer.id}</p>
-                <p><strong>Name:</strong> {selectedCustomer.name}</p>
-                <p><strong>Email:</strong> {selectedCustomer.email}</p>
-                <p><strong>Phone:</strong> {selectedCustomer.phone}</p>
-                <p><strong>City:</strong> {selectedCustomer.city}</p>
-                <p><strong>Total Orders:</strong> {selectedCustomer.orders.length}</p>
-                <p><strong>Total Spent:</strong> ₹{selectedCustomer.totalSpent.toFixed(2)}</p>
-                <p><strong>Last Order:</strong> {selectedCustomer.lastOrder}</p>
+                <p>
+                  <strong>Customer ID:</strong> {selectedCustomer.id}
+                </p>
+                <p>
+                  <strong>Name:</strong> {selectedCustomer.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedCustomer.email}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {selectedCustomer.phone}
+                </p>
+                <p>
+                  <strong>City:</strong> {selectedCustomer.city}
+                </p>
+                <p>
+                  <strong>Total Orders:</strong>{" "}
+                  {selectedCustomer.orders.length}
+                </p>
+                <p>
+                  <strong>Total Spent:</strong> ₹
+                  {selectedCustomer.totalSpent.toFixed(2)}
+                </p>
+                <p>
+                  <strong>Last Order:</strong> {selectedCustomer.lastOrder}
+                </p>
               </div>
             </div>
           </div>
@@ -233,15 +206,29 @@ const SellerCustomers = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2>Order History - {selectedCustomer.name}</h2>
-              <button className="close-btn" onClick={closeOrdersModal}>&times;</button>
+              <button className="close-btn" onClick={closeOrdersModal}>
+                &times;
+              </button>
             </div>
             <div className="modal-body">
               <div className="customer-info">
-                <p><strong>Customer ID:</strong> {selectedCustomer.id}</p>
-                <p><strong>Email:</strong> {selectedCustomer.email}</p>
-                <p><strong>Phone:</strong> {selectedCustomer.phone}</p>
-                <p><strong>Total Orders:</strong> {selectedCustomer.orders.length}</p>
-                <p><strong>Total Spent:</strong> ₹{selectedCustomer.totalSpent.toFixed(2)}</p>
+                <p>
+                  <strong>Customer ID:</strong> {selectedCustomer.id}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedCustomer.email}
+                </p>
+                <p>
+                  <strong>Phone:</strong> {selectedCustomer.phone}
+                </p>
+                <p>
+                  <strong>Total Orders:</strong>{" "}
+                  {selectedCustomer.orders.length}
+                </p>
+                <p>
+                  <strong>Total Spent:</strong> ₹
+                  {selectedCustomer.totalSpent.toFixed(2)}
+                </p>
               </div>
               <div className="order-history">
                 <h3>Order History</h3>
@@ -249,13 +236,21 @@ const SellerCustomers = () => {
                   <div key={order.id} className="order-card">
                     <div className="order-header">
                       <h4>Order #{order.id}</h4>
-                      <span className={`status-badge ${order.status.toLowerCase().replace(' ', '-')}`}>
+                      <span
+                        className={`status-badge ${order.status
+                          .toLowerCase()
+                          .replace(" ", "-")}`}
+                      >
                         {order.status}
                       </span>
                     </div>
                     <div className="order-details">
-                      <p><strong>Date:</strong> {order.date}</p>
-                      <p><strong>Items:</strong> {order.items}</p>
+                      <p>
+                        <strong>Date:</strong> {order.date}
+                      </p>
+                      <p>
+                        <strong>Items:</strong> {order.items}
+                      </p>
                       <table className="items-table">
                         <thead>
                           <tr>
@@ -277,8 +272,12 @@ const SellerCustomers = () => {
                         </tbody>
                         <tfoot>
                           <tr>
-                            <td colSpan="3" className="total-label">Order Total:</td>
-                            <td className="total-amount">₹{order.total.toFixed(2)}</td>
+                            <td colSpan="3" className="total-label">
+                              Order Total:
+                            </td>
+                            <td className="total-amount">
+                              ₹{order.total.toFixed(2)}
+                            </td>
                           </tr>
                         </tfoot>
                       </table>
