@@ -8,17 +8,6 @@ const SellerDeals = () => {
   const [deals, setDeals] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newDeal, setNewDeal] = useState({
-    title: '',
-    description: '',
-    productId: '',
-    discountPercentage: '',
-    startDate: '',
-    endDate: '',
-    maxQuantity: '',
-    termsAndConditions: ''
-  });
 
   useEffect(() => {
     fetchDeals();
@@ -53,35 +42,6 @@ const SellerDeals = () => {
       }
     } catch (error) {
       toast.error('Error fetching products');
-      console.log(error);
-    }
-  };
-
-  const handleCreateDeal = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      const response = await axios.post('/api/deals/create', newDeal, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
-      if (response.data) {
-        toast.success('Deal created and sent for approval');
-        setShowCreateModal(false);
-        setNewDeal({
-          title: '',
-          description: '',
-          productId: '',
-          discountPercentage: '',
-          startDate: '',
-          endDate: '',
-          maxQuantity: '',
-          termsAndConditions: ''
-        });
-        fetchDeals();
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Error creating deal');
       console.log(error);
     }
   };
@@ -156,7 +116,6 @@ const SellerDeals = () => {
         </div>
         <button 
           className="add-deal-btn"
-          onClick={() => setShowCreateModal(true)}
         >
           <FaPlus style={{ marginRight: '0.5rem' }} />
           Create New Deal
@@ -230,145 +189,6 @@ const SellerDeals = () => {
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Create Deal Modal */}
-      {showCreateModal && (
-        <div className="modal-overlay">
-          <div className="modal-content create-deal-modal">
-            <div className="modal-header">
-              <h2>Create New Deal</h2>
-              <button className="close-btn" onClick={() => setShowCreateModal(false)}>
-                &times;
-              </button>
-            </div>
-            
-            <form onSubmit={handleCreateDeal}>
-              <div className="modal-body">
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Deal Title *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={newDeal.title}
-                      onChange={(e) => setNewDeal({...newDeal, title: e.target.value})}
-                      required
-                      placeholder="Enter deal title"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Product *</label>
-                    <select
-                      className="form-control"
-                      value={newDeal.productId}
-                      onChange={(e) => setNewDeal({...newDeal, productId: e.target.value})}
-                      required
-                    >
-                      <option value="">Select a product</option>
-                      {products.map(product => (
-                        <option key={product._id} value={product._id}>
-                          {product.name} - ₹{product.price}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <label>Description *</label>
-                  <textarea
-                    className="form-control"
-                    rows="3"
-                    value={newDeal.description}
-                    onChange={(e) => setNewDeal({...newDeal, description: e.target.value})}
-                    required
-                    placeholder="Describe your deal"
-                  />
-                </div>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Discount Percentage *</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={newDeal.discountPercentage}
-                      onChange={(e) => setNewDeal({...newDeal, discountPercentage: e.target.value})}
-                      min="1"
-                      max="90"
-                      required
-                      placeholder="e.g., 20"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Max Quantity (Optional)</label>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={newDeal.maxQuantity}
-                      onChange={(e) => setNewDeal({...newDeal, maxQuantity: e.target.value})}
-                      min="1"
-                      placeholder="Limit quantity (optional)"
-                    />
-                  </div>
-                </div>
-                
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Start Date *</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={newDeal.startDate}
-                      onChange={(e) => setNewDeal({...newDeal, startDate: e.target.value})}
-                      required
-                      min={new Date().toISOString().split('T')[0]}
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>End Date *</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={newDeal.endDate}
-                      onChange={(e) => setNewDeal({...newDeal, endDate: e.target.value})}
-                      required
-                      min={newDeal.startDate || new Date().toISOString().split('T')[0]}
-                    />
-                  </div>
-                </div>
-                
-                <div className="form-group">
-                  <label>Terms and Conditions (Optional)</label>
-                  <textarea
-                    className="form-control"
-                    rows="2"
-                    value={newDeal.termsAndConditions}
-                    onChange={(e) => setNewDeal({...newDeal, termsAndConditions: e.target.value})}
-                    placeholder="Any special terms or conditions"
-                  />
-                </div>
-              </div>
-              
-              <div className="modal-actions">
-                <button type="submit" className="btn btn-primary">
-                  Create Deal
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setShowCreateModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
     </div>
