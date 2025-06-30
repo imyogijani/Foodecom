@@ -3,11 +3,21 @@ import { toast } from 'react-toastify';
 import { FaPlus, FaEye, FaEdit, FaTrash, FaCalendarAlt, FaPercentage, FaTag, FaSpinner } from 'react-icons/fa';
 import axios from '../../utils/axios';
 import './SellerDeals.css';
+import './SellerDealsForm.css';
 
 const SellerDeals = () => {
   const [deals, setDeals] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    productId: '',
+    discountPercentage: '',
+    startDate: '',
+    endDate: '',
+  });
 
   useEffect(() => {
     fetchDeals();
@@ -42,6 +52,29 @@ const SellerDeals = () => {
       }
     } catch (error) {
       toast.error('Error fetching products');
+      console.log(error);
+    }
+  };
+
+  const handleCreateDeal = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('/api/deals', formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success('Deal created successfully');
+      setShowForm(false);
+      setFormData({
+        title: '',
+        description: '',
+        productId: '',
+        discountPercentage: '',
+        startDate: '',
+        endDate: '',
+      });
+      fetchDeals();
+    } catch (error) {
+      toast.error('Error creating deal');
       console.log(error);
     }
   };
@@ -116,11 +149,88 @@ const SellerDeals = () => {
         </div>
         <button 
           className="add-deal-btn"
+          onClick={() => setShowForm(true)}
         >
           <FaPlus style={{ marginRight: '0.5rem' }} />
           Create New Deal
         </button>
       </div>
+
+      {showForm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h2>Create New Deal</h2>
+              <button className="close-btn" onClick={() => setShowForm(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <form className="seller-deal-form" onSubmit={e => { e.preventDefault(); handleCreateDeal(); }}>
+                <div className="seller-deal-form-group">
+                  <label>Title</label>
+                  <input
+                    type="text"
+                    className="seller-deal-form-control"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  />
+                </div>
+                <div className="seller-deal-form-group">
+                  <label>Description</label>
+                  <textarea
+                    className="seller-deal-form-control"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  ></textarea>
+                </div>
+                <div className="seller-deal-form-group">
+                  <label>Product</label>
+                  <select
+                    className="seller-deal-form-control"
+                    value={formData.productId}
+                    onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
+                  >
+                    <option value="">Select Product</option>
+                    {products.map((product) => (
+                      <option key={product._id} value={product._id}>{product.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="seller-deal-form-group">
+                  <label>Discount (%)</label>
+                  <input
+                    type="number"
+                    className="seller-deal-form-control"
+                    value={formData.discountPercentage}
+                    onChange={(e) => setFormData({ ...formData, discountPercentage: e.target.value })}
+                  />
+                </div>
+                <div className="seller-deal-form-group">
+                  <label>Start Date</label>
+                  <input
+                    type="date"
+                    className="seller-deal-form-control"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                  />
+                </div>
+                <div className="seller-deal-form-group">
+                  <label>End Date</label>
+                  <input
+                    type="date"
+                    className="seller-deal-form-control"
+                    value={formData.endDate}
+                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                  />
+                </div>
+                <div className="modal-actions">
+                  <button className="btn btn-primary" type="submit">Create</button>
+                  <button className="btn btn-secondary" type="button" onClick={() => setShowForm(false)}>Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
 
       {deals.length === 0 ? (
         <div className="no-deals">
@@ -168,21 +278,12 @@ const SellerDeals = () => {
               
               <div className="deal-actions">
                 {deal.status === 'pending' && (
-                  <>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => handleDeleteDeal(deal._id)}
-                    >
-                      <FaTrash /> Delete
-                    </button>
-                  </>
+                  <button className="btn btn-danger" onClick={() => handleDeleteDeal(deal._id)}>
+                    <FaTrash /> Delete
+                  </button>
                 )}
-                
                 {(deal.status === 'approved' || deal.status === 'active') && (
-                  <button
-                    className="btn btn-warning"
-                    onClick={() => handleEndDeal(deal._id)}
-                  >
+                  <button className="btn btn-warning" onClick={() => handleEndDeal(deal._id)}>
                     End Deal
                   </button>
                 )}
@@ -196,4 +297,3 @@ const SellerDeals = () => {
 };
 
 export default SellerDeals;
-
