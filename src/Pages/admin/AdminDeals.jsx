@@ -1,22 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { useDeals } from "../../context/DealsContext";
+import axios from "../../utils/axios";
 
 const statusOptions = ["pending", "approved", "rejected"];
 
 function AdminDeals() {
-  const { deals, approveDeal, rejectDeal } = useDeals();
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("pending");
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [dealToReject, setDealToReject] = useState(null);
+
+  useEffect(() => {
+    fetchDeals();
+  }, []);
+
+  const fetchDeals = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/deals/admin/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.data.success) {
+        setDeals(response.data.deals);
+      }
+    } catch (error) {
+      // Optionally show error
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredDeals = deals.filter((d) =>
     filter === "all" ? true : d.status === filter
   );
 
-  const handleApprove = (id) => {
+  const handleApprove = async (id) => {
     if (window.confirm("Approve this deal?")) {
-      approveDeal(id);
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `/api/deals/admin/${id}/approve`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        fetchDeals();
+      } catch (error) {
+        // Optionally show error
+      }
     }
   };
 
@@ -25,11 +59,23 @@ function AdminDeals() {
     setShowRejectModal(true);
   };
 
-  const confirmReject = () => {
+  const confirmReject = async () => {
     if (dealToReject) {
-      rejectDeal(dealToReject.id);
-      setShowRejectModal(false);
-      setDealToReject(null);
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `/api/deals/admin/${dealToReject._id}/reject`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setShowRejectModal(false);
+        setDealToReject(null);
+        fetchDeals();
+      } catch (error) {
+        // Optionally show error
+      }
     }
   };
 
@@ -82,7 +128,7 @@ function AdminDeals() {
         {filteredDeals.length === 0 && <li>No deals found.</li>}
         {filteredDeals.map((deal) => (
           <li
-            key={deal.id}
+            key={deal._id}
             style={{
               border: "1px solid #fc8a06",
               borderRadius: 12,
@@ -127,15 +173,15 @@ function AdminDeals() {
             <div
               style={{ color: "#e57a00", fontWeight: 600, marginBottom: 10 }}
             >
-              Discount: {deal.discount}%
+              Discount: {deal.discountPercentage}%
             </div>
             <div style={{ color: "#888", fontSize: 13, marginBottom: 10 }}>
-              Seller ID: {deal.sellerId}
+              Shop Name: {deal.seller?.shopName || deal.seller?.names || "N/A"}
             </div>
             {deal.status === "pending" && (
               <div style={{ display: "flex", gap: 10 }}>
                 <button
-                  onClick={() => handleApprove(deal.id)}
+                  onClick={() => handleApprove(deal._id)}
                   style={{
                     background: "#28a745",
                     color: "#fff",

@@ -20,6 +20,11 @@ export const createDeal = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
+    let dealPrice = product.price;
+    if (discountPercentage) {
+      dealPrice = product.price - (product.price * discountPercentage) / 100;
+    }
+
     const deal = new Deal({
       title,
       description,
@@ -27,6 +32,7 @@ export const createDeal = async (req, res) => {
       seller: req.user._id,
       originalPrice: product.price,
       discountPercentage,
+      dealPrice, // ensure dealPrice is set
       startDate,
       endDate,
       maxQuantity,
@@ -179,7 +185,7 @@ export const getAllDeals = async (req, res) => {
 
     const deals = await Deal.find(filter)
       .populate("product", "name image")
-      .populate("seller", "names email")
+      .populate("seller", "names email shopName shopownerName")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
