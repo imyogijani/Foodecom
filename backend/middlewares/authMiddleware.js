@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 
@@ -38,14 +39,14 @@ export const authenticateToken = async (req, res, next) => {
 export const fetchUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.userId);
-    
+
     if (!user) {
       return res.status(404).send({
         success: false,
         message: "User not found",
       });
     }
-    
+
     req.user = user;
     next();
   } catch (error) {

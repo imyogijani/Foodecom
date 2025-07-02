@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import Deal from "../models/dealModel.js";
 import Notification from "../models/notificationModel.js";
 import Product from "../models/productModel.js";
