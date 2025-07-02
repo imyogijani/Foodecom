@@ -1,9 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { FaPlus, FaEye, FaEdit, FaTrash, FaCalendarAlt, FaPercentage, FaTag, FaSpinner } from 'react-icons/fa';
-import axios from '../../utils/axios';
-import './SellerDeals.css';
-import './SellerDealsForm.css';
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import {
+  FaPlus,
+  FaEye,
+  FaEdit,
+  FaTrash,
+  FaCalendarAlt,
+  FaPercentage,
+  FaTag,
+  FaSpinner,
+} from "react-icons/fa";
+import axios from "../../utils/axios";
+import "./SellerDeals.css";
+import "./SellerDealsForm.css";
 
 const SellerDeals = () => {
   const [deals, setDeals] = useState([]);
@@ -11,12 +20,12 @@ const SellerDeals = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    productId: '',
-    discountPercentage: '',
-    startDate: '',
-    endDate: '',
+    title: "",
+    description: "",
+    productId: "",
+    discountPercentage: "",
+    startDate: "",
+    endDate: "",
   });
 
   useEffect(() => {
@@ -26,15 +35,15 @@ const SellerDeals = () => {
 
   const fetchDeals = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/deals/seller', {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/deals/seller", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
         setDeals(response.data.deals);
       }
     } catch (error) {
-      toast.error('Error fetching deals');
+      toast.error("Error fetching deals");
       console.log(error);
     } finally {
       setLoading(false);
@@ -43,69 +52,73 @@ const SellerDeals = () => {
 
   const fetchProducts = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('/api/products/seller-products', {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/products/seller-products", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (response.data.success) {
         setProducts(response.data.products);
       }
     } catch (error) {
-      toast.error('Error fetching products');
+      toast.error("Error fetching products");
       console.log(error);
     }
   };
 
   const handleCreateDeal = async () => {
     try {
-      const token = localStorage.getItem('token');
-      await axios.post('/api/deals', formData, {
+      const token = localStorage.getItem("token");
+      await axios.post("/api/deals/create", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      toast.success('Deal created successfully');
+      toast.success("Deal created successfully and sent for admin approval");
       setShowForm(false);
       setFormData({
-        title: '',
-        description: '',
-        productId: '',
-        discountPercentage: '',
-        startDate: '',
-        endDate: '',
+        title: "",
+        description: "",
+        productId: "",
+        discountPercentage: "",
+        startDate: "",
+        endDate: "",
       });
       fetchDeals();
     } catch (error) {
-      toast.error('Error creating deal');
+      toast.error("Error creating deal");
       console.log(error);
     }
   };
 
   const handleEndDeal = async (dealId) => {
-    if (window.confirm('Are you sure you want to end this deal?')) {
+    if (window.confirm("Are you sure you want to end this deal?")) {
       try {
-        const token = localStorage.getItem('token');
-        await axios.post(`/api/deals/${dealId}/end`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success('Deal ended successfully');
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `/api/deals/${dealId}/end`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast.success("Deal ended successfully");
         fetchDeals();
       } catch (error) {
-        toast.error('Error ending deal');
+        toast.error("Error ending deal");
         console.log(error);
       }
     }
   };
 
   const handleDeleteDeal = async (dealId) => {
-    if (window.confirm('Are you sure you want to delete this deal?')) {
+    if (window.confirm("Are you sure you want to delete this deal?")) {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         await axios.delete(`/api/deals/${dealId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        toast.success('Deal deleted successfully');
+        toast.success("Deal deleted successfully");
         fetchDeals();
       } catch (error) {
-        toast.error('Error deleting deal');
+        toast.error("Error deleting deal");
         console.log(error);
       }
     }
@@ -113,21 +126,28 @@ const SellerDeals = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return '#ffa500';
-      case 'approved': return '#28a745';
-      case 'rejected': return '#dc3545';
-      case 'active': return '#007bff';
-      case 'expired': return '#6c757d';
-      case 'ended': return '#6c757d';
-      default: return '#6c757d';
+      case "pending":
+        return "#ffa500";
+      case "approved":
+        return "#28a745";
+      case "rejected":
+        return "#dc3545";
+      case "active":
+        return "#007bff";
+      case "expired":
+        return "#6c757d";
+      case "ended":
+        return "#6c757d";
+      default:
+        return "#6c757d";
     }
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -145,13 +165,12 @@ const SellerDeals = () => {
       <div className="admin-header">
         <div>
           <h1>My Deals</h1>
-          <p className="admin-subtitle">Create and manage your special offers</p>
+          <p className="admin-subtitle">
+            Create and manage your special offers
+          </p>
         </div>
-        <button 
-          className="add-deal-btn"
-          onClick={() => setShowForm(true)}
-        >
-          <FaPlus style={{ marginRight: '0.5rem' }} />
+        <button className="add-deal-btn" onClick={() => setShowForm(true)}>
+          <FaPlus style={{ marginRight: "0.5rem" }} />
           Create New Deal
         </button>
       </div>
@@ -161,17 +180,27 @@ const SellerDeals = () => {
           <div className="modal-content">
             <div className="modal-header">
               <h2>Create New Deal</h2>
-              <button className="close-btn" onClick={() => setShowForm(false)}>&times;</button>
+              <button className="close-btn" onClick={() => setShowForm(false)}>
+                &times;
+              </button>
             </div>
             <div className="modal-body">
-              <form className="seller-deal-form" onSubmit={e => { e.preventDefault(); handleCreateDeal(); }}>
+              <form
+                className="seller-deal-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCreateDeal();
+                }}
+              >
                 <div className="seller-deal-form-group">
                   <label>Title</label>
                   <input
                     type="text"
                     className="seller-deal-form-control"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
                   />
                 </div>
                 <div className="seller-deal-form-group">
@@ -179,7 +208,9 @@ const SellerDeals = () => {
                   <textarea
                     className="seller-deal-form-control"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                   ></textarea>
                 </div>
                 <div className="seller-deal-form-group">
@@ -187,11 +218,15 @@ const SellerDeals = () => {
                   <select
                     className="seller-deal-form-control"
                     value={formData.productId}
-                    onChange={(e) => setFormData({ ...formData, productId: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, productId: e.target.value })
+                    }
                   >
                     <option value="">Select Product</option>
                     {products.map((product) => (
-                      <option key={product._id} value={product._id}>{product.name}</option>
+                      <option key={product._id} value={product._id}>
+                        {product.name}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -201,7 +236,12 @@ const SellerDeals = () => {
                     type="number"
                     className="seller-deal-form-control"
                     value={formData.discountPercentage}
-                    onChange={(e) => setFormData({ ...formData, discountPercentage: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        discountPercentage: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="seller-deal-form-group">
@@ -210,7 +250,9 @@ const SellerDeals = () => {
                     type="date"
                     className="seller-deal-form-control"
                     value={formData.startDate}
-                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, startDate: e.target.value })
+                    }
                   />
                 </div>
                 <div className="seller-deal-form-group">
@@ -219,12 +261,22 @@ const SellerDeals = () => {
                     type="date"
                     className="seller-deal-form-control"
                     value={formData.endDate}
-                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, endDate: e.target.value })
+                    }
                   />
                 </div>
                 <div className="modal-actions">
-                  <button className="btn btn-primary" type="submit">Create</button>
-                  <button className="btn btn-secondary" type="button" onClick={() => setShowForm(false)}>Cancel</button>
+                  <button className="btn btn-primary" type="submit">
+                    Create
+                  </button>
+                  <button
+                    className="btn btn-secondary"
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                  >
+                    Cancel
+                  </button>
                 </div>
               </form>
             </div>
@@ -242,48 +294,58 @@ const SellerDeals = () => {
             <div key={deal._id} className="deal-card">
               <div className="deal-header">
                 <h3 className="deal-title">{deal.title}</h3>
-                <span 
+                <span
                   className="deal-status"
                   style={{ backgroundColor: getStatusColor(deal.status) }}
                 >
                   {deal.status}
                 </span>
               </div>
-              
+
               <div className="deal-content">
                 <p className="deal-description">{deal.description}</p>
-                
+
                 <div className="deal-details">
                   <div className="detail-item">
                     <FaTag className="detail-icon" />
                     <span>Product: {deal.product?.name}</span>
                   </div>
-                  
+
                   <div className="detail-item">
                     <FaPercentage className="detail-icon" />
                     <span>Discount: {deal.discountPercentage}%</span>
                   </div>
-                  
+
                   <div className="detail-item">
                     <FaCalendarAlt className="detail-icon" />
-                    <span>{formatDate(deal.startDate)} - {formatDate(deal.endDate)}</span>
+                    <span>
+                      {formatDate(deal.startDate)} - {formatDate(deal.endDate)}
+                    </span>
                   </div>
-                  
+
                   <div className="price-info">
-                    <span className="original-price">₹{deal.originalPrice}</span>
+                    <span className="original-price">
+                      ₹{deal.originalPrice}
+                    </span>
                     <span className="deal-price">₹{deal.dealPrice}</span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="deal-actions">
-                {deal.status === 'pending' && (
-                  <button className="btn btn-danger" onClick={() => handleDeleteDeal(deal._id)}>
+                {deal.status === "pending" && (
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleDeleteDeal(deal._id)}
+                  >
                     <FaTrash /> Delete
                   </button>
                 )}
-                {(deal.status === 'approved' || deal.status === 'active') && (
-                  <button className="btn btn-warning" onClick={() => handleEndDeal(deal._id)}>
+                {(deal.status === "approved" || deal.status === "active") && (
+                  <button
+                    className="btn btn-warning"
+                    onClick={() => handleEndDeal(deal._id)}
+                  >
                     End Deal
                   </button>
                 )}
