@@ -2,11 +2,11 @@
 
 /* Modal content/card sizing for consistency */
 .modal-content {
-  width: 400px;
-  max-width: 95vw;
+  width: 100%;
+  max-width: 800px;
   padding: 2rem 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   background: #fff;
   margin: 0 auto;
   display: flex;
@@ -63,4 +63,4 @@
     max-height: 50vh;
     padding-right: 0;
   }
-} 
+}

@@ -21,7 +21,7 @@
 }
 
 .admin-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -87,7 +87,9 @@
   border-radius: 15px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .deal-card:hover {
@@ -212,7 +214,7 @@
 .modal-overlay {
   position: fixed;
   top: 0;
-  left: 0;
+  left: 280px;
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
@@ -227,7 +229,7 @@
   background: white;
   border-radius: 15px;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -314,8 +316,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Additional styles */
@@ -325,7 +331,7 @@
   color: #6c757d;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary {
@@ -358,11 +364,17 @@
 }
 
 /* Responsive Design */
+@media (max-width: 900px) {
+  .modal-overlay {
+    left: 0;
+  }
+}
+
 @media (max-width: 768px) {
   .seller-deals {
     padding: 1rem;
   }
-  
+
   .admin-header {
     flex-direction: column;
     align-items: flex-start;
@@ -377,31 +389,22 @@
   .admin-header .add-deal-btn {
     align-self: flex-end;
   }
-  
+
   .deals-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .deal-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .deal-title {
     margin-right: 0;
   }
-  
+
   .deal-actions {
-    flex-direction: column;
-  }
-  
-  .modal-content {
-    margin: 0.5rem;
-    max-height: 95vh;
-  }
-  
-  .form-row {
     flex-direction: column;
   }
 
@@ -409,7 +412,7 @@
     margin: 0.5rem;
     max-height: 95vh;
   }
-  
+
   .form-row {
     flex-direction: column;
   }
@@ -435,7 +438,7 @@
     min-width: 0;
     border-radius: 0;
     padding: 0.5rem 0.15rem 0.5rem 0.15rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -452,7 +455,7 @@
     min-width: 0;
     border-radius: 0;
     padding: 1rem 0.2rem 1rem 0.2rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.10);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
   .create-deal-modal .form-row {
     gap: 1rem;
