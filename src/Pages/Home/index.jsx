@@ -204,11 +204,6 @@ export default function Home() {
             fill={wishlist.has(product._id) ? "currentColor" : "none"}
           />
         </button>
-        {product.discount && (
-          <div className="card-badge card-badge-discount">
-            -{product.discount}%
-          </div>
-        )}
       </div>
 
       <div className="card-content">
@@ -245,6 +240,12 @@ export default function Home() {
           )}
         </div>
 
+        {product.discount && (
+          <div style={{ color: "#ff4757", fontSize: "12px", margin: "0 0 6px 0" }}>
+            -{product.discount}% OFF
+          </div>
+        )}
+
         <div style={{ margin: "6px 0", fontSize: "10px" }}>
           <span
             className="prime-badge"
@@ -271,9 +272,9 @@ export default function Home() {
           <button
             className="card-button"
             onClick={() => handleAddToCart(product)}
+            title="Add to Cart"
           >
-            <ShoppingCart size={14} />
-            Add to Cart
+            <ShoppingCart size={16} />
           </button>
         </div>
       </div>
@@ -531,8 +532,8 @@ export default function Home() {
       {/* Footer Content */}
       <div className="footer-content">
         <div className="additional-sections">
-          <BottomCard />
           <DealsList />
+          <BottomCard />
         </div>
       </div>
     </div>
