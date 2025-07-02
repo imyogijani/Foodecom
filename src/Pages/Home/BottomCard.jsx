@@ -10,25 +10,25 @@ const faqTabs = [
     label: "Frequent Questions",
     faqs: [
       {
-        q: "How does E-mall World work?",
-        a: "E-mall World connects you with local restaurants and stores. Browse the menu, place your order online or via our app, and get your food delivered quickly to your doorstep.",
+        q: "How does E-Mall World work?",
+        a: "E-Mall World is your comprehensive online shopping destination. Browse millions of products from thousands of brands, place your order online, and get items delivered quickly to your doorstep.",
         highlight: true,
       },
       {
         q: "What payment methods are accepted?",
-        a: "We accept all major credit/debit cards, digital wallets (like Google Pay, Apple Pay), and sometimes cash on delivery depending on the restaurant.",
+        a: "We accept all major credit/debit cards, digital wallets (like Google Pay, Apple Pay, PhonePe), UPI, net banking, and cash on delivery for eligible orders.",
       },
       {
         q: "Can I track my order in real-time?",
-        a: "Yes! After placing your order, you can track its status and delivery time in real-time from your account dashboard or the app.",
+        a: "Yes! After placing your order, you can track its status and delivery progress in real-time from your account dashboard or mobile app.",
       },
       {
         q: "Are there any special discounts or promotions available?",
-        a: "Yes, we regularly offer exclusive deals and discounts. Check the 'Special Offers' section or subscribe to our newsletter for updates.",
+        a: "Yes, we regularly offer exclusive deals, seasonal sales, and flash discounts. Check the 'Today's Deals' section or subscribe to our newsletter for the latest offers.",
       },
       {
-        q: "Is E-mall World available in my area?",
-        a: "E-mall World is available in most major cities and towns. Enter your postcode on our homepage to check availability in your area.",
+        q: "Is E-Mall World available in my area?",
+        a: "E-Mall World delivers to most cities and towns across India. Enter your pincode during checkout to check delivery availability and estimated delivery time.",
       },
     ],
   },
@@ -36,12 +36,12 @@ const faqTabs = [
     label: "Who we are?",
     faqs: [
       {
-        q: "Who is behind E-mall World?",
-        a: "E-mall World is a passionate team dedicated to making food delivery fast, easy, and enjoyable for everyone.",
+        q: "Who is behind E-Mall World?",
+        a: "E-Mall World is a passionate team of tech enthusiasts and retail experts dedicated to revolutionizing online shopping with innovative technology and exceptional customer service.",
       },
       {
-        q: "What is the mission of E-mall World?",
-        a: "Our mission is to connect people with great food from their favorite local restaurants, delivered quickly and reliably.",
+        q: "What is the mission of E-Mall World?",
+        a: "Our mission is to democratize commerce by connecting customers with quality products from trusted sellers worldwide, making shopping convenient, affordable, and enjoyable.",
       },
     ],
   },
@@ -49,12 +49,12 @@ const faqTabs = [
     label: "Partner Program",
     faqs: [
       {
-        q: "How can I partner with E-mall World?",
-        a: "If you own a restaurant or store, you can join our platform by signing up through the 'Partner with us' section. We'll guide you through the onboarding process.",
+        q: "How can I partner with E-Mall World?",
+        a: "If you own a business or brand, you can join our marketplace by signing up through the 'Sell on E-Mall World' section. Our team will guide you through the onboarding process and help you set up your store.",
       },
       {
         q: "What are the benefits of partnering?",
-        a: "Partners get access to a wider customer base, marketing support, and advanced order management tools.",
+        a: "Partners get access to millions of customers, comprehensive seller tools, marketing support, secure payment processing, and dedicated account management to grow their business.",
       },
     ],
   },
@@ -63,11 +63,11 @@ const faqTabs = [
     faqs: [
       {
         q: "How do I contact customer support?",
-        a: "You can reach our support team via the 'Help & Support' section on our website or app, or email us at support@emall.world.",
+        a: "You can reach our 24/7 support team via the 'Help & Support' section on our website or app, live chat, or email us at support@emallworld.com.",
       },
       {
         q: "What if I have an issue with my order?",
-        a: "If you face any issues, please contact us immediately through your order page or support. We'll resolve it as quickly as possible.",
+        a: "If you face any issues with your order, please contact us immediately through your order tracking page or customer support. We offer hassle-free returns and refunds as per our policy.",
       },
     ],
   },
@@ -75,18 +75,18 @@ const faqTabs = [
 
 const steps = [
   {
-    title: "Place an Order!",
-    desc: "Place order through our website or Mobile app",
+    title: "Browse & Shop!",
+    desc: "Explore millions of products through our website or mobile app",
     img: image1,
   },
   {
     title: "Track Progress",
-    desc: "Your can track your order status with delivery time",
+    desc: "Monitor your order status with real-time tracking",
     img: offer1,
   },
   {
-    title: "Get your Order!",
-    desc: "Receive your order at a lighting fast speed!",
+    title: "Receive your Order!",
+    desc: "Get your products delivered at lightning-fast speed!",
     img: offer2,
   },
 ];
@@ -150,9 +150,10 @@ export default function BottomCard() {
             ))}
           </div>
           <div className="desc bottom-card-desc">
-            E-mall World simplifies the food ordering process. Browse through our
-            diverse menu, select your favorite dishes, and proceed to checkout.
-            Your delicious meal will be on its way to your doorstep in no time!
+            E-Mall World simplifies online shopping like never before. Browse
+            through our vast catalog of products, compare prices, read reviews,
+            and checkout securely. Your favorite products will be delivered to
+            your doorstep with care and speed!
           </div>
         </div>
       </div>

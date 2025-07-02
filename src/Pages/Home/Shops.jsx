@@ -2,697 +2,557 @@
 import React, { useState, useEffect } from "react";
 import "./restaurant.css";
 import "./HomeLayout.css";
-import McD from "../../images/McD.png";
-import papajohn from "../../images/Papajohns.png";
-import kfc from "../../images/KFC.png";
-import texasChicken from "../../images/Tex.png";
-import burgerKing from "../../images/Bking.png";
-import shaurma from "../../images/shaurma.png";
+import "./shops-modern.css";
+import "./theme-override.css";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  Star,
+  ShoppingCart,
+  Heart,
+  Search,
+  Filter,
+  Store,
+  Users,
+  Package,
+  Award,
+  MapPin,
+  Phone,
+  Globe,
+  Clock,
+} from "lucide-react";
 import axios from "../../utils/axios";
 
-// Minimal E-mall sample data
 const mallInfo = {
-  name: "E-Mall World Shopping Center",
-  minOrder: "$0.00",
-  deliveryTime: "1-3 Business Days",
-  phone: "+1-800-EMALL",
-  website: "https://e-mallworld.com",
-  address: "Global Online Shopping Mall",
-  operationalHours: {
-    monday: "12:00 AM–3:00 AM, 8:00 AM–3:00 AM",
-    tuesday: "8:00 AM–3:00 AM",
-    wednesday: "8:00 AM–3:00 AM",
-    thursday: "8:00 AM–3:00 AM",
-    friday: "8:00 AM–3:00 AM",
-    saturday: "8:00 AM–3:00 AM",
-    sunday: "8:00 AM–12:00 AM",
-  },
-  reviews: 1240, // <-- Added to prevent undefined error
+  name: "E-Mall World",
+  description: "Your comprehensive shopping destination",
+  totalStores: 2500,
+  totalProducts: 50000,
+  customerSatisfaction: 98,
 };
 
-const mallCategories = [
-  "Offers",
-  "Electronics",
-  "Clothing",
-  "Home Appliances",
-  "Books",
-  "Toys",
+// Enhanced store data
+const featuredStores = [
+  {
+    id: "store-1",
+    name: "TechZone Electronics",
+    description: "Latest gadgets and electronics",
+    image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg",
+    category: "Electronics",
+    rating: 4.8,
+    reviews: 15420,
+    products: 2500,
+    established: "2015",
+    location: "Mumbai, India",
+    verified: true,
+    badges: ["Top Seller", "Fast Delivery"],
+    specialties: ["Smartphones", "Laptops", "Gaming"],
+  },
+  {
+    id: "store-2",
+    name: "Fashion Forward",
+    description: "Trendy clothing and accessories",
+    image: "https://images.pexels.com/photos/3119215/pexels-photo-3119215.jpeg",
+    category: "Fashion",
+    rating: 4.6,
+    reviews: 8930,
+    products: 1800,
+    established: "2018",
+    location: "Delhi, India",
+    verified: true,
+    badges: ["Premium Quality", "Designer Brands"],
+    specialties: ["Women's Wear", "Men's Fashion", "Accessories"],
+  },
+  {
+    id: "store-3",
+    name: "Home Essentials Plus",
+    description: "Complete home and kitchen solutions",
+    image:
+      "https://images.pexels.com/photos/13968342/pexels-photo-13968342.jpeg",
+    category: "Home & Kitchen",
+    rating: 4.5,
+    reviews: 6750,
+    products: 3200,
+    established: "2016",
+    location: "Bangalore, India",
+    verified: true,
+    badges: ["Quality Assured", "Wide Range"],
+    specialties: ["Kitchen Appliances", "Home Decor", "Storage"],
+  },
+  {
+    id: "store-4",
+    name: "BookMart Central",
+    description: "Books, stationery and educational materials",
+    image: "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg",
+    category: "Books & Stationery",
+    rating: 4.7,
+    reviews: 4230,
+    products: 5000,
+    established: "2012",
+    location: "Pune, India",
+    verified: true,
+    badges: ["Academic Excellence", "Rare Books"],
+    specialties: ["Academic Books", "Fiction", "Children's Books"],
+  },
+  {
+    id: "store-5",
+    name: "FitLife Sports",
+    description: "Sports equipment and fitness gear",
+    image: "https://images.pexels.com/photos/2526878/pexels-photo-2526878.jpeg",
+    category: "Sports & Fitness",
+    rating: 4.4,
+    reviews: 3560,
+    products: 1200,
+    established: "2019",
+    location: "Chennai, India",
+    verified: true,
+    badges: ["Authentic Gear", "Professional Quality"],
+    specialties: ["Gym Equipment", "Outdoor Sports", "Fitness Wear"],
+  },
+  {
+    id: "store-6",
+    name: "Beauty Paradise",
+    description: "Cosmetics and personal care products",
+    image: "https://images.pexels.com/photos/3119215/pexels-photo-3119215.jpeg",
+    category: "Beauty & Health",
+    rating: 4.6,
+    reviews: 7890,
+    products: 2100,
+    established: "2017",
+    location: "Hyderabad, India",
+    verified: true,
+    badges: ["Natural Products", "Cruelty Free"],
+    specialties: ["Skincare", "Makeup", "Hair Care"],
+  },
 ];
 
-const mallItemsByCategory = {
-  Offers: [
-    {
-      id: "offer-1",
-      title: "10% Off Electronics",
-      image:
-        "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg?auto=compress&w=400",
-      discount: "-10%",
-      store: "ElectroStore",
-      badge: "NEW",
-    },
-    {
-      id: "offer-2",
-      title: "Buy 1 Get 1 Free Clothing",
-      image:
-        "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400",
-      discount: "B1G1",
-      store: "FashionHub",
-      badge: "HOT",
-    },
-  ],
-  Electronics: [
-    {
-      id: "el-1",
-      title: "Smartphone X",
-      desc: "Latest smartphone with advanced features",
-      image:
-        "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg?auto=compress&w=400",
-      price: "$499",
-      isPopular: true,
-    },
-    {
-      id: "el-2",
-      title: "Wireless Headphones",
-      desc: "Noise-cancelling over-ear headphones",
-      image:
-        "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg?auto=compress&w=400",
-      price: "$99",
-    },
-  ],
-  Clothing: [
-    {
-      id: "cl-1",
-      title: "Men's T-Shirt",
-      desc: "100% cotton, various sizes",
-      image:
-        "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg?auto=compress&w=400",
-      price: "$19",
-    },
-    {
-      id: "cl-2",
-      title: "Women's Dress",
-      desc: "Elegant evening dress",
-      image:
-        "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg?auto=compress&w=400",
-      price: "$49",
-    },
-  ],
-  "Home Appliances": [
-    {
-      id: "ha-1",
-      title: "Blender Pro",
-      desc: "Multi-speed kitchen blender",
-      image:
-        "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg?auto=compress&w=400",
-      price: "$59",
-    },
-  ],
-  Books: [
-    {
-      id: "bk-1",
-      title: "Bestseller Novel",
-      desc: "A thrilling mystery novel",
-      image:
-        "https://images.pexels.com/photos/46274/pexels-photo-46274.jpeg?auto=compress&w=400",
-      price: "$12",
-    },
-  ],
-  Toys: [
-    {
-      id: "ty-1",
-      title: "Building Blocks Set",
-      desc: "Creative play for kids",
-      image:
-        "https://images.pexels.com/photos/3661350/pexels-photo-3661350.jpeg?auto=compress&w=400",
-      price: "$25",
-    },
-  ],
-};
-
-const getItemsByCategory = (category) => mallItemsByCategory[category] || [];
-
-const reviews = [
-  {
-    id: 1,
-    name: "Alice",
-    rating: 5,
-    date: "2024-06-01",
-    verified: true,
-    text: "Great selection and fast delivery!",
-  },
-  {
-    id: 2,
-    name: "Bob",
-    rating: 4,
-    date: "2024-06-02",
-    verified: false,
-    text: "Good prices on electronics.",
-  },
+const storeCategories = [
+  { name: "All Stores", count: 2500, icon: Store },
+  { name: "Electronics", count: 450, icon: Package },
+  { name: "Fashion", count: 680, icon: Star },
+  { name: "Home & Kitchen", count: 320, icon: Store },
+  { name: "Books & Stationery", count: 200, icon: Package },
+  { name: "Sports & Fitness", count: 180, icon: Star },
+  { name: "Beauty & Health", count: 290, icon: Store },
+  { name: "Toys & Games", count: 150, icon: Package },
 ];
 
 export default function Shops() {
-  const [activeTab, setActiveTab] = useState("Offers");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const { addToCart, removeFromCart, cartItems } = useCart();
-  const navigate = useNavigate();
-
+  const [selectedCategory, setSelectedCategory] = useState("All Stores");
+  const [sortBy, setSortBy] = useState("");
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("");
-  const [sortBy, setSortBy] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [hoveredItem, setHoveredItem] = useState(null);
-
-  const similarRestaurants = [
-    { name: "McDonald's London", img: McD },
-    { name: "Papa Johns", img: papajohn },
-    { name: "KFC West London", img: kfc },
-    { name: "Texas Chicken", img: texasChicken },
-    { name: "Burger King", img: burgerKing },
-    { name: "Shaurma 1", img: shaurma },
-  ];
-
-  // Simulate loading state
-  useEffect(() => {
-    setIsLoading(true);
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, [activeTab]);
+  const [wishlist, setWishlist] = useState(new Set());
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch products and categories for product section
-    const fetchProductsAndCategories = async () => {
-      try {
-        const [catRes, prodRes] = await Promise.all([
-          axios.get("/api/category/get-category-with-shop-count"),
-          axios.get(
-            "/api/products?populateCategory=true&populateSubcategory=true"
-          ),
-        ]);
-        const categoriesData = catRes.data.categories || [];
-        setCategories(categoriesData);
-        if (categoriesData.length > 0)
-          setActiveCategory(categoriesData[0].name);
-        setProducts(prodRes.data.products || []);
-      } catch (err) {
-        setCategories([]);
-        setProducts([]);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProductsAndCategories();
   }, []);
 
-  const filteredProducts = React.useMemo(() => {
-    let filtered = products;
-    if (activeCategory) {
+  const fetchProductsAndCategories = async () => {
+    setLoading(true);
+    try {
+      const [catRes, prodRes] = await Promise.all([
+        axios.get("/api/category/get-category-with-shop-count"),
+        axios.get(
+          "/api/products?populateCategory=true&populateSubcategory=true",
+        ),
+      ]);
+      setCategories(catRes.data.categories || []);
+      setProducts(prodRes.data.products || []);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setCategories([]);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterStores = (stores) => {
+    let filtered = stores;
+
+    if (searchQuery) {
       filtered = filtered.filter(
-        (p) => p.category && p.category.name === activeCategory
+        (store) =>
+          store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          store.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          store.category.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
-    if (sortBy === "low") {
-      filtered = [...filtered].sort((a, b) => a.price - b.price);
-    } else if (sortBy === "high") {
-      filtered = [...filtered].sort((a, b) => b.price - a.price);
+
+    if (selectedCategory !== "All Stores") {
+      filtered = filtered.filter(
+        (store) => store.category === selectedCategory,
+      );
     }
+
+    if (sortBy === "rating") {
+      filtered = [...filtered].sort((a, b) => b.rating - a.rating);
+    } else if (sortBy === "reviews") {
+      filtered = [...filtered].sort((a, b) => b.reviews - a.reviews);
+    } else if (sortBy === "products") {
+      filtered = [...filtered].sort((a, b) => b.products - a.products);
+    }
+
     return filtered;
-  }, [products, activeCategory, sortBy]);
-
-  const filterItems = (items) => {
-    if (!searchQuery) return items;
-    return items.filter(
-      (item) =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.desc.toLowerCase().includes(searchQuery.toLowerCase())
-    );
   };
 
-  const renderOffers = (items) => {
-    return (
-      <div className="offers-grid">
-        {items.map((offer) => (
-          <div
-            className="offer-card compact-menu-card"
-            key={offer.id}
-            onClick={() => navigate(`/product/${offer.id}`, { state: { item: offer } })}
-            onMouseEnter={() => setHoveredItem(offer.id)}
-            onMouseLeave={() => setHoveredItem(null)}
-            style={{ position: "relative" }}
-          >
-            <div className="card-content">
-              <div className="circular-image">
-                <img src={offer.image} alt={offer.title} loading="lazy" />
-                {offer.badge && <div className="popular-badge">{offer.badge}</div>}
-              </div>
-              <div className="item-title-wrapper">
-                <h4 className="item-title">{offer.title}</h4>
-              </div>
-              <button
-                className="add-to-cart-btn"
-                onClick={e => { e.stopPropagation(); addToCart({ ...offer, quantity: 1, addedAt: new Date().toISOString() }); }}
-                aria-label={`Add ${offer.title} to cart`}
-              >
-                +
-              </button>
-            </div>
-            {hoveredItem === offer.id && (
-              <div className="product-popup">
-                <p className="popup-price">{offer.price}</p>
-                <p className="popup-desc">{offer.discount} {offer.store}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderMenuItems = (items) => {
-    return (
-      <div className="compact-menu-grid">
-        {items.map((item) => (
-          <div
-            className="compact-menu-card"
-            key={item.id}
-            onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
-            onMouseEnter={() => setHoveredItem(item.id)}
-            onMouseLeave={() => setHoveredItem(null)}
-            style={{ position: "relative" }}
-          >
-            <div className="card-content">
-              <div className="circular-image">
-                <img src={item.image} alt={item.title} loading="lazy" />
-                {item.isPopular && <div className="popular-badge">🔥 Popular</div>}
-              </div>
-              <div className="item-title-wrapper">
-                <h4 className="item-title">{item.title}</h4>
-              </div>
-              <button
-                className="add-to-cart-btn"
-                onClick={e => { e.stopPropagation(); addToCart({ ...item, quantity: 1, addedAt: new Date().toISOString() }); }}
-                aria-label={`Add ${item.title} to cart`}
-              >
-                +
-              </button>
-            </div>
-            {hoveredItem === item.id && (
-              <div className="product-popup">
-                <p className="popup-price">{item.price}</p>
-                <p className="popup-desc">{item.desc}</p>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const renderContent = () => {
-    if (isLoading) {
-      return (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading delicious items...</p>
-        </div>
-      );
+  const toggleWishlist = (e, storeId) => {
+    e.stopPropagation();
+    const newWishlist = new Set(wishlist);
+    if (newWishlist.has(storeId)) {
+      newWishlist.delete(storeId);
+      toast.info("Store removed from favorites");
+    } else {
+      newWishlist.add(storeId);
+      toast.success("Store added to favorites ❤️");
     }
+    setWishlist(newWishlist);
+  };
 
-    const items = getItemsByCategory(activeTab);
+  const handleVisitStore = (store) => {
+    navigate(`/store/${store.id}`, { state: { store } });
+  };
 
-    if (activeTab === "Offers") {
-      return renderOffers(items);
-    }
-
-    return (
-      <div className="menu-section">
-        <h3 className="menu-category-title">{activeTab}</h3>
-        {renderMenuItems(items)}
-      </div>
-    );
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation();
+    addToCart({
+      ...product,
+      quantity: 1,
+      addedAt: new Date().toISOString(),
+    });
+    toast.success(`${product.name} added to cart! 🛒`);
   };
 
   const renderStars = (rating) => {
-    return Array.from({ length: 5 }, (_, index) => (
-      <span key={index} className={`star ${index < rating ? "filled" : ""}`}>
-        ★
-      </span>
-    ));
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
+    for (let i = 0; i < fullStars; i++) {
+      stars.push(
+        <Star key={i} className="star-filled" size={14} fill="currentColor" />,
+      );
+    }
+
+    if (hasHalfStar) {
+      stars.push(
+        <Star key="half" className="star-half" size={14} fill="currentColor" />,
+      );
+    }
+
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars.push(<Star key={`empty-${i}`} className="star-empty" size={14} />);
+    }
+
+    return stars;
   };
 
-  // Optionally, you can show a summary using cartItems from useCart if needed
+  const StoreCard = ({ store }) => (
+    <div className="store-card" onClick={() => handleVisitStore(store)}>
+      <div className="store-image-container">
+        <img src={store.image} alt={store.name} loading="lazy" />
+
+        <button
+          className={`store-favorite-btn ${wishlist.has(store.id) ? "active" : ""}`}
+          onClick={(e) => toggleWishlist(e, store.id)}
+        >
+          <Heart
+            size={16}
+            fill={wishlist.has(store.id) ? "currentColor" : "none"}
+          />
+        </button>
+
+        {store.verified && (
+          <div className="store-verified-badge">
+            <Award size={14} />
+            <span>Verified</span>
+          </div>
+        )}
+      </div>
+
+      <div className="store-content">
+        <div className="store-header">
+          <h3 className="store-name">{store.name}</h3>
+          <p className="store-description">{store.description}</p>
+        </div>
+
+        <div className="store-rating-section">
+          <div className="store-stars">{renderStars(store.rating)}</div>
+          <span className="store-rating-text">{store.rating}</span>
+          <span className="store-reviews">
+            ({store.reviews.toLocaleString()} reviews)
+          </span>
+        </div>
+
+        <div className="store-badges">
+          {store.badges.map((badge, index) => (
+            <span key={index} className="store-badge">
+              {badge}
+            </span>
+          ))}
+        </div>
+
+        <div className="store-stats">
+          <div className="store-stat">
+            <Package size={14} />
+            <span>{store.products.toLocaleString()} products</span>
+          </div>
+          <div className="store-stat">
+            <MapPin size={14} />
+            <span>{store.location}</span>
+          </div>
+          <div className="store-stat">
+            <Clock size={14} />
+            <span>Since {store.established}</span>
+          </div>
+        </div>
+
+        <div className="store-specialties">
+          <strong>Specialties:</strong>
+          <div className="specialty-tags">
+            {store.specialties.map((specialty, index) => (
+              <span key={index} className="specialty-tag">
+                {specialty}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <button className="visit-store-btn">
+          <Store size={16} />
+          Visit Store
+        </button>
+      </div>
+    </div>
+  );
+
+  const ProductCard = ({ product }) => (
+    <div
+      className="product-card-compact"
+      onClick={() => navigate(`/product/${product._id}`)}
+    >
+      <div className="product-image-wrapper">
+        <img
+          src={
+            product.image
+              ? `http://localhost:8080${product.image}`
+              : "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
+          }
+          alt={product.name}
+          loading="lazy"
+        />
+      </div>
+      <div className="product-details-compact">
+        <h4>{product.name}</h4>
+        <p className="product-price">₹{product.price}</p>
+        <button
+          className="add-to-cart-compact"
+          onClick={(e) => handleAddToCart(e, product)}
+        >
+          <ShoppingCart size={14} />
+        </button>
+      </div>
+    </div>
+  );
+
+  const filteredStores = filterStores(featuredStores);
 
   return (
-    <div className="home-layout-container restaurant-page">
+    <div className="shops-page">
       {/* Hero Section */}
-      <div className="restaurant-hero">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1>{mallInfo.name}</h1>
-            <div className="hero-tags">
-              <span className="tag">Minimum Order: {mallInfo.minOrder}</span>
-              <span className="tag">Delivery in {mallInfo.deliveryTime}</span>
+      <div className="shops-hero">
+        <div className="shops-hero-content">
+          <div className="shops-hero-text">
+            <h1>Discover Amazing Stores</h1>
+            <p>
+              Shop from {mallInfo.totalStores.toLocaleString()}+ verified stores
+              across India
+            </p>
+            <div className="hero-stats-row">
+              <div className="hero-stat-item">
+                <Store size={24} />
+                <span>{mallInfo.totalStores.toLocaleString()}+ Stores</span>
+              </div>
+              <div className="hero-stat-item">
+                <Package size={24} />
+                <span>{mallInfo.totalProducts.toLocaleString()}+ Products</span>
+              </div>
+              <div className="hero-stat-item">
+                <Users size={24} />
+                <span>{mallInfo.customerSatisfaction}% Satisfaction</span>
+              </div>
             </div>
           </div>
-          <div className="hero-image"></div>
+          <div className="shops-hero-image">
+            <img
+              src="https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg"
+              alt="Shopping Stores"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Menu Section */}
-      <div className="restaurant-menu">
-        <div className="menu-header">
-          <h2>All Offers from {mallInfo.name}</h2>
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search from menu..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <span className="search-icon">🔍</span>
-          </div>
+      {/* Search and Filter Controls */}
+      <div className="shops-controls">
+        <div className="shops-search">
+          <Search size={20} className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search stores by name, category, or location..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="shops-search-input"
+          />
         </div>
 
-        <div className="menu-tabs">
-          {mallCategories.map((cat) => (
+        <div className="shops-filters">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="shops-sort-select"
+          >
+            <option value="">Sort by</option>
+            <option value="rating">Highest Rated</option>
+            <option value="reviews">Most Reviewed</option>
+            <option value="products">Most Products</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Store Categories */}
+      <div className="store-categories">
+        <h2>Browse by Category</h2>
+        <div className="category-filters">
+          {storeCategories.map((category) => (
             <button
-              key={cat}
-              className={`menu-tab ${activeTab === cat ? "active" : ""}`}
-              onClick={() => setActiveTab(cat)}
+              key={category.name}
+              className={`category-filter-btn ${selectedCategory === category.name ? "active" : ""}`}
+              onClick={() => setSelectedCategory(category.name)}
             >
-              {cat}
+              <category.icon size={18} />
+              <span>{category.name}</span>
+              <span className="category-count">({category.count})</span>
             </button>
           ))}
         </div>
-
-        <div className="menu-content">{renderContent()}</div>
       </div>
 
-      {/* Product Section */}
-      <div className="featured-products-container">
-        <h3 style={{ marginBottom: 16 }}>Featured Products</h3>
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            marginBottom: 24,
-            flexWrap: "wrap",
-          }}
-        >
-          <select
-            value={activeCategory}
-            onChange={(e) => setActiveCategory(e.target.value)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 8,
-              border: "1px solid #ccc",
-              fontWeight: 500,
-            }}
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-          <select
-            onChange={(e) => setSortBy(e.target.value)}
-            style={{
-              padding: "8px 16px",
-              borderRadius: 8,
-              border: "1px solid #ccc",
-              fontWeight: 500,
-            }}
-            defaultValue=""
-          >
-            <option value="">Sort by</option>
-            <option value="low">Price: Low to High</option>
-            <option value="high">Price: High to Low</option>
-          </select>
+      {/* Featured Stores */}
+      <div className="stores-main-content">
+        <div className="stores-header">
+          <h2>🏪 Featured Stores ({filteredStores.length} stores)</h2>
+          <p>Handpicked stores with the best products and service</p>
         </div>
-        <div className="product-cards-wrapper">
-          <div className="product-cards">
-            {loading ? (
-              <p>Loading products...</p>
-            ) : filteredProducts.length === 0 ? (
-              <div
-                className="under-development-section"
-                style={{
-                  padding: "32px",
-                  textAlign: "center",
-                  background: "#f8f9fa",
-                  borderRadius: 12,
-                  color: "#888",
-                  fontWeight: 600,
-                  fontSize: 20,
-                  margin: "32px 0",
-                  width: "100%",
-                }}
-              >
-                🚧 This section is under development 🚧
-              </div>
-            ) : (
-              filteredProducts.map((product) => (
-                <div
-                  className="compact-menu-card"
-                  key={product._id}
-                  onClick={() => navigate(`/product/${product._id}`, { state: { item: product } })}
-                  onMouseEnter={() => setHoveredItem(product._id)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                  style={{ position: "relative" }}
-                >
-                  <div className="card-content">
-                    <div className="circular-image">
-                      <img
-                        src={
-                          product.image
-                            ? product.image.startsWith("/uploads")
-                              ? `http://localhost:8080${product.image}`
-                              : product.image
-                            : "placeholder.jpg"
-                        }
-                        alt={product.name}
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="item-title-wrapper">
-                      <h4 className="item-title">{product.name}</h4>
-                    </div>
-                    <button
-                      className="add-to-cart-btn"
-                      onClick={e => { e.stopPropagation(); addToCart({ ...product, quantity: 1, addedAt: new Date().toISOString() }); }}
-                      aria-label={`Add ${product.name} to cart`}
-                    >
-                      +
-                    </button>
-                  </div>
-                  {hoveredItem === product._id && (
-                    <div className="product-popup">
-                      <p className="popup-price">₹{product.price}</p>
-                      <p className="popup-desc">{product.desc}</p>
-                    </div>
-                  )}
-                </div>
+
+        <div className="stores-grid">
+          {loading ? (
+            <div className="loading-section">
+              <div className="loading-spinner"></div>
+              <p>Loading stores...</p>
+            </div>
+          ) : filteredStores.length === 0 ? (
+            <div className="no-stores-found">
+              <h3>No stores found</h3>
+              <p>Try adjusting your search or category filter</p>
+            </div>
+          ) : (
+            filteredStores.map((store) => (
+              <StoreCard key={store.id} store={store} />
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Latest Products */}
+      <div className="latest-products-section">
+        <div className="section-header">
+          <h2>🆕 Latest Products</h2>
+          <p>Fresh arrivals from our partner stores</p>
+        </div>
+
+        <div className="products-grid-compact">
+          {loading ? (
+            <p>Loading products...</p>
+          ) : products.length === 0 ? (
+            <div className="under-development">
+              <h3>🚧 Products coming soon! 🚧</h3>
+              <p>Our partner stores are adding new products daily</p>
+            </div>
+          ) : (
+            products
+              .slice(0, 8)
+              .map((product) => (
+                <ProductCard key={product._id} product={product} />
               ))
-            )}
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Delivery Information */}
-      <div className="delivery-info-section">
-        <div className="delivery-info-grid">
-          <div className="delivery-info-card">
-            <h3>🚚 Delivery Information</h3>
-            <div className="info-item">
-              <span className="label">Monday:</span>
-              <span className="value">{mallInfo.operationalHours.monday}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Tuesday:</span>
-              <span className="value">{mallInfo.operationalHours.tuesday}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Wednesday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.wednesday}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">Thursday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.thursday}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">Friday:</span>
-              <span className="value">{mallInfo.operationalHours.friday}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Saturday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.saturday}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">Sunday:</span>
-              <span className="value">{mallInfo.operationalHours.sunday}</span>
-            </div>
-            <div className="info-item highlight">
-              <span className="label">⏱️ Estimated delivery:</span>
-              <span className="value">20 min</span>
-            </div>
-          </div>
-
-          <div className="delivery-info-card">
-            <h3>📞 Contact Information</h3>
-            <div className="info-item">
-              <span className="label">Dietary restrictions:</span>
-              <span className="value">
-                Please contact the restaurant. We provide food-specific
-                information upon request.
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">📱 Phone number:</span>
-              <span className="value">{mallInfo.phone}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">🌐 Website:</span>
-              <span className="value">{mallInfo.website}</span>
-            </div>
-          </div>
-
-          <div className="delivery-info-card">
-            <h3>⏰ Operational Times</h3>
-            <div className="info-item">
-              <span className="label">Monday:</span>
-              <span className="value">{mallInfo.operationalHours.monday}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Tuesday:</span>
-              <span className="value">{mallInfo.operationalHours.tuesday}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Wednesday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.wednesday}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">Thursday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.thursday}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">Friday:</span>
-              <span className="value">{mallInfo.operationalHours.friday}</span>
-            </div>
-            <div className="info-item">
-              <span className="label">Saturday:</span>
-              <span className="value">
-                {mallInfo.operationalHours.saturday}
-              </span>
-            </div>
-            <div className="info-item">
-              <span className="label">Sunday:</span>
-              <span className="value">{mallInfo.operationalHours.sunday}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Map Section */}
-      <div className="map-section">
-        <div className="map-container">
-          <div className="map-info">
-            <div className="restaurant-location-card">
-              <h3>📍 {mallInfo.name}</h3>
-              <p>South London</p>
-              <p>{mallInfo.address}</p>
-              <div className="location-tags">
-                <span className="tag">📞 Phone: {mallInfo.phone}</span>
-                <span className="tag">🌐 Website: {mallInfo.website}</span>
+      {/* Store Information */}
+      <div className="store-info-section">
+        <div className="store-info-cards">
+          <div className="store-info-card">
+            <h3>🏪 Store Directory</h3>
+            <div className="info-list">
+              <div className="info-item">
+                <span className="info-label">Total Stores:</span>
+                <span className="info-value">
+                  {mallInfo.totalStores.toLocaleString()}
+                </span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Verified Stores:</span>
+                <span className="info-value">2,250+</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">New This Month:</span>
+                <span className="info-value">45 stores</span>
               </div>
             </div>
           </div>
-          <div className="map-placeholder">
-            <div className="map-overlay">
-              <p>🗺️ Interactive Map</p>
-              <p>{mallInfo.name} Location</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Customer Reviews */}
-      <div className="reviews-section">
-        <div className="reviews-header">
-          <h3>⭐ Customer Reviews</h3>
-          <div className="navigation-arrows">
-            <button className="nav-arrow prev">&lt;</button>
-            <button className="nav-arrow next">&gt;</button>
-          </div>
-        </div>
-        <div className="reviews-grid">
-          {reviews.map((review) => (
-            <div className="review-card" key={review.id}>
-              <div className="review-header">
-                <div className="reviewer-info">
-                  <div className="reviewer-avatar">
-                    <span>{review.name.charAt(0)}</span>
-                  </div>
-                  <div className="reviewer-details">
-                    <h4>
-                      {review.name}
-                      {review.verified && (
-                        <span className="verified-badge">✓</span>
-                      )}
-                    </h4>
-                    <p>{review.date}</p>
-                  </div>
-                </div>
-                <div className="review-rating">
-                  {renderStars(review.rating)}
-                </div>
+          <div className="store-info-card">
+            <h3>🎯 Quality Assurance</h3>
+            <div className="info-list">
+              <div className="info-item">
+                <span className="info-label">Verification Process:</span>
+                <span className="info-value">Strict Quality Checks</span>
               </div>
-              <p className="review-comment">{review.text}</p>
-              <div className="review-actions">
-                <button className="helpful-btn">
-                  👍 Helpful ({review.helpful})
-                </button>
+              <div className="info-item">
+                <span className="info-label">Customer Support:</span>
+                <span className="info-value">24/7 Available</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Return Policy:</span>
+                <span className="info-value">Store-specific</span>
               </div>
             </div>
-          ))}
-        </div>
-        <div className="overall-rating">
-          <span className="rating-number-large">{mallInfo.rating}</span>
-          <div className="rating-details">
-            <div className="rating-stars-large">
-              {renderStars(Math.floor(mallInfo.rating))}
-            </div>
-            <span className="rating-count">
-              {mallInfo.reviews.toLocaleString()} reviews
-            </span>
           </div>
-        </div>
-      </div>
 
-      {/* Similar Restaurants */}
-      <div className="similar-restaurants">
-        <h3>Similar Restaurants</h3>
-        <div className="restaurants-grid">
-          {similarRestaurants.map((restaurant) => (
-            <div className="restaurant-brand-card" key={restaurant.name}>
-              <img src={restaurant.img} alt={restaurant.name} loading="lazy" />
-              <span className="restaurant-name">{restaurant.name}</span>
+          <div className="store-info-card">
+            <h3>📈 Why Shop With Us?</h3>
+            <div className="info-list">
+              <div className="info-item">
+                <span className="info-label">Wide Selection:</span>
+                <span className="info-value">50,000+ Products</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Competitive Prices:</span>
+                <span className="info-value">Best Market Rates</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Satisfaction Rate:</span>
+                <span className="info-value">98% Happy Customers</span>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>

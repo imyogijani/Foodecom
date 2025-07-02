@@ -46,36 +46,192 @@ const SellerDashboard = () => {
         </p>
       </div>
 
-      <div className="dashboard-stats">
-        <div className="stat-card">
-          <div className="stat-title">Today's Sales</div>
-          <div className="stat-value">₹1,890</div>
-          <div className="stat-change">
-            <FaArrowUp /> +10.2% from yesterday
+      <div className="cards-grid cards-grid-medium">
+        <div className="card-base card-medium seller-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#28a745",
+                  marginRight: "12px",
+                }}
+              >
+                <FaDollarSign />
+              </div>
+              <div>
+                <h3 className="card-title">Today's Sales</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  ₹1,890
+                </p>
+                <p
+                  className="card-description"
+                  style={{
+                    color: "#28a745",
+                    fontSize: "11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  <FaArrowUp /> +10.2% from yesterday
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-title">Total Products</div>
-          <div className="stat-value">157</div>
-          <div className="stat-change">
-            <FaArrowUp /> +5 new this week
+        <div className="card-base card-medium seller-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#28a745",
+                  marginRight: "12px",
+                }}
+              >
+                <FaShoppingBag />
+              </div>
+              <div>
+                <h3 className="card-title">Total Products</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  157
+                </p>
+                <p
+                  className="card-description"
+                  style={{
+                    color: "#28a745",
+                    fontSize: "11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  <FaArrowUp /> +5 new this week
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-title">Pending Orders</div>
-          <div className="stat-value">24</div>
-          <div className="stat-change">
-            <FaArrowUp /> +3 from yesterday
+        <div className="card-base card-medium seller-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#28a745",
+                  marginRight: "12px",
+                }}
+              >
+                <FaChartLine />
+              </div>
+              <div>
+                <h3 className="card-title">Pending Orders</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  24
+                </p>
+                <p
+                  className="card-description"
+                  style={{
+                    color: "#28a745",
+                    fontSize: "11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  <FaArrowUp /> +3 from yesterday
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-title">Customer Rating</div>
-          <div className="stat-value">4.8</div>
-          <div className="stat-change">
-            <FaArrowUp /> +0.2 this month
+        <div className="card-base card-medium seller-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#28a745",
+                  marginRight: "12px",
+                }}
+              >
+                ⭐
+              </div>
+              <div>
+                <h3 className="card-title">Customer Rating</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  4.8
+                </p>
+                <p
+                  className="card-description"
+                  style={{
+                    color: "#28a745",
+                    fontSize: "11px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  <FaArrowUp /> +0.2 this month
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

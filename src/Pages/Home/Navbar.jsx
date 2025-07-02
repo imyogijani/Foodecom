@@ -15,9 +15,9 @@ import MaleUser from "../../images/MaleUser.png";
 
 const navLinks = [
   { name: "Home", path: "/" },
-  { name: "Browse Menu", path: "/menu" },
-  { name: "Special Offers", path: "/Offer" },
-  { name: "Shops", path: "/shops" },
+  { name: "Browse Products", path: "/menu" },
+  { name: "Today's Deals", path: "/Offer" },
+  { name: "All Stores", path: "/shops" },
 ];
 
 const Navbar = () => {
@@ -158,7 +158,9 @@ const Navbar = () => {
                     <div className="user-menu animate-dropdown">
                       <div className="user-info">
                         <img
-                          src={avatarError ? MaleUser : user?.avatar || MaleUser}
+                          src={
+                            avatarError ? MaleUser : user?.avatar || MaleUser
+                          }
                           alt={user?.name || "User avatar"}
                           className="menu-avatar"
                           onError={handleAvatarError}

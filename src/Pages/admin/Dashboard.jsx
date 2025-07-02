@@ -44,7 +44,7 @@ const Dashboard = () => {
         const response = await axios.get("/api/admin/dashboard-stats", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("dashboard‑stats →", response.data);   // <— add this
+        console.log("dashboard‑stats →", response.data); // <— add this
         setStats(response.data.data);
       } catch (error) {
         console.error("Error fetching stats:", error);
@@ -68,108 +68,220 @@ const Dashboard = () => {
         <p className="admin-subtitle">Overall System Statistics</p>
       </div>
 
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaUsers />
-          </div>
-          <div className="stat-details">
-            <h3>Total Users</h3>
-            <p className="stat-value">{stats.totalUsers}</p>
-            <p className="stat-change">
-              +{stats.userStats?.weeklyGrowth || 0}% this week
-            </p>
+      <div className="cards-grid cards-grid-medium">
+        <div className="card-base card-medium admin-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#ff9900",
+                  marginRight: "12px",
+                }}
+              >
+                <FaUsers />
+              </div>
+              <div>
+                <h3 className="card-title">Total Users</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  {stats.totalUsers}
+                </p>
+                <p
+                  className="card-description"
+                  style={{ color: "#28a745", fontSize: "11px" }}
+                >
+                  +{stats.userStats?.weeklyGrowth || 0}% this week
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaStore />
-          </div>
-          <div className="stat-details">
-            <h3>Active Sellers</h3>
-            <p className="stat-value">{stats.totalSellers}</p>
-            <p className="stat-change">
-              +{stats.shopStats?.weeklyGrowth || 0}% this week
-            </p>
+        <div className="card-base card-medium admin-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#ff9900",
+                  marginRight: "12px",
+                }}
+              >
+                <FaStore />
+              </div>
+              <div>
+                <h3 className="card-title">Active Sellers</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  {stats.totalSellers}
+                </p>
+                <p
+                  className="card-description"
+                  style={{ color: "#28a745", fontSize: "11px" }}
+                >
+                  +{stats.shopStats?.weeklyGrowth || 0}% this week
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaShoppingBag />
-          </div>
-          <div className="stat-details">
-            <h3>Total Products</h3>
-            <p className="stat-value">{stats.totalProducts}</p>
+        <div className="card-base card-medium admin-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#ff9900",
+                  marginRight: "12px",
+                }}
+              >
+                <FaShoppingBag />
+              </div>
+              <div>
+                <h3 className="card-title">Total Products</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  {stats.totalProducts}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="stat-card">
-          <div className="stat-icon">
-            <FaMoneyBillWave />
-          </div>
-          <div className="stat-details">
-            <h3>Total Revenue</h3>
-            <p className="stat-value">₹{stats.revenue}</p>
+        <div className="card-base card-medium admin-card">
+          <div className="card-content">
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: "12px",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "24px",
+                  color: "#ff9900",
+                  marginRight: "12px",
+                }}
+              >
+                <FaMoneyBillWave />
+              </div>
+              <div>
+                <h3 className="card-title">Total Revenue</h3>
+                <p
+                  className="card-subtitle"
+                  style={{
+                    fontSize: "20px",
+                    fontWeight: "700",
+                    color: "#232f3e",
+                  }}
+                >
+                  ₹{stats.revenue}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="charts-grid">
-        <div className="chart-card">
-          <h3>Revenue Trends</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={stats.revenueData || []}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
-            </LineChart>
-          </ResponsiveContainer>
+      <div className="cards-grid cards-grid-xlarge">
+        <div className="card-base card-xlarge admin-card">
+          <div className="card-content">
+            <h3 className="card-title">Revenue Trends</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={stats.revenueData || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="revenue" stroke="#8884d8" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="chart-card">
-          <h3>User Registration Trends</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={stats.userStats || []}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="users" fill="#82ca9d" />
-              <Bar dataKey="sellers" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="card-base card-xlarge admin-card">
+          <div className="card-content">
+            <h3 className="card-title">User Registration Trends</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={stats.userStats || []}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="users" fill="#82ca9d" />
+                <Bar dataKey="sellers" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
 
-        <div className="chart-card">
-          <h3>System Overview</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={pieData}
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-                label
-              >
-                {pieData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="card-base card-xlarge admin-card">
+          <div className="card-content">
+            <h3 className="card-title">System Overview</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={pieData}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label
+                >
+                  {pieData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 

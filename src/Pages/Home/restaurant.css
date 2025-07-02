@@ -1,2183 +1,693 @@
-:root {
-  --dark-blue: #03081f;
-  --yellow: #fc8a06;
-  --gray-100: #f8f9fa;
-  --gray-200: #e9ecef;
-  --gray-300: #dee2e6;
-  --gray-500: #6c757d;
-  --gray-700: #495057;
-  --white: #ffffff;
-  --green: #28a745;
-  --light-beige: #f4f7f6;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  --popular-color: #ff6b35;
-  --verified-color: #28a745;
-}
+/* Modern E-Mall Menu/Catalog Page Styles */
 
-* {
-  box-sizing: border-box;
-}
-
-.restaurant-page {
+.modern-menu-page {
+  background: #f7f7f7;
   min-height: 100vh;
-  background: var(--light-beige);
-  animation: fadeIn 0.5s ease-in;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+/* Header Section */
+.menu-header-section {
+  background: white;
+  padding: 30px 20px;
+  border-bottom: 1px solid #ddd;
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.mall-info {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+.mall-info h1 {
+  font-size: 2.5rem;
+  color: #232f3e;
+  margin-bottom: 15px;
+  font-weight: 700;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.mall-meta {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-/* Loading States */
-.loading-container {
+.rating-badge,
+.delivery-badge,
+.security-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.rating-badge .star-icon {
+  color: #ff9900;
+}
+
+.delivery-badge svg,
+.security-badge svg {
+  color: #007600;
+}
+
+/* Search and Filter Bar */
+.search-filter-bar {
+  background: white;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 70px;
+  z-index: 100;
+}
+
+.search-filter-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.search-section {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: #666;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 12px 12px 45px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  border-color: #ff9900;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.filter-toggle:hover {
+  background: #f8f8f8;
+}
+
+.filter-toggle .rotated {
+  transform: rotate(180deg);
+}
+
+.sort-dropdown {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.view-toggle {
+  display: flex;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.view-btn {
+  padding: 10px 12px;
+  border: none;
+  background: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.view-btn:hover,
+.view-btn.active {
+  background: #ff9900;
+  color: white;
+}
+
+/* Filters Panel */
+.filters-panel {
+  background: white;
+  padding: 20px;
+  border-bottom: 1px solid #ddd;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.filter-group {
+  margin-bottom: 20px;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #232f3e;
+}
+
+.price-range {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.price-range input {
+  width: 100px;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Category Navigation */
+.category-navigation {
+  background: white;
+  padding: 0 20px;
+  border-bottom: 1px solid #ddd;
+  overflow-x: auto;
+}
+
+.category-tabs {
+  display: flex;
+  gap: 5px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-width: max-content;
+}
+
+.category-tab {
+  padding: 15px 20px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.category-tab:hover {
+  color: #232f3e;
+}
+
+.category-tab.active {
+  color: #ff9900;
+  border-bottom-color: #ff9900;
+}
+
+/* Products Section */
+.products-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+.results-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.results-info h2 {
+  font-size: 1.8rem;
+  color: #232f3e;
+}
+
+.results-info p {
+  color: #666;
+  font-size: 1rem;
+}
+
+/* Products Container */
+.products-container {
+  display: grid;
+  gap: 20px;
+}
+
+.products-container.grid {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.products-container.list {
+  grid-template-columns: 1fr;
+}
+
+/* Product Card Styles */
+.modern-product-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.modern-product-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.modern-product-card.list-view {
+  flex-direction: row;
+  align-items: center;
+}
+
+.modern-product-card.list-view .product-image-wrapper {
+  width: 200px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+.product-image-wrapper {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+
+.product-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.modern-product-card:hover .product-image-wrapper img {
+  transform: scale(1.05);
+}
+
+.wishlist-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+  color: #666;
+  z-index: 10;
+}
+
+.wishlist-button:hover,
+.wishlist-button.active {
+  color: #e47911;
+  transform: scale(1.1);
+}
+
+.discount-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #e47911;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.prime-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: #0066cc;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.product-details {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-size: 1.1rem;
+  color: #232f3e;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  height: 2.6em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  height: 2.8em;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.product-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star-filled {
+  color: #ff9900;
+}
+
+.star-empty {
+  color: #ddd;
+}
+
+.rating-value {
+  color: #232f3e;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.review-count {
+  color: #0066cc;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.pricing-section {
+  margin-bottom: 10px;
+}
+
+.current-price {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #232f3e;
+}
+
+.original-price {
+  font-size: 0.95rem;
+  color: #666;
+  text-decoration: line-through;
+  margin-left: 8px;
+}
+
+.discount-percent {
+  font-size: 0.85rem;
+  color: #007600;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.delivery-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  font-size: 0.85rem;
+}
+
+.free-delivery {
+  color: #007600;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.delivery-date {
+  color: #666;
+}
+
+.add-cart-button {
+  width: 100%;
+  background: #ff9900;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.3s;
+  margin-top: auto;
+}
+
+.add-cart-button:hover {
+  background: #e88700;
+}
+
+/* Loading Section */
+.loading-section {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
-  color: var(--gray-500);
+  padding: 60px 20px;
+  color: #666;
 }
 
 .loading-spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--gray-300);
-  border-top: 4px solid var(--yellow);
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #ff9900;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 
-/* Hero Section */
-.restaurant-hero {
-  background: linear-gradient(135deg, var(--dark-blue) 0%, #1a237e 100%);
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-  animation: slideUp 0.6s ease-out;
-  color: var(--white);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-height: 300px;
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.hero-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 3rem;
-  position: relative;
-  z-index: 1;
-}
-
-.hero-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80') center/cover no-repeat;
-  opacity: 0.15;
-  z-index: -1;
-  animation: slowZoom 20s infinite alternate;
-}
-
-@keyframes slowZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.1); }
-}
-
-.hero-text {
-  flex: 1;
-  padding-right: 2rem;
-}
-
-.hero-text h1 {
-  font-size: 3.5rem;
-  font-weight: 800;
-  margin-bottom: 1.5rem;
-  line-height: 1.2;
-  background: linear-gradient(120deg, var(--yellow), #ff9f43);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: slideUp 0.8s ease-out;
-}
-
-.hero-tags {
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-}
-
-.tag {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 0.8rem 1.5rem;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-}
-
-.tag:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
-}
-
-.hero-image {
-  flex: 1;
-  position: relative;
-  height: 400px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-  transform: perspective(1000px) rotateY(-5deg);
-  transition: transform 0.5s ease;
-}
-
-.hero-image:hover {
-  transform: perspective(1000px) rotateY(0deg);
-}
-
-.hero-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.hero-image:hover img {
-  transform: scale(1.05);
-}
-
-.hero-text h1 {
-  color: var(--dark-blue);
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  font-family: "Poppins", sans-serif;
-  animation: slideUp 0.7s ease-out 0.2s both;
-}
-
-.hero-tags {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  animation: slideUp 0.8s ease-out 0.4s both;
-}
-
-.hero-tags .tag {
-  background: var(--dark-blue);
-  color: var(--white);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.hero-tags .tag:hover {
-  background: var(--yellow);
-  transform: translateY(-2px);
-}
-
-.hero-image {
-  position: relative;
-  z-index: 1;
-  animation: slideUp 0.6s ease-out 0.3s both;
-}
-
-.hero-image img {
-  width: 300px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 12px;
-  box-shadow: var(--card-shadow);
-  transition: transform 0.3s ease;
-}
-
-.hero-image img:hover {
-  transform: scale(1.02);
-}
-
-.rating-badge {
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  background: var(--white);
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+/* No Results */
+.no-results {
   text-align: center;
-  box-shadow: var(--card-shadow);
-  z-index: 2;
-  animation: slideUp 0.6s ease-out 0.5s both;
-  transition: all 0.3s ease;
+  padding: 60px 20px;
+  color: #666;
 }
 
-.rating-badge:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--hover-shadow);
-}
-
-.rating-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.rating-stars {
-  margin-bottom: 0.5rem;
-}
-
-.rating-count {
-  font-size: 0.8rem;
-  color: var(--gray-500);
-}
-
-/* Menu Section */
-.restaurant-menu {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  animation: slideUp 0.6s ease-out 0.2s both;
-}
-
-.menu-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.menu-header h2 {
+.no-results h3 {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  font-family: "Poppins", sans-serif;
+  margin-bottom: 10px;
 }
 
-.search-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
+.no-results p {
+  font-size: 1rem;
 }
 
-.search-bar input {
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  border-radius: 25px;
-  border: 1px solid var(--gray-300);
-  width: 250px;
-  outline: none;
-  font-size: 0.9rem;
-  background: var(--white);
-  transition: all 0.3s ease;
+/* Info Cards Section */
+.info-cards-section {
+  background: white;
+  padding: 40px 20px;
+  border-top: 1px solid #ddd;
 }
 
-.search-bar input:focus {
-  border-color: var(--yellow);
-  box-shadow: 0 0 0 3px rgba(252, 138, 6, 0.1);
-  transform: scale(1.02);
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.75rem;
-  color: var(--gray-500);
-  pointer-events: none;
-}
-
-.menu-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.menu-tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.menu-tab {
-  background: transparent;
-  border: none;
-  color: var(--dark-blue);
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.menu-tab:hover {
-  background: rgba(3, 8, 31, 0.1);
-  transform: translateY(-2px);
-}
-
-.menu-tab.active {
-  background: var(--dark-blue);
-  color: var(--white);
-  box-shadow: 0 4px 12px rgba(3, 8, 31, 0.3);
-}
-
-/* Offers Grid */
-.offers-grid {
+.info-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1rem;
-}
-
-.offer-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: white;
-  box-shadow: var(--card-shadow);
-  height: 280px;
-  display: flex;
-  flex-direction: column;
-}
-
-.offer-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--hover-shadow);
-}
-
-.offer-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.offer-card:hover img {
-  transform: scale(1.05);
-}
-
-.discount-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: linear-gradient(135deg, #ff4757, #ff3742);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
-  z-index: 2;
-}
-
-.special-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, var(--yellow), #ff9f43);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
-  z-index: 2;
-}
-
-.offer-info {
-  padding: 1rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-}
-
-.offer-info span {
-  font-size: 0.875rem;
-  color: var(--gray-500);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.offer-info h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  margin: 0 0 1rem 0;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.plus-icon {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--yellow), #ff9f43);
-  color: white;
-  border: none;
-  font-size: 1.25rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
-}
-
-.plus-icon:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(252, 138, 6, 0.4);
-}
-
-/* Menu Items - Enhanced */
-.menu-section {
-  margin-top: 2rem;
-  animation: slideUp 0.6s ease-out;
-}
-
-.menu-category-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  margin-bottom: 2rem;
-  font-family: "Poppins", sans-serif;
-}
-
-.menu-items-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-}
-
-.menu-item-card {
-  background: var(--white);
-  border-radius: 16px;
-  padding: 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  box-shadow: var(--card-shadow);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  min-height: 140px;
-  animation: slideUp 0.6s ease-out;
-}
-
-.menu-item-card:hover {
-  box-shadow: var(--hover-shadow);
-  transform: translateY(-4px);
-}
-
-.menu-item-info {
-  flex: 1;
-  padding-right: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
-
-.item-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.menu-item-info h4 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  font-family: "Poppins", sans-serif;
-  line-height: 1.3;
-  flex: 1;
-}
-
-.popular-badge {
-  background: var(--popular-color);
-  color: var(--white);
-  padding: 0.15rem 0.4rem;
-  border-radius: 8px;
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  margin-left: 0.5rem;
-  flex-shrink: 0;
-}
-
-.menu-item-info p {
-  color: var(--gray-500);
-  font-size: 0.8rem;
-  margin-bottom: 1rem;
-  line-height: 1.4;
-  font-weight: 400;
-  flex-grow: 1;
-}
-
-.item-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-}
-
-.rating-calories {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.rating,
-.calories {
-  font-size: 0.7rem;
-  color: var(--gray-500);
-}
-
-.rating {
-  color: var(--yellow);
-  font-weight: 600;
-}
-
-.menu-item-info .price {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  font-family: "Poppins", sans-serif;
-}
-
-.menu-item-image {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.menu-item-image img {
-  width: 100px;
-  height: 85px;
-  object-fit: cover;
-  border-radius: 12px;
-  transition: transform 0.3s ease;
-}
-
-.menu-item-card:hover .menu-item-image img {
-  transform: scale(1.05);
-}
-
-.menu-item-image .plus-icon {
-  position: absolute;
-  right: -8px;
-  bottom: -8px;
-  width: 30px;
-  height: 30px;
-  font-size: 16px;
-  background: var(--dark-blue);
-  border: 2px solid var(--white);
-}
-
-/* Delivery Information */
-.delivery-info-section {
-  background: var(--white);
-  padding: 3rem 2rem;
-  margin-top: 2rem;
-  animation: slideUp 0.6s ease-out;
-}
-
-.delivery-info-grid {
+  gap: 20px;
   max-width: 1200px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
 }
 
-.delivery-info-card {
-  background: var(--light-beige);
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
-  animation: slideUp 0.6s ease-out;
+.info-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
 }
 
-.delivery-info-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-shadow);
-}
-
-.delivery-info-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  margin-bottom: 1.5rem;
-  font-family: "Poppins", sans-serif;
+.info-card h3 {
+  font-size: 1.2rem;
+  color: #232f3e;
+  margin-bottom: 15px;
 }
 
 .info-item {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--gray-300);
-  transition: all 0.3s ease;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
-}
-
-.info-item:hover {
-  background: rgba(252, 138, 6, 0.05);
-  margin: 0 -0.5rem 1rem;
-  padding: 0.5rem 0.5rem 1.25rem;
-  border-radius: 8px;
-}
-
-.info-item.highlight {
-  background: rgba(252, 138, 6, 0.1);
-  margin: 0 -0.5rem 1rem;
-  padding: 0.75rem 0.5rem 1.25rem;
-  border-radius: 8px;
-  font-weight: 600;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 5px 0;
 }
 
 .info-item .label {
-  font-weight: 600;
-  color: var(--dark-blue);
-  flex: 0 0 40%;
+  color: #666;
   font-size: 0.9rem;
 }
 
 .info-item .value {
-  color: var(--gray-700);
-  text-align: right;
-  flex: 1;
+  color: #232f3e;
+  font-weight: 600;
   font-size: 0.9rem;
-  line-height: 1.4;
-}
-
-/* Map Section */
-.map-section {
-  background: var(--dark-blue);
-  padding: 3rem 2rem;
-  color: var(--white);
-  animation: slideUp 0.6s ease-out;
-}
-
-.map-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 2rem;
-  align-items: center;
-}
-
-.restaurant-location-card {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 2rem;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.restaurant-location-card:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-4px);
-}
-
-.restaurant-location-card h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  font-family: "Poppins", sans-serif;
-}
-
-.restaurant-location-card p {
-  margin-bottom: 0.75rem;
-  opacity: 0.9;
-  line-height: 1.4;
-}
-
-.location-tags {
-  margin-top: 1rem;
-}
-
-.location-tags .tag {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-}
-
-.location-tags .tag:hover {
-  opacity: 1;
-}
-
-.map-placeholder {
-  background: var(--gray-300);
-  height: 300px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.map-placeholder:hover {
-  transform: scale(1.02);
-}
-
-.map-overlay {
-  text-align: center;
-  color: var(--gray-700);
-}
-
-.map-overlay p {
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-/* Reviews Section */
-.reviews-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-  animation: slideUp 0.6s ease-out;
-}
-
-.reviews-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.reviews-header h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  font-family: "Poppins", sans-serif;
-}
-
-.navigation-arrows {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.nav-arrow {
-  background: var(--yellow);
-  color: var(--white);
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.nav-arrow:hover {
-  background: var(--dark-blue);
-  transform: scale(1.1);
-}
-
-.reviews-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.review-card {
-  background: var(--white);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: var(--card-shadow);
-  transition: all 0.3s ease;
-  animation: slideUp 0.6s ease-out;
-}
-
-.review-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--hover-shadow);
-}
-
-.review-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-}
-
-.reviewer-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.reviewer-avatar {
-  width: 40px;
-  height: 40px;
-  background: var(--yellow);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  font-weight: 600;
-  transition: all 0.3s ease;
-}
-
-.reviewer-avatar:hover {
-  transform: scale(1.1);
-}
-
-.reviewer-details h4 {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.verified-badge {
-  color: var(--verified-color);
-  font-size: 0.7rem;
-}
-
-.reviewer-details p {
-  font-size: 0.8rem;
-  color: var(--gray-500);
-  margin: 0;
-}
-
-.review-rating {
-  display: flex;
-  gap: 2px;
-}
-
-.star {
-  color: var(--gray-300);
-  font-size: 1rem;
-  transition: color 0.3s ease;
-}
-
-.star.filled {
-  color: var(--yellow);
-}
-
-.review-comment {
-  color: var(--gray-700);
-  line-height: 1.5;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-}
-
-.review-actions {
-  display: flex;
-  gap: 1rem;
-}
-
-.helpful-btn {
-  background: transparent;
-  border: 1px solid var(--gray-300);
-  color: var(--gray-500);
-  padding: 0.25rem 0.75rem;
-  border-radius: 15px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.helpful-btn:hover {
-  background: var(--yellow);
-  color: var(--white);
-  border-color: var(--yellow);
-}
-
-.overall-rating {
-  text-align: center;
-  padding: 2rem;
-  background: var(--light-beige);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
-
-.overall-rating:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-shadow);
-}
-
-.rating-number-large {
-  font-size: 3rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  display: block;
-  margin-bottom: 0.5rem;
-  font-family: "Poppins", sans-serif;
-}
-
-.rating-stars-large {
-  margin-bottom: 0.5rem;
-}
-
-.rating-stars-large .star {
-  font-size: 1.5rem;
-  margin: 0 2px;
-}
-
-/* Similar Restaurants */
-.similar-restaurants {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 3rem 2rem;
-  margin-bottom: 2rem;
-}
-
-.similar-restaurants h3 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--dark-blue);
-  margin-bottom: 2rem;
-  font-family: "Poppins", sans-serif;
-  text-align: left;
-}
-
-.restaurants-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
-}
-
-.restaurant-brand-card {
-  position: relative;
-  width: 100%;
-  padding-top: 100%;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.restaurant-brand-card:hover {
-  transform: scale(1.05);
-}
-
-.restaurant-brand-card img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 1rem;
-}
-
-.restaurant-name {
-  display: none;
-}
-
-/* Remove all brand-specific colors and effects */
-.mcdonalds,
-.papa-johns,
-.kfc,
-.texas-chicken,
-.burger-king,
-.shaurma {
-  background: none;
-}
-
-@media (max-width: 1024px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  .featured-products-container .product-cards-wrapper .product-cards{
-    grid-template-columns: repeat(3, 1fr) auto;
-  }
-}
-
-@media (max-width: 768px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .featured-products-container .product-cards-wrapper .product-cards{
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .restaurants-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .featured-products-container .product-cards-wrapper .product-cards{
-    grid-template-columns: repeat(2, 1fr) ;
-  }
-}
-
-/* Cart Summary */
-.cart-summary {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: var(--dark-blue);
-  color: var(--white);
-  padding: 1rem 1.5rem;
-  border-radius: 25px;
-  box-shadow: var(--hover-shadow);
-  z-index: 1000;
-  animation: slideUp 0.4s ease-out;
-}
-
-.cart-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.cart-count {
-  font-weight: 600;
-}
-
-.view-cart-btn {
-  background: var(--yellow);
-  color: var(--white);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.view-cart-btn:hover {
-  background: var(--white);
-  color: var(--dark-blue);
-}
-
-.no-content {
-  text-align: center;
-  padding: 3rem;
-  color: var(--gray-500);
-  font-size: 1.1rem;
-  animation: slideUp 0.6s ease-out;
-}
-
-.no-content h3 {
-  color: var(--dark-blue);
-  margin-bottom: 1rem;
 }
 
 /* Responsive Design */
-@media (max-width: 1200px) {
-  .menu-items-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem;
-  }
-}
-
 @media (max-width: 768px) {
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .hero-text h1 {
+  .mall-info h1 {
     font-size: 2rem;
   }
 
-  .rating-badge {
-    position: static;
-    margin-top: 1rem;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+  .mall-meta {
+    gap: 15px;
   }
 
-  .menu-header {
+  .search-filter-bar {
     flex-direction: column;
+    gap: 15px;
     align-items: stretch;
   }
 
-  .search-bar {
-    width: 100%;
-  }
-
-  .search-bar input {
-    width: 100%;
-  }
-
-  .menu-tabs {
-    flex-wrap: wrap;
-  }
-
-  .offers-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .menu-items-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .delivery-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .map-container {
-    grid-template-columns: 1fr;
-  }
-
-  .reviews-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .restaurants-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
-
-  .menu-item-card {
-    flex-direction: row;
-    min-height: 120px;
-  }
-
-  .menu-item-info {
-    padding-right: 1rem;
-  }
-
-  .menu-item-image img {
-    width: 90px;
-    height: 75px;
-  }
-
-  .cart-summary {
-    bottom: 1rem;
-    right: 1rem;
-    left: 1rem;
-    border-radius: 15px;
-  }
-
-  .cart-content {
+  .filter-controls {
     justify-content: space-between;
   }
+
+  .category-tabs {
+    padding: 0 10px;
+  }
+
+  .products-container.grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .modern-product-card.list-view {
+    flex-direction: column;
+  }
+
+  .modern-product-card.list-view .product-image-wrapper {
+    width: 100%;
+    height: 200px;
+  }
+
+  .info-cards-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 480px) {
-  .restaurant-hero {
-    padding: 2rem 1rem;
+  .mall-info h1 {
+    font-size: 1.7rem;
   }
 
-  .restaurant-menu {
-    padding: 1rem;
-    margin-bottom: 200px; /* Add space for any floating elements */
-  }
-
-  .delivery-info-section {
-    padding: 2rem 1rem;
-  }
-
-  .map-section {
-    padding: 2rem 1rem;
-  }
-
-  .reviews-section {
-    padding: 2rem 1rem;
-  }
-
-  .similar-restaurants {
-    padding: 1rem;
-  }
-
-  .menu-item-card {
-    padding: 1rem;
-    min-height: 110px;
-  }
-
-  .menu-item-info h4 {
-    font-size: 0.95rem;
-  }
-
-  .menu-item-info p {
-    font-size: 0.75rem;
-  }
-
-  .menu-item-image img {
-    width: 80px;
-    height: 65px;
-  }
-
-  .menu-item-image .plus-icon {
-    width: 26px;
-    height: 26px;
-    font-size: 14px;
-    right: -6px;
-    bottom: -6px;
-  }
-
-  .hero-image img {
-    width: 250px;
-    height: 150px;
-  }
-
-  /* Ensure content doesn't get hidden by any floating elements */
-  .menu-content,
-  .compact-menu-grid {
-    padding-bottom: 2rem;
-  }
-}
-
-/* Enhanced Compact Menu Grid Styles */
-.compact-menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem 0;
-  width: 100%;
-}
-
-.compact-menu-card {
-  background: var(--white);
-  border-radius: 16px;
-  box-shadow: var(--card-shadow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  overflow: visible;
-  position: relative;
-  border: 1px solid var(--gray-200);
-  min-height: 280px;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  z-index: 1;
-}
-
-.compact-menu-card:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--hover-shadow);
-  border-color: var(--yellow);
-  z-index: 2;
-}
-
-.compact-menu-card .card-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 1rem;
-  position: relative;
-  padding-bottom: 3.5rem; /* Add space for the + button */
-}
-
-.compact-menu-card .circular-image {
-  position: relative;
-  width: 100%;
-  height: 160px;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-  background: var(--gray-100);
-}
-
-.compact-menu-card .circular-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.compact-menu-card:hover .circular-image img {
-  transform: scale(1.05);
-}
-
-.compact-menu-card .popular-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: linear-gradient(135deg, var(--popular-color), #ff8a50);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
-  z-index: 2;
-}
-
-.compact-menu-card .item-title-wrapper {
-  flex: 1;
-  margin-bottom: 0; /* Remove bottom margin since we have padding-bottom on card-content */
-  text-align: center;
-  padding: 0 0.5rem; /* Add horizontal padding to prevent text from touching edges */
-}
-
-.compact-menu-card .item-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  margin: 0;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2.6rem; /* Ensure consistent height for title area */
-}
-
-.compact-menu-card .item-description {
-  font-size: 0.875rem;
-  color: var(--gray-500);
-  line-height: 1.4;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.compact-menu-card .item-price-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid var(--gray-200);
-}
-
-.compact-menu-card .item-price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--yellow);
-  margin: 0;
-}
-
-.compact-menu-card .add-to-cart-btn {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--yellow), #ff9f43);
-  color: white;
-  border: none;
-  font-size: 1.25rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
-  z-index: 3;
-}
-
-.compact-menu-card .add-to-cart-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(252, 138, 6, 0.4);
-  background: linear-gradient(135deg, #ff9f43, var(--yellow));
-}
-
-/* Enhanced Offer Cards */
-.offer-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: white;
-  box-shadow: var(--card-shadow);
-  height: 280px;
-  display: flex;
-  flex-direction: column;
-}
-
-.offer-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--hover-shadow);
-}
-
-.offer-card img {
-  width: 100%;
-  height: 180px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.offer-card:hover img {
-  transform: scale(1.05);
-}
-
-.discount-badge {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: linear-gradient(135deg, #ff4757, #ff3742);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
-  z-index: 2;
-}
-
-.special-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: linear-gradient(135deg, var(--yellow), #ff9f43);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
-  z-index: 2;
-}
-
-.offer-info {
-  padding: 1rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  position: relative;
-}
-
-.offer-info span {
-  font-size: 0.875rem;
-  color: var(--gray-500);
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.offer-info h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--dark-blue);
-  margin: 0 0 1rem 0;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.plus-icon {
-  position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--yellow), #ff9f43);
-  color: white;
-  border: none;
-  font-size: 1.25rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3);
-}
-
-.plus-icon:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(252, 138, 6, 0.4);
-}
-
-/* Print styles */
-@media print {
-  .cart-summary,
-  .navigation-arrows,
-  .plus-icon,
-  .search-bar {
-    display: none !important;
-  }
-}
-
-/* Responsive Styles */
-@media (max-width: 1200px) {
-  .hero-content {
-    padding: 0 1rem;
-  }
-
-  .restaurant-menu {
-    padding: 1rem;
-  }
-
-  .menu-header {
+  .mall-meta {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
   }
 
-  .search-bar {
-    width: 100%;
-  }
-
-  .search-bar input {
-    width: 100%;
-  }
-
-  .delivery-info-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-}
-
-@media (max-width: 992px) {
-  .hero-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .hero-text {
-    width: 100%;
-  }
-
-  .hero-tags {
-    justify-content: center;
-  }
-
-  .hero-image {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .hero-image img {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-  }
-
-  .rating-badge {
-    position: relative;
-    top: 0;
-    right: 0;
-    margin: 1rem auto;
-    width: fit-content;
-  }
-
-  .offers-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .compact-menu-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .reviews-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .restaurant-hero {
-    padding: 1rem;
-  }
-
-  .hero-text h1 {
-    font-size: 2rem;
-  }
-
-  .menu-tabs {
-    padding-bottom: 0.5rem;
-  }
-
-  .menu-tab {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  .offers-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .compact-menu-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .delivery-info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .map-container {
-    flex-direction: column;
-  }
-
-  .map-info {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-
-  .map-placeholder {
-    width: 100%;
-    height: 300px;
-  }
-
-  .reviews-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .restaurants-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .cart-summary {
-    padding: 0.75rem 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .restaurant-hero {
-    padding: 0.75rem;
-  }
-
-  .hero-text h1 {
-    font-size: 1.75rem;
-  }
-
-  .hero-tags .tag {
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-  }
-
-  .restaurant-menu {
-    padding: 0.75rem;
-  }
-
-  .menu-header h2 {
-    font-size: 1.25rem;
-  }
-
-  .menu-tab {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-  }
-
-  .compact-menu-card {
-    padding: 0.75rem;
-  }
-
-  .item-title {
-    font-size: 1rem;
-  }
-
-  .item-description {
-    font-size: 0.85rem;
-  }
-
-  .size-row {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .compact-size-btn {
-    width: 100%;
-  }
-
-  .xl-btn {
-    width: 100%;
-  }
-
-  .circular-image {
-    width: 80px;
-    height: 80px;
-  }
-
-  .restaurants-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cart-content {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .view-cart-btn {
-    width: 100%;
-  }
-}
-
-/* Fix for very small screens */
-@media (max-width: 360px) {
-  .restaurant-page {
-    font-size: 14px;
-  }
-
-  .restaurant-hero {
-    padding: 0.5rem;
-  }
-
-  .hero-text h1 {
-    font-size: 1.5rem;
-    line-height: 1.1;
-  }
-
-  .hero-tags {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .hero-tags .tag {
-    width: 100%;
-    text-align: center;
-    justify-content: center;
-  }
-
-  .restaurant-menu {
-    padding: 0.5rem;
-  }
-
-  .menu-header h2 {
-    font-size: 1.1rem;
-  }
-
-  .search-bar input {
-    padding: 0.6rem 1rem 0.6rem 2rem;
-    font-size: 14px;
-  }
-
-  .menu-tabs {
+  .filter-controls {
     flex-wrap: wrap;
-    gap: 0.3rem;
+    gap: 10px;
   }
 
-  .menu-tab {
-    flex: 1 1 calc(50% - 0.3rem);
-    text-align: center;
-    padding: 0.5rem 0.8rem;
-    font-size: 0.8rem;
+  .sort-dropdown {
+    min-width: 120px;
   }
 
-  .offer-card {
-    margin-bottom: 1rem;
-  }
-
-  .compact-menu-card {
-    padding: 0.75rem;
-  }
-
-  .item-title {
-    font-size: 0.95rem;
-  }
-
-  .item-description {
-    font-size: 0.8rem;
-    line-height: 1.3;
-  }
-
-  .circular-image {
-    width: 70px;
-    height: 70px;
-  }
-
-  .delivery-info-section,
-  .map-section,
-  .reviews-section,
-  .similar-restaurants {
-    padding: 1.5rem 0.5rem;
-  }
-
-  .delivery-info-card {
-    padding: 1rem;
-  }
-
-  .info-item .label,
-  .info-item .value {
-    font-size: 0.85rem;
-  }
-
-  .review-card {
-    padding: 1rem;
-  }
-
-  .reviewer-avatar {
-    width: 35px;
-    height: 35px;
-  }
-
-  .review-comment {
-    font-size: 0.85rem;
-  }
-
-  .restaurants-grid {
+  .products-container.grid {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
   }
 
-  .restaurant-brand-card {
-    min-height: 100px;
-    padding: 0.75rem 0.5rem;
-    flex-direction: row;
-    text-align: left;
+  .category-tabs {
+    gap: 0;
   }
 
-  .restaurant-brand-card img {
-    width: 40px;
-    height: 40px;
-    margin-right: 0.5rem;
-  }
-
-  .restaurant-name {
-    font-size: 0.75rem;
-    line-height: 1.2;
+  .category-tab {
+    padding: 12px 15px;
+    font-size: 13px;
   }
 }
 
-/* Ultra small screens (Galaxy Fold, etc.) */
-@media (max-width: 320px) {
-  .restaurant-hero {
-    padding: 0.3rem;
-  }
-
-  .hero-text h1 {
-    font-size: 1.3rem;
-  }
-
-  .hero-tags .tag {
-    font-size: 0.75rem;
-    padding: 0.3rem 0.6rem;
-  }
-
-  .menu-tab {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.6rem;
-  }
-
-  .compact-menu-card {
-    padding: 0.5rem;
-  }
-
-  .card-content {
-    gap: 1rem;
-  }
-
-  .circular-image {
-    width: 60px;
-    height: 60px;
-  }
-
-  .item-title {
-    font-size: 0.9rem;
-  }
-
-  .compact-size-btn {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.5rem;
-    min-width: 50px;
-  }
-
-  .delivery-info-section,
-  .map-section,
-  .reviews-section,
-  .similar-restaurants {
-    padding: 1rem 0.3rem;
-  }
-
-  .restaurant-brand-card {
-    min-height: 80px;
-    padding: 0.5rem;
-  }
-
-  .restaurant-brand-card img {
-    width: 35px;
-    height: 35px;
-  }
-
-  .restaurant-name {
-    font-size: 0.7rem;
-  }
-}
-
-.item-title-wrapper {
-  height: 3.5em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-/* Responsive styles for enhanced menu cards */
-@media (max-width: 1200px) {
-  .compact-menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 1.25rem;
-  }
-  
-  .compact-menu-card {
-    min-height: 260px;
-  }
-  
-  .compact-menu-card .circular-image {
-    height: 150px;
-  }
-}
-
-@media (max-width: 992px) {
-  .compact-menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1rem;
-  }
-  
-  .compact-menu-card {
-    min-height: 250px;
-  }
-  
-  .compact-menu-card .circular-image {
-    height: 140px;
-  }
-  
-  .compact-menu-card .item-title {
-    font-size: 1rem;
-  }
-  
-  .compact-menu-card .add-to-cart-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
-  }
-}
-
+/* Category tab scrolling on mobile */
 @media (max-width: 768px) {
-  .compact-menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 0.875rem;
+  .category-navigation {
+    padding: 0 10px;
   }
-  
-  .compact-menu-card {
-    min-height: 240px;
+
+  .category-tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 5px;
   }
-  
-  .compact-menu-card .circular-image {
-    height: 120px;
-  }
-  
-  .compact-menu-card .item-title {
-    font-size: 0.95rem;
-    min-height: 2.4rem;
-  }
-  
-  .compact-menu-card .add-to-cart-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 1rem;
-    bottom: 0.75rem;
-    right: 0.75rem;
-  }
-  
-  .compact-menu-card .card-content {
-    padding-bottom: 3rem;
+
+  .category-tabs::-webkit-scrollbar {
+    display: none;
   }
 }
 
-@media (max-width: 480px) {
-  .compact-menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 0.75rem;
-  }
-  
-  .compact-menu-card {
-    min-height: 220px;
-  }
-  
-  .compact-menu-card .circular-image {
-    height: 100px;
-  }
-  
-  .compact-menu-card .item-title {
-    font-size: 0.9rem;
-    min-height: 2.2rem;
-  }
-  
-  .compact-menu-card .add-to-cart-btn {
-    width: 28px;
-    height: 28px;
-    font-size: 0.9rem;
-    bottom: 0.5rem;
-    right: 0.5rem;
-  }
-  
-  .compact-menu-card .card-content {
-    padding-bottom: 2.5rem;
-    padding: 0.75rem;
-  }
-  
-  .compact-menu-card .item-title-wrapper {
-    padding: 0 0.25rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .compact-menu-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 0.625rem;
-  }
-  
-  .compact-menu-card {
-    min-height: 200px;
-  }
-  
-  .compact-menu-card .circular-image {
-    height: 90px;
-  }
-  
-  .compact-menu-card .item-title {
-    font-size: 0.85rem;
-    min-height: 2rem;
-  }
-  
-  .compact-menu-card .add-to-cart-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 0.8rem;
-    bottom: 0.5rem;
-    right: 0.5rem;
-  }
-  
-  .compact-menu-card .card-content {
-    padding-bottom: 2rem;
-    padding: 0.5rem;
-  }
-}
-
-/* Product Popup Styles */
-.product-popup {
-  position: absolute;
-  top: 10px;
-  left: 100%;
-  margin-left: 10px;
-  width: 180px;
-  background: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  padding: 0.75rem;
-  box-shadow: var(--hover-shadow);
-  z-index: 10;
-  animation: fadeIn 0.2s ease-out;
-  pointer-events: none;
-}
-
-/* Handle edge case where popup might go off-screen */
-.compact-menu-card:nth-child(3n) .product-popup,
-.compact-menu-card:nth-child(3n+1) .product-popup {
-  left: auto;
-  right: 100%;
-  margin-left: 0;
-  margin-right: 10px;
-}
-
-/* Ensure popup doesn't interfere with grid spacing */
-.compact-menu-card {
-  margin: 0;
-  z-index: 1;
-}
-
-.compact-menu-card:hover {
-  z-index: 2;
-}
-
-.popup-price {
-  font-weight: 700;
-  color: var(--yellow);
-  margin-bottom: 0.4rem;
-  font-size: 1rem;
-}
-
-.popup-desc {
-  font-size: 0.85rem;
-  color: var(--gray-700);
-  line-height: 1.3;
-  margin: 0;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Responsive styles for product popup */
+/* Enhanced touch targets for mobile */
 @media (max-width: 768px) {
-  .product-popup {
-    display: none; /* Hide popup on mobile for better UX */
+  .filter-toggle,
+  .sort-dropdown,
+  .view-btn,
+  .category-tab,
+  .add-cart-button {
+    min-height: 44px;
   }
-  
-  .compact-menu-card {
-    overflow: hidden; /* Reset overflow for mobile */
+
+  .search-input {
+    font-size: 16px; /* Prevents zoom on iOS */
   }
 }

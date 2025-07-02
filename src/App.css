@@ -255,43 +255,7 @@ body,
   margin-top: 1rem;
 }
 
-.category-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease;
-  cursor: pointer;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding-bottom: 1rem;
-}
-
-.category-card:hover {
-  transform: translateY(-6px);
-}
-
-.category-card img {
-  width: 100%;
-  height: 130px;
-  object-fit: cover;
-  border-radius: 12px 12px 0 0;
-}
-
-.category-card h4 {
-  font-size: 16px;
-  margin: 8px 0 4px;
-  color: #03081f;
-  font-weight: 600;
-}
-
-.category-card p {
-  font-size: 13px;
-  color: #fc8a06;
-  margin: 0;
-}
+/* Category card styles now handled by unified card-system.css */
 
 /* ===== Popular restuarants ==== */
 .popular_restaurants {
@@ -451,10 +415,7 @@ footer {
     max-width: 240px;
   }
 
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 16px;
-  }
+  /* Category grid now handled by card-system.css */
 
   .restaurant-grid {
     justify-content: center;
@@ -505,27 +466,7 @@ footer {
     padding: 15px;
   }
 
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 15px;
-  }
-
-  .category-card {
-    width: 100%;
-  }
-
-  .category-card img {
-    height: 100px;
-  }
-
-  .category-card h4 {
-    font-size: 14px;
-    margin: 6px 0 3px;
-  }
-
-  .category-card p {
-    font-size: 12px;
-  }
+  /* Category styles now handled by card-system.css */
 
   .restaurant-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -586,23 +527,7 @@ footer {
     font-size: 14px;
   }
 
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 12px;
-  }
-
-  .category-card img {
-    height: 90px;
-  }
-
-  .category-card h4 {
-    font-size: 13px;
-    margin: 5px 0 2px;
-  }
-
-  .category-card p {
-    font-size: 11px;
-  }
+  /* Category styles now handled by card-system.css */
 
   .restaurant-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -739,27 +664,7 @@ footer {
     font-size: 13px;
   }
 
-  .category-grid {
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 8px;
-  }
-
-  .category-card {
-    padding-bottom: 0.5rem;
-  }
-
-  .category-card img {
-    height: 70px;
-  }
-
-  .category-card h4 {
-    font-size: 11px;
-    margin: 5px 0 2px;
-  }
-
-  .category-card p {
-    font-size: 9px;
-  }
+  /* Category styles now handled by card-system.css */
 
   .restaurant-card {
     padding: 0.5rem;

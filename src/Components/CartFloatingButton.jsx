@@ -4,19 +4,20 @@ import CartModal from "./CartModal";
 import "./CartFloatingButton.css";
 
 export default function CartFloatingButton() {
-  const { cartItems } = useCart();
+  const { cartItems, getTotalItems } = useCart();
   const [open, setOpen] = useState(false);
+  const totalItems = getTotalItems();
 
   return (
     <>
       <button className="cart-float-btn" onClick={() => setOpen(true)}>
         <span className="cart-float-icon">🛒</span>
-        {cartItems.length > 0 && (
-          <span className="cart-float-count">{cartItems.length}</span>
+        {totalItems > 0 && (
+          <span className="cart-float-count">{totalItems}</span>
         )}
         <span className="cart-float-label">View Cart</span>
       </button>
       <CartModal open={open} onClose={() => setOpen(false)} />
     </>
   );
-} 
+}
