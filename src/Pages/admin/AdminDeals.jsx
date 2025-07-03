@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaTimes, FaStop } from "react-icons/fa";
+import { AiOutlineStop } from "react-icons/ai";
 import axios from "../../utils/axios";
 
 const statusOptions = ["pending", "approved", "rejected"];
@@ -82,6 +83,24 @@ function AdminDeals() {
   const cancelReject = () => {
     setShowRejectModal(false);
     setDealToReject(null);
+  };
+
+  const handleEndDeal = async (id) => {
+    if (window.confirm("End this deal immediately?")) {
+      try {
+        const token = localStorage.getItem("token");
+        await axios.post(
+          `/api/deals/${id}/end`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        fetchDeals();
+      } catch (error) {
+        // Optionally show error
+      }
+    }
   };
 
   return (
@@ -213,6 +232,27 @@ function AdminDeals() {
                   }}
                 >
                   <FaTimes style={{ marginRight: 6 }} /> Reject
+                </button>
+              </div>
+            )}
+            {deal.status === "approved" && (
+              <div style={{ display: "flex", gap: 10 }}>
+                <button
+                  onClick={() => handleEndDeal(deal._id)}
+                  style={{
+                    background: "#ffc107",
+                    color: "#212529",
+                    border: "none",
+                    borderRadius: 6,
+                    padding: "8px 18px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <AiOutlineStop style={{ marginRight: 6 }} /> End Deal
                 </button>
               </div>
             )}
