@@ -7,6 +7,8 @@ import morgan from "morgan";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import cron from "node-cron";
+import { expireDeals } from "./cronExpireDeals.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -93,6 +95,16 @@ app.use("/api/deals", dealRoutes);
 app.use("/api/notifications", notificationRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
+
+// Schedule deal expiration every hour
+cron.schedule("0 * * * *", async () => {
+  try {
+    await expireDeals();
+    console.log("[CRON] Deal expiration check completed.");
+  } catch (err) {
+    console.error("[CRON] Error running deal expiration:", err);
+  }
+});
 
 // to see sever is proper running
 // http://localhost:8080/

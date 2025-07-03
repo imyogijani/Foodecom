@@ -291,7 +291,11 @@ const SellerDeals = () => {
       ) : (
         <div className="deals-grid">
           {deals.map((deal) => (
-            <div key={deal._id} className="deal-card">
+            <div
+              key={deal._id}
+              className="deal-card"
+              style={{ maxHeight: "500vh", height: "auto" }}
+            >
               <div className="deal-header">
                 <h3 className="deal-title">{deal.title}</h3>
                 <span
