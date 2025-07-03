@@ -274,10 +274,14 @@ aside button {
   border: 1.5px solid rgba(255, 71, 87, 0.22) !important;
   border-radius: 12px !important;
   font-weight: 600;
-  box-shadow: 0 4px 24px 0 rgba(255,71,87,0.10);
+  box-shadow: 0 4px 24px 0 rgba(255, 71, 87, 0.1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 .sidebar-footer .logout-btn:hover {
   background: rgba(255, 71, 87, 0.38) !important;
@@ -293,10 +297,14 @@ aside button {
   border: 1.5px solid rgba(66, 133, 244, 0.22) !important;
   border-radius: 12px !important;
   font-weight: 600;
-  box-shadow: 0 4px 24px 0 rgba(66,133,244,0.10);
+  box-shadow: 0 4px 24px 0 rgba(66, 133, 244, 0.1);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s;
 }
 .sidebar-footer .login-btn:hover {
   background: rgba(66, 133, 244, 0.38) !important;
@@ -310,6 +318,14 @@ aside button {
   aside {
     width: 260px;
     padding: 1.25rem;
+    /* Hide scrollbar on small screens */
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  aside::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
   }
 
   aside h2 {

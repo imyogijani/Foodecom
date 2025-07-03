@@ -269,6 +269,14 @@ aside button {
   aside {
     width: 260px;
     padding: 1.25rem;
+    /* Hide scrollbar on small screens */
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+
+  aside::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
   }
 
   aside h2 {
@@ -305,12 +313,16 @@ aside button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
 }
-.dashboard-link:hover, .dashboard-link.active {
+.dashboard-link:hover,
+.dashboard-link.active {
   background: #0056b3;
   color: #fff !important;
   text-decoration: none;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }

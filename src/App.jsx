@@ -100,8 +100,8 @@ function LayoutWrapper() {
     location.pathname.startsWith("/login") ||
     location.pathname.startsWith("/register");
 
-  // Show cart button on all pages for mobile/tablet, or only on non-admin/seller/auth pages for desktop
-  const shouldShowCartButton = isMobileOrTablet || !isAdminOrSellerOrAuth;
+  // Show cart button only on non-admin/seller/auth pages (never on admin/seller pages)
+  const shouldShowCartButton = !isAdminOrSellerOrAuth;
 
   return (
     <>

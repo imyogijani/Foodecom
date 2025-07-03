@@ -34,21 +34,30 @@ const SellerSidebar = ({ onClose }) => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    document.cookie =
-      "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     toast.success("Logged out successfully");
     navigate("/login");
   };
 
   // Check if current location matches any sublink
   const isSubLinkActive = (subLinks) => {
-    return subLinks?.some(subLink => location.pathname === subLink.path);
+    return subLinks?.some((subLink) => location.pathname === subLink.path);
+  };
+
+  const handleTitleClick = () => {
+    navigate("/");
   };
 
   return (
     <aside className="sidebar">
       <div className="admin-sidebar">
-        <h2 className="admin-title">E-Mall Seller</h2>
+        <h2
+          className="admin-title"
+          onClick={handleTitleClick}
+          style={{ cursor: "pointer" }}
+        >
+          E-Mall Seller
+        </h2>
         <nav>
           <ul className="admin-nav-list">
             {sellerLinks.map((link, idx) => (
@@ -56,11 +65,14 @@ const SellerSidebar = ({ onClose }) => {
                 <Link
                   to={link.path}
                   className={`admin-nav-link ${
-                    (idx === 0
-                      ? location.pathname === link.path
-                      : location.pathname.includes(link.path) || isSubLinkActive(link.subLinks))
-                      ? 'active'
-                      : ''
+                    (
+                      idx === 0
+                        ? location.pathname === link.path
+                        : location.pathname.includes(link.path) ||
+                          isSubLinkActive(link.subLinks)
+                    )
+                      ? "active"
+                      : ""
                   }`}
                 >
                   <span className="admin-nav-icon">{link.icon}</span>

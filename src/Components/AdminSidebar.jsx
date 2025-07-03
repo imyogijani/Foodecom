@@ -45,10 +45,20 @@ const AdminSidebar = ({ onClose }) => {
     navigate("/login");
   };
 
+  const handleTitleClick = () => {
+    navigate("/");
+  };
+
   return (
     <aside className={`sidebar ${theme}`}>
       <div className="admin-sidebar">
-        <h2 className="admin-title">E-Mall Admin</h2>
+        <h2
+          className="admin-title"
+          onClick={handleTitleClick}
+          style={{ cursor: "pointer" }}
+        >
+          E-Mall Admin
+        </h2>
         <nav>
           <ul className="admin-nav-list">
             {adminLinks.map((link) => (

@@ -1,8 +1,20 @@
-.cart-float-btn {
+.cart-float-wrapper {
   position: fixed !important;
   bottom: 32px;
   right: 32px;
-  z-index: 9999 !important;
+  z-index: 99999 !important;
+  pointer-events: none;
+  /* Ensure it's always visible */
+  visibility: visible !important;
+  opacity: 1 !important;
+  /* Create new stacking context */
+  isolation: isolate;
+  /* Prevent any parent from affecting positioning */
+  transform: translateZ(0);
+}
+
+.cart-float-btn {
+  position: relative !important;
   background: #ff9900;
   color: #fff;
   border: none;
@@ -15,24 +27,24 @@
   align-items: center;
   gap: 0.7rem;
   cursor: pointer;
+  pointer-events: auto;
   transition:
     background 0.2s,
     box-shadow 0.2s,
     transform 0.2s;
-  /* Ensure it's positioned relative to viewport, not any container */
-  transform: translateZ(0);
-  /* Force hardware acceleration */
-  will-change: transform;
 }
+
 .cart-float-btn:hover {
   background: #e88700;
   box-shadow: 0 8px 32px rgba(255, 153, 0, 0.18);
   transform: translateY(-2px);
 }
+
 .cart-float-icon {
   font-size: 1.5rem;
   margin-right: 0.2rem;
 }
+
 .cart-float-count {
   background: #fff;
   color: #ff9900;
@@ -46,6 +58,7 @@
   text-align: center;
   box-shadow: 0 2px 8px rgba(255, 153, 0, 0.13);
 }
+
 .cart-float-label {
   font-size: 1.1rem;
   font-weight: 600;
@@ -53,9 +66,12 @@
 
 /* Tablet Styles */
 @media (max-width: 1024px) {
-  .cart-float-btn {
+  .cart-float-wrapper {
     bottom: 24px;
     right: 24px;
+  }
+
+  .cart-float-btn {
     padding: 0.6rem 1.3rem 0.6rem 1rem;
     font-size: 1rem;
     border-radius: 28px;
@@ -78,139 +94,119 @@
 
 /* Mobile Styles */
 @media (max-width: 768px) {
-  .cart-float-btn {
+  .cart-float-wrapper {
     bottom: 20px;
     right: 16px;
-    padding: 0.5rem 1.1rem 0.5rem 0.9rem;
-    font-size: 0.95rem;
-    border-radius: 24px;
-    gap: 0.5rem;
+    z-index: 99999 !important;
+    /* Force visibility on mobile */
+    position: fixed !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
-  .cart-float-icon {
-    font-size: 1.2rem;
-    margin-right: 0.1rem;
-  }
-
-  .cart-float-label {
-    font-size: 0.95rem;
-  }
-
-  .cart-float-count {
-    font-size: 0.85rem;
-    min-width: 20px;
-    padding: 1px 6px;
-    margin-right: 0.2rem;
-    margin-left: -0.3rem;
-  }
-}
-
-/* Small Mobile Styles */
-@media (max-width: 480px) {
   .cart-float-btn {
-    bottom: 16px;
-    right: 12px;
-    padding: 0.5rem 1rem 0.5rem 0.8rem;
-    font-size: 0.9rem;
-    border-radius: 22px;
-    gap: 0.4rem;
+    padding: 0.8rem;
+    font-size: 0.95rem;
+    border-radius: 50%;
+    gap: 0;
+    width: 56px;
+    height: 56px;
+    justify-content: center;
   }
 
   .cart-float-icon {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     margin-right: 0;
-  }
-
-  .cart-float-label {
-    font-size: 0.9rem;
-  }
-
-  .cart-float-count {
-    font-size: 0.8rem;
-    min-width: 18px;
-    padding: 1px 5px;
-    margin-right: 0.1rem;
-    margin-left: -0.2rem;
-  }
-}
-
-/* Extra Small Mobile Styles */
-@media (max-width: 360px) {
-  .cart-float-btn {
-    bottom: 12px;
-    right: 8px;
-    padding: 0.4rem 0.9rem 0.4rem 0.7rem;
-    font-size: 0.85rem;
-    border-radius: 20px;
-    gap: 0.3rem;
-  }
-
-  .cart-float-icon {
-    font-size: 1rem;
-  }
-
-  .cart-float-label {
-    font-size: 0.85rem;
-  }
-
-  .cart-float-count {
-    font-size: 0.75rem;
-    min-width: 16px;
-    padding: 1px 4px;
-  }
-}
-
-/* Landscape orientation adjustments */
-@media (max-height: 500px) and (orientation: landscape) {
-  .cart-float-btn {
-    bottom: 8px;
-    right: 12px;
-    padding: 0.4rem 0.8rem 0.4rem 0.6rem;
-    font-size: 0.85rem;
   }
 
   .cart-float-label {
     display: none;
   }
 
-  .cart-float-icon {
-    font-size: 1rem;
-    margin-right: 0;
+  .cart-float-count {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    font-size: 0.75rem;
+    min-width: 18px;
+    padding: 1px 5px;
+    margin: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
 }
 
-/* Safe area support for devices with notches */
-@supports (padding: max(0px)) {
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+  .cart-float-wrapper {
+    bottom: 16px;
+    right: 12px;
+  }
+
   .cart-float-btn {
-    bottom: max(32px, env(safe-area-inset-bottom) + 16px);
-    right: max(32px, env(safe-area-inset-right) + 16px);
+    padding: 0.7rem;
+    width: 52px;
+    height: 52px;
   }
 
-  @media (max-width: 1024px) {
-    .cart-float-btn {
-      bottom: max(24px, env(safe-area-inset-bottom) + 12px);
-      right: max(24px, env(safe-area-inset-right) + 12px);
-    }
+  .cart-float-icon {
+    font-size: 1.3rem;
   }
 
-  @media (max-width: 768px) {
-    .cart-float-btn {
-      bottom: max(20px, env(safe-area-inset-bottom) + 10px);
-      right: max(16px, env(safe-area-inset-right) + 8px);
-    }
+  .cart-float-count {
+    top: -3px;
+    right: -3px;
+    font-size: 0.7rem;
+    min-width: 16px;
+    padding: 1px 4px;
+  }
+}
+
+/* Extra Small Mobile Styles */
+@media (max-width: 360px) {
+  .cart-float-wrapper {
+    bottom: 12px;
+    right: 8px;
   }
 
-  @media (max-width: 480px) {
-    .cart-float-btn {
-      bottom: max(16px, env(safe-area-inset-bottom) + 8px);
-      right: max(12px, env(safe-area-inset-right) + 6px);
-    }
+  .cart-float-btn {
+    padding: 0.6rem;
+    width: 48px;
+    height: 48px;
   }
 
-  @media (max-width: 360px) {
-    .cart-float-btn {
-      bottom: max(12px, env(safe-area-inset-bottom) + 6px);
-      right: max(8px, env(safe-area-inset-right) + 4px);
-    }
+  .cart-float-icon {
+    font-size: 1.2rem;
   }
+
+  .cart-float-count {
+    top: -2px;
+    right: -2px;
+    font-size: 0.65rem;
+    min-width: 14px;
+    padding: 1px 3px;
+  }
+}
+
+/* Additional fixes to prevent disappearing during scroll */
+.cart-float-wrapper {
+  /* Force it to stay in place during scroll */
+  position: fixed !important;
+  /* Ensure it's never hidden */
+  overflow: visible !important;
+  /* Prevent any clipping */
+  clip: auto !important;
+  /* Ensure it's in its own layer */
+  will-change: transform;
+  /* Prevent interference from other elements */
+  pointer-events: none !important;
+}
+
+.cart-float-btn {
+  /* Re-enable pointer events for the button */
+  pointer-events: auto !important;
+  /* Ensure button is always visible */
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }

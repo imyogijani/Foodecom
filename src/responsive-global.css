@@ -95,17 +95,23 @@ body {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #333;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 12px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
   font-size: 16px;
-  transition: border-color 0.3s ease;
+  font-family: inherit;
+  background: #fff;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .form-group input:focus,
@@ -113,7 +119,184 @@ body {
 .form-group select:focus {
   outline: none;
   border-color: var(--primary-color, #fc8a06);
-  box-shadow: 0 0 0 3px rgba(252, 138, 6, 0.1);
+  box-shadow:
+    0 0 0 4px rgba(252, 138, 6, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.form-group input:hover,
+.form-group textarea:hover,
+.form-group select:hover {
+  border-color: #c1c7cd;
+}
+
+.form-group select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 20px;
+  padding-right: 40px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-group input[type="file"] {
+  padding: 8px 12px;
+  background: #f8f9fa;
+  border-style: dashed;
+  cursor: pointer;
+}
+
+.form-group input[type="file"]:hover {
+  background: #e9ecef;
+}
+
+/* Enhanced button styling */
+.form-submit-btn,
+.admin-btn,
+.seller-btn {
+  background: linear-gradient(135deg, var(--primary-color, #fc8a06), #e67e00);
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.form-submit-btn:hover,
+.admin-btn:hover,
+.seller-btn:hover {
+  background: linear-gradient(135deg, #e67e00, #d67300);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(252, 138, 6, 0.3);
+}
+
+.form-submit-btn:active,
+.admin-btn:active,
+.seller-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.2);
+}
+
+.form-submit-btn:disabled,
+.admin-btn:disabled,
+.seller-btn:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Secondary button styling */
+.btn-secondary {
+  background: linear-gradient(135deg, #6c757d, #5a6268);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background: linear-gradient(135deg, #5a6268, #495057);
+}
+
+/* Danger button styling */
+.btn-danger {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #c82333, #bd2130);
+}
+
+/* Success button styling */
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #218838);
+  color: white;
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #218838, #1e7e34);
+}
+
+/* Form row for side-by-side inputs */
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* Input with icon */
+.input-with-icon {
+  position: relative;
+}
+
+.input-with-icon input {
+  padding-left: 45px;
+}
+
+.input-with-icon .input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 18px;
+}
+
+/* Floating label effect */
+.floating-label {
+  position: relative;
+}
+
+.floating-label input,
+.floating-label textarea,
+.floating-label select {
+  padding-top: 20px;
+}
+
+.floating-label label {
+  position: absolute;
+  left: 16px;
+  top: 16px;
+  color: #6c757d;
+  font-size: 16px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.floating-label input:focus + label,
+.floating-label textarea:focus + label,
+.floating-label select:focus + label,
+.floating-label input:not(:placeholder-shown) + label,
+.floating-label textarea:not(:placeholder-shown) + label {
+  top: 6px;
+  font-size: 12px;
+  color: var(--primary-color, #fc8a06);
+  font-weight: 600;
 }
 
 /* Global responsive buttons */

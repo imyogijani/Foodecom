@@ -51,12 +51,14 @@ const AdminLayout = () => {
           backgroundColor: "var(--dark-blue)",
           zIndex: 100,
           width: "280px",
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
         }}
         className="admin-sidebar-container"
       >
         <AdminSidebar onClose={handleSidebarClose} />
       </div>
-      
+
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
@@ -73,7 +75,7 @@ const AdminLayout = () => {
           }}
         ></div>
       )}
-      
+
       {/* Main content */}
       <div
         style={{
@@ -86,14 +88,17 @@ const AdminLayout = () => {
       >
         <Outlet />
       </div>
-      
+
       <style>{`
+        .admin-sidebar-container::-webkit-scrollbar {
+          display: none;
+        }
         @media (max-width: 900px) {
           .admin-main-content {
             margin-left: 0 !important;
             padding-top: 80px !important;
-            padding-left: 20px !important;
-            padding-right: 20px !important;
+            padding-left: 15px !important;
+            padding-right: 15px !important;
           }
           .admin-hamburger-btn {
             display: flex !important;
@@ -101,12 +106,40 @@ const AdminLayout = () => {
           .admin-sidebar-container {
             width: 260px !important;
             min-width: 220px !important;
-            max-width: 90vw !important;
+            max-width: 85vw !important;
             box-shadow: 2px 0 8px rgba(0,0,0,0.08) !important;
             background: var(--dark-blue) !important;
             transition: transform 0.3s ease !important;
             will-change: transform !important;
-            transform: ${sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'} !important;
+            transform: ${sidebarOpen ? "translateX(0)" : "translateX(-100%)"} !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .admin-main-content {
+            padding-top: 70px !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+          }
+          .admin-sidebar-container {
+            max-width: 90vw !important;
+            width: 240px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .admin-main-content {
+            padding-top: 60px !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+          }
+          .admin-sidebar-container {
+            max-width: 95vw !important;
+            width: 220px !important;
+          }
+          .admin-hamburger-btn {
+            width: 40px !important;
+            height: 40px !important;
+            top: 15px !important;
+            left: ${sidebarOpen ? 230 : 15}px !important;
           }
         }
         .hamburger-lines {
