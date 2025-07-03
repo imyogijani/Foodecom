@@ -63,10 +63,13 @@ export const addProduct = async (req, res) => {
         f.startsWith("productLimit:")
       );
       if (!productLimitFeature) {
-        console.error(`Shopowner ${user._id} has no productLimit feature in subscriptionFeatures!`);
+        console.error(
+          `Shopowner ${user._id} has no productLimit feature in subscriptionFeatures!`
+        );
         return res.status(403).json({
           success: false,
-          message: "Your subscription plan does not allow adding products. Please contact support.",
+          message:
+            "Your subscription plan does not allow adding products. Please contact support.",
         });
       }
       const limit = parseInt(productLimitFeature.split(":")[1], 10);
@@ -74,12 +77,13 @@ export const addProduct = async (req, res) => {
       const productCount = await Product.countDocuments({ seller: user._id });
       if (!isNaN(limit) && productCount >= limit) {
         // Prevent duplicate notifications
-        const Notification = (await import("../models/notificationModel.js")).default;
+        const Notification = (await import("../models/notificationModel.js"))
+          .default;
         const existing = await Notification.findOne({
           recipient: user._id,
           type: "system",
           title: "Product Limit Reached",
-          isRead: false
+          isRead: false,
         });
         if (!existing) {
           const { createNotification } = await import(

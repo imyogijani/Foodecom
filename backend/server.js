@@ -83,6 +83,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import dealRoutes from "./routes/dealRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
 
 app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -93,6 +94,7 @@ app.use("/api", subscriptionRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/deals", dealRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/analytics", analyticsRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 
