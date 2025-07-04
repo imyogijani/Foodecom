@@ -68,8 +68,8 @@ const Dashboard = () => {
         <p className="admin-subtitle">Overall System Statistics</p>
       </div>
 
-      <div className="cards-grid cards-grid-medium">
-        <div className="card-base card-medium admin-card">
+      <div className="admin-grid">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <div
               style={{
@@ -110,7 +110,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-medium admin-card">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <div
               style={{
@@ -151,7 +151,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-medium admin-card">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <div
               style={{
@@ -186,7 +186,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-medium admin-card">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <div
               style={{
@@ -222,8 +222,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="cards-grid cards-grid-xlarge">
-        <div className="card-base card-xlarge admin-card">
+      <div className="charts-grid">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <h3 className="card-title">Revenue Trends</h3>
             <ResponsiveContainer width="100%" height={300}>
@@ -239,7 +239,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-xlarge admin-card">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <h3 className="card-title">User Registration Trends</h3>
             <ResponsiveContainer width="100%" height={300}>
@@ -256,7 +256,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-xlarge admin-card">
+        <div className="responsive-card admin-card">
           <div className="card-content">
             <h3 className="card-title">System Overview</h3>
             <ResponsiveContainer width="100%" height={300}>

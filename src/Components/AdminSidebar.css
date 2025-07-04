@@ -15,15 +15,16 @@ aside {
 }
 
 aside h2 {
-  font-weight: 700;
-  font-size: 2rem;
-  background: linear-gradient(135deg, #fff, var(--yellow));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  margin-bottom: 2rem;
-  text-align: center;
-  letter-spacing: -0.5px;
+  font-weight: 700 !important;
+  font-size: 2rem !important;
+  background: linear-gradient(135deg, #fff, var(--yellow, #fc8a06)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  margin-bottom: 2rem !important;
+  text-align: center !important;
+  letter-spacing: -0.5px !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
 }
 
 aside ul {
@@ -112,8 +113,14 @@ aside button {
 .admin-title {
   font-size: 24px;
   margin-bottom: 30px;
-  color: white;
+  color: white !important;
   text-align: center;
+  font-weight: 700 !important;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+  background: linear-gradient(135deg, #fff, var(--yellow, #fc8a06)) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
 }
 
 .admin-nav-list {

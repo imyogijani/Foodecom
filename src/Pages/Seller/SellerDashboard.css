@@ -47,9 +47,12 @@
 
 .dashboard-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-bottom: 2rem;
+  padding: 0;
+  justify-content: center;
+  align-items: start;
 }
 
 .stat-card {
@@ -155,8 +158,8 @@
   }
 
   .dashboard-stats {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.2rem;
   }
 
   .chart-container {
@@ -245,7 +248,7 @@
 
 @media (max-width: 768px) {
   .seller-dashboard {
-    padding: 0.6rem;
+    padding: 0.8rem;
   }
 
   .seller-header {
@@ -259,7 +262,7 @@
 
   .dashboard-stats {
     grid-template-columns: 1fr;
-    gap: 0.8rem;
+    gap: 1rem;
   }
 
   .stat-card {

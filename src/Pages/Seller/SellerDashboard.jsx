@@ -46,8 +46,8 @@ const SellerDashboard = () => {
         </p>
       </div>
 
-      <div className="cards-grid cards-grid-medium">
-        <div className="card-base card-medium seller-card">
+      <div className="seller-grid">
+        <div className="responsive-card seller-card">
           <div className="card-content">
             <div
               style={{
@@ -94,7 +94,7 @@ const SellerDashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-medium seller-card">
+        <div className="responsive-card seller-card">
           <div className="card-content">
             <div
               style={{
@@ -141,7 +141,7 @@ const SellerDashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-medium seller-card">
+        <div className="responsive-card seller-card">
           <div className="card-content">
             <div
               style={{
@@ -188,7 +188,7 @@ const SellerDashboard = () => {
           </div>
         </div>
 
-        <div className="card-base card-medium seller-card">
+        <div className="responsive-card seller-card">
           <div className="card-content">
             <div
               style={{
