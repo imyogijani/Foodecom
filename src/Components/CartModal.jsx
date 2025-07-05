@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import "./CartModal.css";
 
 export default function CartModal({ open, onClose }) {
+  const navigate = useNavigate();
   const {
     cartItems,
     removeFromCart,
@@ -22,10 +24,8 @@ export default function CartModal({ open, onClose }) {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-    alert(
-      `Checkout Total: ₹${total.toFixed(2)}\nCheckout functionality coming soon!`,
-    );
-    // Future: Redirect to checkout page
+    onClose(); // Close the modal
+    navigate("/checkout"); // Navigate to checkout page
   };
 
   const handleQuantityChange = (itemId, newQuantity) => {

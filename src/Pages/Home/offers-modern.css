@@ -17,7 +17,7 @@
 .offers-hero-content {
   background: linear-gradient(135deg, #232f3e 0%, #131a22 100%);
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
@@ -203,31 +203,6 @@
 
 .deal-card-modern:hover .deal-image-container img {
   transform: scale(1.05);
-}
-
-.deal-wishlist-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s;
-  color: #666;
-  z-index: 10;
-}
-
-.deal-wishlist-btn:hover,
-.deal-wishlist-btn.active {
-  color: #e47911;
-  transform: scale(1.1);
 }
 
 .deal-badge-container {

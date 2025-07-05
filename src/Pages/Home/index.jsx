@@ -10,7 +10,6 @@ import DealsList from "./DealsList";
 import {
   Star,
   ShoppingCart,
-  Heart,
   Search,
   Filter,
   Truck,
@@ -30,7 +29,6 @@ export default function Home() {
   const [deals, setDeals] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [wishlist, setWishlist] = useState(new Set());
 
   // Filter and sort products
   const filteredProducts = React.useMemo(() => {
@@ -137,18 +135,6 @@ export default function Home() {
     }
   };
 
-  const toggleWishlist = (productId) => {
-    const newWishlist = new Set(wishlist);
-    if (newWishlist.has(productId)) {
-      newWishlist.delete(productId);
-      toast.info("Removed from wishlist");
-    } else {
-      newWishlist.add(productId);
-      toast.success("Added to wishlist ❤️");
-    }
-    setWishlist(newWishlist);
-  };
-
   const handleAddToCart = (product) => {
     addToCart({
       ...product,
@@ -195,15 +181,6 @@ export default function Home() {
           className="card-image"
           loading="lazy"
         />
-        <button
-          className={`wishlist-btn ${wishlist.has(product._id) ? "active" : ""}`}
-          onClick={() => toggleWishlist(product._id)}
-        >
-          <Heart
-            size={18}
-            fill={wishlist.has(product._id) ? "currentColor" : "none"}
-          />
-        </button>
       </div>
 
       <div className="card-content">
@@ -241,7 +218,9 @@ export default function Home() {
         </div>
 
         {product.discount && (
-          <div style={{ color: "#ff4757", fontSize: "12px", margin: "0 0 6px 0" }}>
+          <div
+            style={{ color: "#ff4757", fontSize: "12px", margin: "0 0 6px 0" }}
+          >
             -{product.discount}% OFF
           </div>
         )}

@@ -50,6 +50,9 @@ import SellerDeals from "./Pages/Seller/SellerDeals";
 import ProductDetail from "./Pages/Home/ProductDetail";
 import { DealsProvider } from "./context/DealsContext";
 import SubscriptionReview from "./Pages/SubscriptionReview";
+import Checkout from "./Pages/Checkout/Checkout";
+import Payment from "./Pages/Payment/Payment";
+import Invoice from "./Pages/Invoice/Invoice";
 
 function LayoutWrapper() {
   const [showProfile, setShowProfile] = useState(false);
@@ -72,6 +75,8 @@ function LayoutWrapper() {
   const hideLayoutPaths = [
     "/login",
     "/register",
+    "/checkout",
+    "/payment",
     "/admin",
     "/admin/dashboard",
     "/admin/products",
@@ -118,6 +123,9 @@ function LayoutWrapper() {
         <Route path="register" element={<Register />} />
         <Route path="/pricing" element={<Pricing />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/invoice/:orderId" element={<Invoice />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/cookies" element={<Cookies />} />

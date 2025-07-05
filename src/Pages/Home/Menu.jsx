@@ -9,7 +9,6 @@ import { toast } from "react-toastify";
 import {
   Star,
   ShoppingCart,
-  Heart,
   Filter,
   Grid,
   List,
@@ -198,7 +197,7 @@ const mallItemsByCategory = {
       desc: "Classic denim for all seasons",
       image:
         "https://images.pexels.com/photos/1081685/pexels-photo-1081685.jpeg",
-      price: "₹3999",
+      price: "���3999",
       originalPrice: "₹5999",
       rating: 4.4,
       reviews: 678,
@@ -406,7 +405,6 @@ export default function Menu() {
   const [sortBy, setSortBy] = useState("relevance");
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 200000]);
-  const [wishlist, setWishlist] = useState(new Set());
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -477,19 +475,6 @@ export default function Menu() {
     toast.success(`${item.title} added to cart! 🛒`);
   };
 
-  const toggleWishlist = (e, itemId) => {
-    e.stopPropagation();
-    const newWishlist = new Set(wishlist);
-    if (newWishlist.has(itemId)) {
-      newWishlist.delete(itemId);
-      toast.info("Removed from wishlist");
-    } else {
-      newWishlist.add(itemId);
-      toast.success("Added to wishlist ❤️");
-    }
-    setWishlist(newWishlist);
-  };
-
   const renderStars = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
@@ -522,15 +507,6 @@ export default function Menu() {
     >
       <div className="product-image-wrapper">
         <img src={item.image} alt={item.title} loading="lazy" />
-        <button
-          className={`wishlist-button ${wishlist.has(item.id) ? "active" : ""}`}
-          onClick={(e) => toggleWishlist(e, item.id)}
-        >
-          <Heart
-            size={18}
-            fill={wishlist.has(item.id) ? "currentColor" : "none"}
-          />
-        </button>
         {item.discount && (
           <div className="discount-label">-{item.discount}%</div>
         )}

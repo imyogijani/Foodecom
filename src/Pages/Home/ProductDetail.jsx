@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import {
   Star,
   ShoppingCart,
-  Heart,
   Share2,
   Shield,
   Truck,
@@ -229,7 +228,6 @@ export default function ProductDetail() {
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -353,14 +351,7 @@ export default function ProductDetail() {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    navigate("/cart");
-  };
-
-  const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
-    toast.success(
-      isWishlisted ? "Removed from wishlist" : "Added to wishlist ❤️",
-    );
+    navigate("/checkout");
   };
 
   const renderStars = (rating) => {
@@ -484,15 +475,6 @@ export default function ProductDetail() {
             <div className="product-actions">
               <button className="share-button">
                 <Share2 size={18} />
-              </button>
-              <button
-                className={`wishlist-button ${isWishlisted ? "active" : ""}`}
-                onClick={toggleWishlist}
-              >
-                <Heart
-                  size={18}
-                  fill={isWishlisted ? "currentColor" : "none"}
-                />
               </button>
             </div>
           </div>

@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import {
   Star,
   ShoppingCart,
-  Heart,
   Filter,
   Clock,
   TrendingDown,
@@ -124,7 +123,6 @@ export default function Offers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [filterBy, setFilterBy] = useState("all");
-  const [wishlist, setWishlist] = useState(new Set());
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -172,19 +170,6 @@ export default function Offers() {
     return filtered;
   };
 
-  const toggleWishlist = (e, dealId) => {
-    e.stopPropagation();
-    const newWishlist = new Set(wishlist);
-    if (newWishlist.has(dealId)) {
-      newWishlist.delete(dealId);
-      toast.info("Removed from wishlist");
-    } else {
-      newWishlist.add(dealId);
-      toast.success("Added to wishlist ❤️");
-    }
-    setWishlist(newWishlist);
-  };
-
   const handleAddToCart = (e, deal) => {
     e.stopPropagation();
     addToCart({
@@ -228,16 +213,6 @@ export default function Offers() {
     >
       <div className="deal-image-container">
         <img src={deal.image} alt={deal.title} loading="lazy" />
-
-        <button
-          className={`deal-wishlist-btn ${wishlist.has(deal.id) ? "active" : ""}`}
-          onClick={(e) => toggleWishlist(e, deal.id)}
-        >
-          <Heart
-            size={16}
-            fill={wishlist.has(deal.id) ? "currentColor" : "none"}
-          />
-        </button>
 
         <div className="deal-badge-container">
           <div className="deal-discount-badge">-{deal.discount}%</div>

@@ -205,8 +205,7 @@
   margin-left: 16px;
 }
 
-.share-button,
-.wishlist-button {
+.share-button {
   background: none;
   border: 1px solid #d5d9d9;
   padding: 8px;
@@ -220,15 +219,8 @@
   transition: all 0.2s;
 }
 
-.share-button:hover,
-.wishlist-button:hover {
+.share-button:hover {
   background: #f7f8f8;
-}
-
-.wishlist-button.active {
-  color: #cc0c39;
-  background: #fff5f5;
-  border-color: #cc0c39;
 }
 
 /* Rating Section */
@@ -1657,7 +1649,6 @@
     min-height: 44px;
   }
 
-  .wishlist-button,
   .share-button {
     min-width: 44px;
     min-height: 44px;
@@ -1718,7 +1709,6 @@
 .tab-button:focus,
 .variant-option:focus,
 .quantity-btn:focus,
-.wishlist-button:focus,
 .share-button:focus {
   outline: 2px solid #ff9900;
   outline-offset: 2px;

@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import {
   Star,
   ShoppingCart,
-  Heart,
   Search,
   Filter,
   Store,
@@ -145,7 +144,6 @@ export default function Shops() {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [wishlist, setWishlist] = useState(new Set());
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -202,19 +200,6 @@ export default function Shops() {
     return filtered;
   };
 
-  const toggleWishlist = (e, storeId) => {
-    e.stopPropagation();
-    const newWishlist = new Set(wishlist);
-    if (newWishlist.has(storeId)) {
-      newWishlist.delete(storeId);
-      toast.info("Store removed from favorites");
-    } else {
-      newWishlist.add(storeId);
-      toast.success("Store added to favorites ❤️");
-    }
-    setWishlist(newWishlist);
-  };
-
   const handleVisitStore = (store) => {
     navigate(`/store/${store.id}`, { state: { store } });
   };
@@ -258,16 +243,6 @@ export default function Shops() {
     <div className="store-card" onClick={() => handleVisitStore(store)}>
       <div className="store-image-container">
         <img src={store.image} alt={store.name} loading="lazy" />
-
-        <button
-          className={`store-favorite-btn ${wishlist.has(store.id) ? "active" : ""}`}
-          onClick={(e) => toggleWishlist(e, store.id)}
-        >
-          <Heart
-            size={16}
-            fill={wishlist.has(store.id) ? "currentColor" : "none"}
-          />
-        </button>
 
         {store.verified && (
           <div className="store-verified-badge">

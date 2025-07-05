@@ -63,7 +63,6 @@
 - 💫 Special offers & discounts
 - 📦 Order tracking
 - ⭐ Ratings & reviews
-- 💝 Wishlist functionality
 - 💳 Multiple payment options
 - 🔒 Secure checkout
 </details>
@@ -94,6 +93,7 @@ npm or pnpm
 ### 🔧 Installation
 
 1. **Clone & Install**
+
 ```bash
 # Clone the repository
 git clone https://github.com/your-username/e-mall.git
@@ -106,6 +106,7 @@ npm install
 ```
 
 2. **Configure Backend**
+
 ```bash
 # Navigate to backend
 cd backend
@@ -118,6 +119,7 @@ npm install
 ```
 
 3. **Start Development Servers**
+
 ```bash
 # Terminal 1: Start backend
 cd backend
@@ -135,6 +137,7 @@ npm run dev
 <td>
 
 ### 🎨 Frontend
+
 - ⚛️ React.js with Vite
 - 🛣️ React Router DOM
 - 📡 Axios
@@ -144,6 +147,7 @@ npm run dev
 <td>
 
 ### 🔧 Backend
+
 - 📡 Node.js & Express
 - 🗄️ MongoDB/Mongoose
 - 🔑 JWT Auth
