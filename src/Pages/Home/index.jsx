@@ -25,7 +25,6 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState({});
-  const [restaurants, setRestaurants] = useState([]);
   const [deals, setDeals] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,7 +66,6 @@ export default function Home() {
         await Promise.all([
           fetchCategories(),
           fetchProducts(),
-          fetchRestaurants(),
           fetchDeals(),
         ]);
       } catch (error) {
@@ -112,16 +110,6 @@ export default function Home() {
       toast.error("Error fetching products");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchRestaurants = async () => {
-    try {
-      const response = await axios.get("/api/restaurants");
-      setRestaurants(response.data.restaurants);
-    } catch (error) {
-      console.error("Restaurant fetch error:", error);
-      setRestaurants([]);
     }
   };
 
