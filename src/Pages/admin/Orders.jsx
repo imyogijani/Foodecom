@@ -52,12 +52,22 @@ const Orders = () => {
   };
 
   const filteredOrders = orders.filter((order) => {
+    // Use orderId if present, else fallback to ORD + last 6 of _id
+    const orderId = order.orderId || (order._id ? `ORD${order._id.toString().slice(-6).toUpperCase()}` : "");
+    // For customer name, prefer user.name, then user.names, then user.email (but not just email alone)
+    let customerName = order.customerName || order.user?.name || order.user?.names || "";
+    if (!customerName && order.user && order.user.email) {
+      // Only use email if no name fields exist, and mask it for privacy
+      const email = order.user.email;
+      customerName = email.replace(/(.{2}).+(@.+)/, "$1***$2");
+    }
+    if (!customerName) customerName = "Unknown";
     const matchesSearch =
-      order.orderId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+      orderId.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customerName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       filterStatus === "all" ||
-      order.status.toLowerCase() === filterStatus.toLowerCase();
+      (order.status && order.status.toLowerCase() === filterStatus.toLowerCase());
     return matchesSearch && matchesStatus;
   });
 
@@ -170,52 +180,55 @@ const Orders = () => {
                 </td>
               </tr>
             ) : (
-              filteredOrders.map((order) => (
-                <tr key={order._id}>
-                  <td>#{order.orderId}</td>
-                  <td>{order.customerName}</td>
-                  <td>{new Date(order.date).toLocaleDateString()}</td>
-                  <td>₹{order.amount}</td>
-                  <td>
-                    <span
-                      className={`status-badge ${order.status.toLowerCase()}`}
-                    >
-                      {order.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="action-btn view"
-                        onClick={() =>
-                          handleStatusUpdate(order._id, "processing")
-                        }
-                        title="Process Order"
+              filteredOrders.map((order) => {
+                const orderId = order.orderId || (order._id ? `ORD${order._id.toString().slice(-6).toUpperCase()}` : "");
+                let customerName = order.customerName || order.user?.name || order.user?.names || "";
+                if (!customerName && order.user && order.user.email) {
+                  const email = order.user.email;
+                  customerName = email.replace(/(.{2}).+(@.+)/, "$1***$2");
+                }
+                if (!customerName) customerName = "Unknown";
+                return (
+                  <tr key={order._id}>
+                    <td>#{orderId}</td>
+                    <td>{customerName}</td>
+                    <td>{order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "-"}</td>
+                    <td>₹{order.amount || order.total}</td>
+                    <td>
+                      <span
+                        className={`status-badge ${order.status ? order.status.toLowerCase() : ''}`}
                       >
-                        <FaTruck />
-                      </button>
-                      <button
-                        className="action-btn complete"
-                        onClick={() =>
-                          handleStatusUpdate(order._id, "delivered")
-                        }
-                        title="Mark as Delivered"
-                      >
-                        <FaCheckCircle />
-                      </button>
-                      <button
-                        className="action-btn cancel"
-                        onClick={() =>
-                          handleStatusUpdate(order._id, "cancelled")
-                        }
-                        title="Cancel Order"
-                      >
-                        <FaTimesCircle />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
+                        {order.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="action-btn view"
+                          onClick={() => handleStatusUpdate(order._id, "processing")}
+                          title="Process Order"
+                        >
+                          <FaTruck />
+                        </button>
+                        <button
+                          className="action-btn complete"
+                          onClick={() => handleStatusUpdate(order._id, "delivered")}
+                          title="Mark as Delivered"
+                        >
+                          <FaCheckCircle />
+                        </button>
+                        <button
+                          className="action-btn cancel"
+                          onClick={() => handleStatusUpdate(order._id, "cancelled")}
+                          title="Cancel Order"
+                        >
+                          <FaTimesCircle />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>

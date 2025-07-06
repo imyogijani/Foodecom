@@ -15,6 +15,8 @@ import {
   User,
   Hash,
 } from "lucide-react";
+import axios from "../../utils/axios";
+import { getCurrentUser } from "../../utils/user";
 import "./Payment.css";
 
 export default function Payment() {
@@ -239,6 +241,24 @@ export default function Payment() {
           Date.now() + 2 * 24 * 60 * 60 * 1000,
         ).toISOString(), // 2 days from now
       };
+
+      // Send order to backend
+      const token = localStorage.getItem("token");
+      const backendOrder = {
+        items: orderData.items.map((item) => ({
+          name: item.title || item.name,
+          price: parseFloat(item.price),
+          quantity: item.quantity || 1,
+          image: item.image || "",
+        })),
+        total: orderData.pricing.grandTotal,
+      };
+      const response = await axios.post("/api/orders/create", backendOrder, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.data.success) {
+        throw new Error(response.data.message || "Order creation failed");
+      }
 
       // Store order data for invoice
       sessionStorage.setItem(
