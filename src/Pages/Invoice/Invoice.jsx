@@ -151,13 +151,13 @@ export default function Invoice() {
       {/* Quick Actions */}
       <div className="quick-actions">
         <button
-          className="action-btn primary"
+          className="invoice-action-btn"
           onClick={handleDownloadInvoice}
         >
           <Download size={18} />
           Download Invoice
         </button>
-        <button className="action-btn secondary" onClick={shareOrder}>
+        <button className="invoice-action-btn" onClick={shareOrder}>
           <Share2 size={18} />
           Share
         </button>
@@ -169,6 +169,10 @@ export default function Invoice() {
           {/* Company Header */}
           <div className="invoice-header">
             <div className="company-info">
+              <div className="company-logo" style={{ marginBottom: 12 }}>
+                {/* Replace with your logo image if available */}
+                <img src="/logo192.png" alt="FooEcom Logo" style={{ height: 48, marginBottom: 8 }} />
+              </div>
               <h2>FooEcom</h2>
               <p>Premium Food Delivery Service</p>
               <div className="company-address">
@@ -193,7 +197,7 @@ export default function Invoice() {
           </div>
 
           {/* Customer Info */}
-          <div className="customer-section">
+          <div className="customer-section" style={{ border: '1px solid #eee', borderRadius: 8, padding: 20, marginBottom: 24, background: '#fcfcfc' }}>
             <div className="billing-address">
               <h3>
                 <MapPin size={18} />
@@ -202,15 +206,12 @@ export default function Invoice() {
               <div className="address-details">
                 <p>
                   <strong>
-                    {orderData.billingDetails.firstName}{" "}
-                    {orderData.billingDetails.lastName}
+                    {orderData.billingDetails.firstName} {orderData.billingDetails.lastName}
                   </strong>
                 </p>
                 <p>{orderData.billingDetails.address}</p>
                 <p>
-                  {orderData.billingDetails.city},{" "}
-                  {orderData.billingDetails.state}{" "}
-                  {orderData.billingDetails.pincode}
+                  {orderData.billingDetails.city}, {orderData.billingDetails.state} {orderData.billingDetails.pincode}
                 </p>
                 <p>{orderData.billingDetails.country}</p>
                 <div className="contact-info">
@@ -223,7 +224,6 @@ export default function Invoice() {
                 </div>
               </div>
             </div>
-
             <div className="delivery-info">
               <h3>
                 <Truck size={18} />
@@ -233,24 +233,20 @@ export default function Invoice() {
                 <p>
                   <strong>Estimated Delivery:</strong>
                 </p>
-                <p className="delivery-date">
-                  {formatDate(orderData.estimatedDelivery)}
-                </p>
+                <p className="delivery-date">{formatDate(orderData.estimatedDelivery)}</p>
                 <p>
                   <strong>Delivery Address:</strong>
                 </p>
                 <p>Same as billing address</p>
                 <div className="delivery-status">
-                  <span className="status-badge confirmed">
-                    Order Confirmed
-                  </span>
+                  <span className="status-badge confirmed">Order Confirmed</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Order Items */}
-          <div className="order-items-section">
+          <div className="order-items-section" style={{ border: '1px solid #eee', borderRadius: 8, padding: 20, marginBottom: 24, background: '#fff' }}>
             <h3>
               <Receipt size={18} />
               Order Items
@@ -264,25 +260,17 @@ export default function Invoice() {
               </div>
               {orderData.items.map((item) => {
                 const itemId = item.id || item._id;
-                const itemPrice = parseFloat(
-                  item.price?.toString().replace(/[^0-9.]/g, "") || 0,
-                );
+                const itemPrice = parseFloat(item.price?.toString().replace(/[^0-9.]/g, "") || 0);
                 const itemTotal = itemPrice * (item.quantity || 1);
-
                 return (
                   <div key={itemId} className="table-row">
                     <div className="item-col">
                       <div className="item-info">
-                        <img
-                          src={item.image || "/placeholder-image.jpg"}
-                          alt={item.title || item.name}
-                        />
+                        <img src={item.image || "/placeholder-image.jpg"} alt={item.title || item.name} />
                         <div className="item-details">
                           <h4>{item.title || item.name}</h4>
                           {(item.desc || item.description) && (
-                            <p className="item-desc">
-                              {item.desc || item.description}
-                            </p>
+                            <p className="item-desc">{item.desc || item.description}</p>
                           )}
                         </div>
                       </div>
@@ -297,44 +285,33 @@ export default function Invoice() {
           </div>
 
           {/* Price Breakdown */}
-          <div className="price-breakdown-section">
+          <div className="price-breakdown-section" style={{ border: '1px solid #eee', borderRadius: 8, padding: 20, marginBottom: 24, background: '#fcfcfc' }}>
             <h3>Price Breakdown</h3>
             <div className="breakdown-table">
               <div className="breakdown-row">
                 <span>Subtotal ({orderData.items.length} items)</span>
                 <span>₹{orderData.pricing.subtotal.toFixed(2)}</span>
               </div>
-
               {orderData.pricing.couponDiscount > 0 && (
                 <div className="breakdown-row discount">
                   <span>Coupon Discount ({orderData.pricing.couponCode})</span>
                   <span>-₹{orderData.pricing.couponDiscount.toFixed(2)}</span>
                 </div>
               )}
-
               <div className="breakdown-row">
                 <span>GST (18%)</span>
                 <span>₹{orderData.pricing.gstAmount.toFixed(2)}</span>
               </div>
-
               <div className="breakdown-row">
                 <span>Packaging Charges</span>
                 <span>₹{orderData.pricing.packagingCharge.toFixed(2)}</span>
               </div>
-
               <div className="breakdown-row">
                 <span>Delivery Charges</span>
-                <span
-                  className={
-                    orderData.pricing.deliveryCharge === 0 ? "free" : ""
-                  }
-                >
-                  {orderData.pricing.deliveryCharge === 0
-                    ? "FREE"
-                    : `₹${orderData.pricing.deliveryCharge.toFixed(2)}`}
+                <span className={orderData.pricing.deliveryCharge === 0 ? "free" : ""}>
+                  {orderData.pricing.deliveryCharge === 0 ? "FREE" : `₹${orderData.pricing.deliveryCharge.toFixed(2)}`}
                 </span>
               </div>
-
               <div className="breakdown-row total">
                 <span>Grand Total</span>
                 <span>₹{orderData.pricing.grandTotal.toFixed(2)}</span>
@@ -343,65 +320,42 @@ export default function Invoice() {
           </div>
 
           {/* Additional Info */}
-          <div className="additional-info">
+          <div className="additional-info" style={{ border: '1px solid #eee', borderRadius: 8, padding: 20, marginBottom: 24, background: '#fff' }}>
             <div className="terms-section">
               <h4>Terms & Conditions</h4>
               <ul>
                 <li>All orders are subject to availability and acceptance.</li>
-                <li>
-                  Delivery charges may vary based on location and order value.
-                </li>
-                <li>
-                  Please check items upon delivery and report any issues
-                  immediately.
-                </li>
-                <li>
-                  Refunds and cancellations are subject to our return policy.
-                </li>
+                <li>Delivery charges may vary based on location and order value.</li>
+                <li>Please check items upon delivery and report any issues immediately.</li>
+                <li>Refunds and cancellations are subject to our return policy.</li>
                 <li>For any queries, contact our customer support.</li>
               </ul>
             </div>
-
             <div className="support-section">
               <h4>Need Help?</h4>
               <div className="support-contacts">
-                <p>
-                  <strong>Customer Support:</strong> +91 9876543210
-                </p>
-                <p>
-                  <strong>Email:</strong> support@fooecom.com
-                </p>
-                <p>
-                  <strong>Help Center:</strong> www.fooecom.com/help
-                </p>
+                <p><strong>Customer Support:</strong> +91 9876543210</p>
+                <p><strong>Email:</strong> support@fooecom.com</p>
+                <p><strong>Help Center:</strong> www.fooecom.com/help</p>
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="invoice-footer">
+          <div className="invoice-footer" style={{ borderTop: '1.5px solid #eee', marginTop: 32, paddingTop: 24 }}>
             <div className="thank-you">
               <h3>Thank you for choosing FooEcom!</h3>
-              <p>
-                We hope you enjoy your order. Please consider leaving a review
-                after your delivery.
-              </p>
-              <div className="rating-prompt">
-                <span>Rate your experience:</span>
-                <div className="star-rating">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} size={20} color="#ffc107" fill="none" />
-                  ))}
-                </div>
+              <p>We hope you enjoy your order. Please consider leaving a review after your delivery.</p>
+            </div>
+            <div style={{ marginTop: 32, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 13, color: '#888', marginBottom: 4 }}>Authorized Signature</div>
+                <div style={{ borderBottom: '1.5px solid #bbb', width: 180, height: 32 }}></div>
               </div>
             </div>
-
             <div className="company-footer">
               <p>© 2024 FooEcom. All rights reserved.</p>
-              <p>
-                This is a computer-generated invoice and does not require a
-                signature.
-              </p>
+              <p>This is a computer-generated invoice and does not require a signature.</p>
             </div>
           </div>
         </div>

@@ -104,35 +104,42 @@
   min-width: 200px;
 }
 
-.action-btn.primary {
+.action-btn.primary,
+.action-btn.secondary {
   background: white !important;
   color: #fc8a06 !important;
   border: 2px solid #fc8a06 !important;
   box-shadow: 0 4px 12px rgba(252, 138, 6, 0.2) !important;
   font-weight: 700 !important;
+  transition: background 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
-.action-btn.primary:hover {
+.action-btn.primary:hover,
+.action-btn.secondary:hover,
+.action-btn.primary:focus,
+.action-btn.secondary:focus {
   background: #fc8a06 !important;
+  color: #fff !important;
   border-color: #fc8a06 !important;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(252, 138, 6, 0.4) !important;
-  color: white !important;
+  box-shadow: 0 4px 16px rgba(252, 138, 6, 0.3) !important;
+  outline: none;
 }
 
-.action-btn.secondary {
-  background: white !important;
-  color: #333 !important;
-  border: 2px solid #fc8a06 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+.action-btn.primary:active,
+.action-btn.secondary:active {
+  background: #e67e00 !important;
+  color: #fff !important;
+  border-color: #e67e00 !important;
+  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.18) !important;
 }
 
-.action-btn.secondary:hover {
-  background: #fc8a06 !important;
-  border-color: #fc8a06 !important;
-  color: white !important;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(252, 138, 6, 0.3) !important;
+.action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8f9fa !important;
+  color: #ccc !important;
+  border-color: #eee !important;
+  box-shadow: none !important;
 }
 
 /* Invoice Content */
@@ -549,6 +556,47 @@
   border-color: #e67e00;
 }
 
+/* Consistent button style for both actions */
+.invoice-action-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border: 2px solid #fc8a06;
+  border-radius: 12px;
+  background: #fff;
+  color: #fc8a06;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.08);
+  outline: none;
+}
+
+.invoice-action-btn:hover,
+.invoice-action-btn:focus {
+  background: #fc8a06;
+  color: #fff;
+  border-color: #fc8a06;
+  box-shadow: 0 4px 16px rgba(252, 138, 6, 0.18);
+}
+
+.invoice-action-btn:active {
+  /* No border shrinking or color jump */
+  background: #e67e00;
+  color: #fff;
+  border-color: #e67e00;
+  box-shadow: 0 2px 8px rgba(252, 138, 6, 0.12);
+}
+
+.invoice-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f8f9fa;
+  color: #ccc;
+  border-color: #eee;
+  box-shadow: none;
+}
+
 /* Loading States */
 .invoice-loading {
   display: flex;
@@ -614,39 +662,54 @@
 
 /* Print Styles */
 @media print {
-  .invoice-container {
-    background: white;
-    padding: 0;
-    max-width: none;
-    margin: 0;
-  }
-
-  .success-header,
-  .quick-actions,
-  .bottom-actions {
-    display: none !important;
-  }
-
-  .invoice-content {
-    box-shadow: none;
-    border-radius: 0;
-  }
-
-  .invoice-main {
-    padding: 20px;
-  }
-
-  .action-btn,
-  .bottom-action-btn {
-    display: none !important;
-  }
-
-  .star-rating svg {
-    cursor: default;
-  }
-
   body {
     background: white !important;
+  }
+  .invoice-container {
+    box-shadow: none !important;
+    border: 1.5px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    padding: 32px !important;
+    margin: 0 auto !important;
+    max-width: 900px !important;
+    min-height: unset !important;
+  }
+  .success-header,
+  .quick-actions,
+  .bottom-actions,
+  .rating-prompt,
+  .star-rating,
+  .bottom-action-btn,
+  .action-btn,
+  .invoice-action-btn {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .invoice-footer {
+    margin-top: 40px !important;
+    border-top: 1px solid #eee !important;
+    padding-top: 24px !important;
+  }
+  .thank-you {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .company-footer {
+    font-size: 13px !important;
+    color: #888 !important;
+    text-align: center !important;
+    margin-top: 16px !important;
+  }
+  /* Remove any box-shadows for print clarity */
+  * {
+    box-shadow: none !important;
   }
 }
 
