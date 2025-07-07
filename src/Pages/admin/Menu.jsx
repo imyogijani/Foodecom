@@ -5,6 +5,8 @@ import axios from "axios";
 import { FaEdit, FaTrash, FaPlus, FaEye } from "react-icons/fa";
 import "./Menu.css";
 import { toast } from "react-toastify";
+import AdminOffers from "./AdminOffers";
+import { Route } from "react-router-dom";
 
 const Menu = () => {
   const [products, setProducts] = useState([]);
@@ -238,5 +240,8 @@ const Menu = () => {
     </div>
   );
 };
+
+// Add this route to render the AdminOffers page
+<Route path="/admin/offers" element={<AdminOffers />} />
 
 export default Menu;

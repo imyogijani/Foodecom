@@ -125,6 +125,51 @@ export default function Offers() {
   const [filterBy, setFilterBy] = useState("all");
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [offers, setOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        const res = await fetch("/api/offers/today");
+        const data = await res.json();
+        if (data && data.offers) {
+          // Map backend offers to dealItems format
+          const mapped = data.offers.map((offer) => ({
+            id: offer._id,
+            title: offer.title,
+            desc: offer.description,
+            image: offer.product?.image,
+            currentPrice:
+              offer.price ||
+              (offer.product?.price * (1 - offer.discount / 100)),
+            originalPrice: offer.product?.price,
+            discount: offer.discount,
+            store:
+              offer.shop?.shopName ||
+              offer.shop?.names ||
+              offer.shop?.email,
+            badge: "TODAY'S OFFER",
+            rating: offer.product?.rating || 4.5,
+            reviews: offer.product?.reviewCount || 100,
+            timeLeft: "Today only",
+            savings:
+              offer.product?.price && offer.discount
+                ? `₹${Math.round(
+                    (offer.product.price * offer.discount) / 100,
+                  )}`
+                : undefined,
+          }));
+          setOffers(mapped);
+        }
+      } catch (e) {
+        setOffers([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOffers();
+  }, []);
 
   const filterDeals = (deals) => {
     let filtered = deals;
@@ -266,7 +311,8 @@ export default function Offers() {
     </div>
   );
 
-  const filteredDeals = filterDeals(dealItems);
+  const allDeals = [...offers, ...dealItems];
+  const filteredDeals = filterDeals(allDeals);
 
   return (
     <div className="offers-page">
@@ -343,9 +389,12 @@ export default function Offers() {
           <h2>🔥 Hot Deals ({filteredDeals.length} items)</h2>
           <p>Grab these amazing offers before they're gone!</p>
         </div>
-
         <div className="deals-grid-container">
-          {filteredDeals.length === 0 ? (
+          {loading ? (
+            <div className="no-deals-found">
+              <h3>Loading...</h3>
+            </div>
+          ) : filteredDeals.length === 0 ? (
             <div className="no-deals-found">
               <h3>No deals found</h3>
               <p>Try adjusting your search or filters</p>

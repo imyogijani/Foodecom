@@ -34,14 +34,14 @@ export default function Home() {
     let filtered = products;
     if (activeCategory) {
       filtered = filtered.filter(
-        (p) => p.category && p.category.name === activeCategory,
+        (p) => p.category && p.category.name === activeCategory
       );
     }
     if (searchQuery) {
       filtered = filtered.filter(
         (p) =>
           p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.description?.toLowerCase().includes(searchQuery.toLowerCase()),
+          p.description?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     if (sortBy === "low") {
@@ -50,7 +50,7 @@ export default function Home() {
       filtered = [...filtered].sort((a, b) => b.price - a.price);
     } else if (sortBy === "rating") {
       filtered = [...filtered].sort(
-        (a, b) => (b.rating || 4.5) - (a.rating || 4.5),
+        (a, b) => (b.rating || 4.5) - (a.rating || 4.5)
       );
     }
     return filtered;
@@ -67,6 +67,7 @@ export default function Home() {
           fetchCategories(),
           fetchProducts(),
           fetchDeals(),
+          // fetchOffers(), // Removed to prevent race condition
         ]);
       } catch (error) {
         console.error("Error fetching initial data:", error);
@@ -79,7 +80,7 @@ export default function Home() {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        "/api/category/get-category-with-shop-count",
+        "/api/category/get-category-with-shop-count"
       );
       const categoriesData = response.data.categories || [];
       setCategories(categoriesData);
@@ -103,7 +104,7 @@ export default function Home() {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
-        "/api/products?populateCategory=true&populateSubcategory=true",
+        "/api/products?populateCategory=true&populateSubcategory=true"
       );
       setProducts(response.data.products);
     } catch (error) {
@@ -115,8 +116,48 @@ export default function Home() {
 
   const fetchDeals = async () => {
     try {
+      // Fetch today's offers (shop-wise) and append to deals
+      const offersRes = await axios.get("/api/offers/today");
+      const offers = offersRes.data.offers || [];
+      // Map offers to deal-like objects for display
+      const mappedOffers = offers.map((offer) => {
+        let image = offer.product?.image;
+        if (image && image.startsWith("/uploads")) {
+          image = `http://localhost:8080${image}`;
+        }
+        return {
+          _id: offer._id,
+          title: offer.title || offer.product?.name || "Today's Offer",
+          description:
+            offer.description ||
+            offer.product?.description ||
+            "Special offer for today only!",
+          image,
+          dealPrice:
+            offer.price ||
+            (offer.product?.price
+              ? Math.round(
+                  offer.product.price * (1 - (offer.discount || 0) / 100)
+                )
+              : undefined),
+          originalPrice: offer.product?.price || offer.price,
+          discountPercentage: offer.discount || 0,
+          shopName:
+            offer.shop?.shopName ||
+            offer.shop?.names ||
+            offer.shop?.email ||
+            "Shop",
+          isOffer: true,
+          // Add fallback fields for UI compatibility
+          rating: offer.product?.rating || 4.5,
+          reviewCount: offer.product?.reviewCount || 100,
+        };
+      });
+      // Fetch regular deals as before
       const response = await axios.get("/api/deals");
-      setDeals(response.data.deals);
+      const allDeals = [...mappedOffers, ...(response.data.deals || [])];
+      setDeals(allDeals);
+      console.log("Today's Deals (offers + deals):", allDeals);
     } catch (error) {
       console.error("Deals fetch error:", error);
       setDeals([]);
@@ -139,13 +180,13 @@ export default function Home() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={i} className="star-filled" size={14} fill="currentColor" />,
+        <Star key={i} className="star-filled" size={14} fill="currentColor" />
       );
     }
 
     if (hasHalfStar) {
       stars.push(
-        <Star key="half" className="star-half" size={14} fill="currentColor" />,
+        <Star key="half" className="star-half" size={14} fill="currentColor" />
       );
     }
 
@@ -425,6 +466,24 @@ export default function Home() {
                       ? `-${deal.discountPercentage}%`
                       : "DEAL"}
                   </div>
+                  {deal.isOffer && (
+                    <div
+                      className="card-badge card-badge-offer"
+                      style={{
+                        background: "#ff4757",
+                        color: "#fff",
+                        top: 40,
+                        left: 10,
+                        position: "absolute",
+                        padding: "2px 8px",
+                        borderRadius: 4,
+                        fontSize: 12,
+                        fontWeight: 600,
+                      }}
+                    >
+                      TODAY'S OFFER
+                    </div>
+                  )}
                 </div>
                 <div className="card-content">
                   <h4 className="card-title">{deal.title || deal.name}</h4>

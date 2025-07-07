@@ -88,3 +88,26 @@ export const authorizeAdmin = async (req, res, next) => {
     });
   }
 };
+
+export const isAdmin = async (req, res, next) => {
+  try {
+    // If user is not already fetched, fetch it
+    if (!req.user) {
+      const user = await User.findById(req.userId);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
+      req.user = user;
+    }
+    if (req.user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ success: false, message: "Admin access required" });
+    }
+    next();
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};

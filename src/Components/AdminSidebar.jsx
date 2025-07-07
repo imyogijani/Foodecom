@@ -30,6 +30,7 @@ const adminLinks = [
   { name: "Deals", path: "/admin/deals", icon: <FaBox /> },
   { name: "Subscriptions", path: "/admin/subscriptions", icon: <FaBox /> },
   { name: "Menu", path: "/admin/menu", icon: <FaBox /> },
+  { name: "Today's Offers", path: "/admin/offers", icon: <FaBox /> },
 ];
 
 const AdminSidebar = ({ onClose }) => {
