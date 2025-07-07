@@ -116,14 +116,19 @@ export default function Home() {
 
   const fetchDeals = async () => {
     try {
-      // Fetch today's offers (shop-wise) and append to deals
-      const offersRes = await axios.get("/api/offers/today");
+      // Use absolute URL to avoid baseURL/proxy issues
+      const offersRes = await axios.get(
+        "http://localhost:8080/api/offers/today"
+      );
       const offers = offersRes.data.offers || [];
       // Map offers to deal-like objects for display
       const mappedOffers = offers.map((offer) => {
         let image = offer.product?.image;
+        // Fix: handle both relative and absolute image URLs
         if (image && image.startsWith("/uploads")) {
           image = `http://localhost:8080${image}`;
+        } else if (!image || image === "") {
+          image = "/images/offer1.png"; // fallback to a local default offer image
         }
         return {
           _id: offer._id,
@@ -154,7 +159,7 @@ export default function Home() {
         };
       });
       // Fetch regular deals as before
-      const response = await axios.get("/api/deals");
+      const response = await axios.get("/api/deals/active");
       const allDeals = [...mappedOffers, ...(response.data.deals || [])];
       setDeals(allDeals);
       console.log("Today's Deals (offers + deals):", allDeals);
@@ -435,6 +440,33 @@ export default function Home() {
           </div>
         )}
       </div>
+
+      {/* Debug: Show loaded deals/offers for troubleshooting
+      <div
+        style={{
+          background: "#fffbe6",
+          color: "#b36b00",
+          padding: "8px",
+          margin: "16px 0",
+          fontSize: "13px",
+          border: "1px solid #ffe58f",
+          borderRadius: "6px",
+        }}
+      >
+        <b>DEBUG:</b> Loaded deals/offers:
+        <br />
+        <pre
+          style={{
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-all",
+            margin: 0,
+            maxHeight: 200,
+            overflow: "auto",
+          }}
+        >
+          {JSON.stringify(deals, null, 2)}
+        </pre>
+      </div> */}
 
       {/* Today's Deals */}
       <div className="deals-section">
