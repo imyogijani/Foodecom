@@ -203,96 +203,101 @@ export default function Home() {
     return stars;
   };
 
-  const ProductCard = ({ product }) => (
-    <div className="card-base card-large product-card">
-      <div className="card-image-container">
-        <img
-          src={
-            product.image ||
-            "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
-          }
-          alt={product.name}
-          className="card-image"
-          loading="lazy"
-        />
-      </div>
-
-      <div className="card-content">
-        <h3 className="card-title">{product.name}</h3>
-        <div className="product-rating" style={{ margin: "6px 0" }}>
-          <div className="stars">{renderStars(product.rating || 4.5)}</div>
-          <span
-            className="rating-count"
-            style={{ fontSize: "11px", color: "#0066cc" }}
-          >
-            ({product.reviewCount || Math.floor(Math.random() * 500) + 50})
-          </span>
+  const ProductCard = ({ product }) => {
+    let image = product.image;
+    if (image && image.startsWith("/uploads")) {
+      image = `http://localhost:8080${image}`;
+    } else if (!image || image === "") {
+      image = "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
+    }
+    return (
+      <div className="card-base card-large product-card">
+        <div className="card-image-container">
+          <img
+            src={image}
+            alt={product.name}
+            className="card-image"
+            loading="lazy"
+          />
         </div>
 
-        <div className="card-description" style={{ margin: "6px 0" }}>
-          <span
-            className="current-price"
-            style={{ fontSize: "16px", fontWeight: "600", color: "#232f3e" }}
-          >
-            ₹{product.price}
-          </span>
-          {product.originalPrice && (
+        <div className="card-content">
+          <h3 className="card-title">{product.name}</h3>
+          <div className="product-rating" style={{ margin: "6px 0" }}>
+            <div className="stars">{renderStars(product.rating || 4.5)}</div>
             <span
-              className="original-price"
+              className="rating-count"
+              style={{ fontSize: "11px", color: "#0066cc" }}
+            >
+              ({product.reviewCount || Math.floor(Math.random() * 500) + 50})
+            </span>
+          </div>
+
+          <div className="card-description" style={{ margin: "6px 0" }}>
+            <span
+              className="current-price"
+              style={{ fontSize: "16px", fontWeight: "600", color: "#232f3e" }}
+            >
+              ₹{product.price}
+            </span>
+            {product.originalPrice && (
+              <span
+                className="original-price"
+                style={{
+                  fontSize: "12px",
+                  color: "#666",
+                  textDecoration: "line-through",
+                  marginLeft: "8px",
+                }}
+              >
+                ₹{product.originalPrice}
+              </span>
+            )}
+          </div>
+
+          {product.discount && (
+            <div
+              style={{ color: "#ff4757", fontSize: "12px", margin: "0 0 6px 0" }}
+            >
+              -{product.discount}% OFF
+            </div>
+          )}
+
+          <div style={{ margin: "6px 0", fontSize: "10px" }}>
+            <span
+              className="prime-badge"
               style={{
-                fontSize: "12px",
-                color: "#666",
-                textDecoration: "line-through",
-                marginLeft: "8px",
+                background: "#0066cc",
+                color: "white",
+                padding: "2px 4px",
+                borderRadius: "3px",
+                fontSize: "9px",
+                marginRight: "6px",
               }}
             >
-              ₹{product.originalPrice}
+              Prime
             </span>
-          )}
-        </div>
-
-        {product.discount && (
-          <div
-            style={{ color: "#ff4757", fontSize: "12px", margin: "0 0 6px 0" }}
-          >
-            -{product.discount}% OFF
+            <span
+              className="free-delivery"
+              style={{ color: "#007600", fontSize: "10px" }}
+            >
+              FREE Delivery
+            </span>
           </div>
-        )}
 
-        <div style={{ margin: "6px 0", fontSize: "10px" }}>
-          <span
-            className="prime-badge"
-            style={{
-              background: "#0066cc",
-              color: "white",
-              padding: "2px 4px",
-              borderRadius: "3px",
-              fontSize: "9px",
-              marginRight: "6px",
-            }}
-          >
-            Prime
-          </span>
-          <span
-            className="free-delivery"
-            style={{ color: "#007600", fontSize: "10px" }}
-          >
-            FREE Delivery
-          </span>
-        </div>
-
-        <div className="card-actions">
-          <button
-            className="card-button"
-            onClick={() => handleAddToCart(product)}
-            title="Add to Cart"
-          >
-            <ShoppingCart size={16} />
-          </button>
+          <div className="card-actions">
+            <button
+              className="card-button"
+              onClick={() => handleAddToCart(product)}
+              title="Add to Cart"
+            >
+              <ShoppingCart size={16} />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="amazon-home-container">
