@@ -20,6 +20,7 @@ function DealsList() {
         }
       } catch (error) {
         setApprovedDeals([]);
+        console.log(error);
       }
       setLoading(false);
     }

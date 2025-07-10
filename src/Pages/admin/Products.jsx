@@ -18,6 +18,10 @@ import { useNavigate } from "react-router-dom";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [shops, setShops] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [selectedBrand, setSelectedBrand] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedShop, setSelectedShop] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,17 +36,41 @@ const Products = () => {
   useEffect(() => {
     fetchProducts();
     fetchShops();
+    fetchCategories();
   }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedCategory, selectedSubcategory, selectedBrand]);
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("/api/category/get-category", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCategories(response.data.categories);
+    } catch (error) {
+      toast.error("Error fetching categories");
+    }
+  };
 
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "/api/admin/all-products?populateCategory=true&populateSubcategory=true",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      let url = "/api/admin/all-products?populateCategory=true&populateSubcategory=true";
+      if (selectedCategory) {
+        url += `&categoryId=${selectedCategory}`;
+      }
+      if (selectedSubcategory) {
+        url += `&subcategoryId=${selectedSubcategory}`;
+      }
+      if (selectedBrand) {
+        url += `&brand=${selectedBrand}`;
+      }
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setProducts(response.data.products);
     } catch (error) {
       toast.error("Error fetching products");
@@ -161,11 +189,15 @@ const Products = () => {
 
   const filteredProducts = products.filter((product) => {
     const matchesShop =
-      selectedShop === "all" || product.shopId === selectedShop;
+      selectedShop === "all" || product.seller._id === selectedShop; // Assuming product.seller is populated with shop details
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesShop && matchesSearch;
+    const matchesCategory = selectedCategory === "" || (product.category && product.category._id === selectedCategory);
+    const matchesSubcategory = selectedSubcategory === "" || (product.subcategory && product.subcategory._id === selectedSubcategory);
+    const matchesBrand = selectedBrand === "" || (product.brand && product.brand.toLowerCase() === selectedBrand.toLowerCase());
+
+    return matchesShop && matchesSearch && matchesCategory && matchesSubcategory && matchesBrand;
   });
 
   const getProductStats = () => {
@@ -206,20 +238,94 @@ const Products = () => {
           />
         </div>
 
-        <select
-          className="shop-filter"
-          value={selectedShop}
-          onChange={(e) => setSelectedShop(e.target.value)}
-        >
-          <option value="all" className="all-shops-option">All Shops</option>
-          {shops
-            .filter((shop) => shop.names || shop.shopName)
-            .map((shop) => (
-              <option key={shop._id} value={shop._id}>
-                {shop.names || shop.shopName}
+        <div className="filter-group">
+          <label htmlFor="categoryFilter">Filter by Category:</label>
+          <select
+            id="categoryFilter"
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setSelectedSubcategory(""); // Reset subcategory when category changes
+              setSelectedBrand(""); // Reset brand when category changes
+            }}
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
               </option>
             ))}
-        </select>
+          </select>
+        </div>
+
+        {selectedCategory && (
+          <div className="filter-group">
+            <label htmlFor="subcategoryFilter">Filter by Subcategory:</label>
+            <select
+              id="subcategoryFilter"
+              value={selectedSubcategory}
+              onChange={(e) => {
+                setSelectedSubcategory(e.target.value);
+                setSelectedBrand(""); // Reset brand when subcategory changes
+              }}
+            >
+              <option value="">All Subcategories</option>
+              {categories
+                .find((cat) => cat._id === selectedCategory)
+                ?.children.map((subcat) => (
+                  <option key={subcat._id} value={subcat._id}>
+                    {subcat.name}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )}
+
+        {(selectedCategory || selectedSubcategory) && (
+          <div className="filter-group">
+            <label htmlFor="brandFilter">Filter by Brand:</label>
+            <select
+              id="brandFilter"
+              value={selectedBrand}
+              onChange={(e) => setSelectedBrand(e.target.value)}
+            >
+              <option value="">All Brands</option>
+              {selectedCategory &&
+                categories
+                  .find((cat) => cat._id === selectedCategory)
+                  ?.brands.map((brand, index) => (
+                    <option key={index} value={brand}>
+                      {brand}
+                    </option>
+                  ))}
+              {selectedSubcategory &&
+                categories
+                  .find((cat) => cat._id === selectedCategory)
+                  ?.children.find((subcat) => subcat._id === selectedSubcategory)
+                  ?.brands.map((brand, index) => (
+                    <option key={index} value={brand}>
+                      {brand}
+                    </option>
+                  ))}
+            </select>
+          </div>
+        )}
+
+        <div className="filter-group">
+          <label htmlFor="shopFilter">Filter by Shop:</label>
+          <select
+            id="shopFilter"
+            value={selectedShop}
+            onChange={(e) => setSelectedShop(e.target.value)}
+          >
+            <option value="all">All Shops</option>
+            {shops.map((shop) => (
+              <option key={shop._id} value={shop._id}>
+                {shop.shopName}
+              </option>
+            ))}
+          </select>
+        </div>
         <button
           className="delete-all-products-btn"
           onClick={handleDeleteAllProducts}

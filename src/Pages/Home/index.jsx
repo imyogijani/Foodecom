@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import "./Home.css";
 import "./HomeLayout.css";
 import "./theme-override.css";
@@ -109,6 +110,7 @@ export default function Home() {
       setProducts(response.data.products);
     } catch (error) {
       toast.error("Error fetching products");
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -208,7 +210,8 @@ export default function Home() {
     if (image && image.startsWith("/uploads")) {
       image = `http://localhost:8080${image}`;
     } else if (!image || image === "") {
-      image = "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
+      image =
+        "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
     }
     return (
       <div className="card-base card-large product-card">
@@ -257,7 +260,11 @@ export default function Home() {
 
           {product.discount && (
             <div
-              style={{ color: "#ff4757", fontSize: "12px", margin: "0 0 6px 0" }}
+              style={{
+                color: "#ff4757",
+                fontSize: "12px",
+                margin: "0 0 6px 0",
+              }}
             >
               -{product.discount}% OFF
             </div>
@@ -436,6 +443,11 @@ export default function Home() {
                 <div className="skeleton-text"></div>
               </div>
             ))}
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="under-development">
+            <h3>🚧 Products Coming Soon! 🚧</h3>
+            <p>We're working hard to bring you amazing products</p>
           </div>
         ) : (
           <div className="cards-grid cards-grid-large">

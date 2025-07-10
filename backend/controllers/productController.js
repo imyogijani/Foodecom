@@ -8,16 +8,7 @@ const __dirname = path.dirname(__filename);
 
 export const addProduct = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      discount,
-      category,
-      subcategory,
-      stock,
-      status,
-    } = req.body;
+    const { name, description, price, discount, category, subcategory, stock, status, brand } = req.body;
 
     // Validate subcategory if provided
     let subcategoryDoc = null;
@@ -116,6 +107,7 @@ export const addProduct = async (req, res) => {
       stock: Number(stock),
       status,
       image,
+      brand: brand || undefined,
       seller: req.userId,
     });
 
@@ -164,7 +156,7 @@ export const getSellerProducts = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-    const { category, subcategory, discount, ...updateData } = req.body;
+    const { category, subcategory, discount, brand, ...updateData } = req.body;
 
     if (category) {
       const categoryDoc = await Category.findById(category);
@@ -196,6 +188,12 @@ export const updateProduct = async (req, res) => {
     } else if (discount === "") {
       updateData.discount = undefined;
     }
+
+    if (brand !== undefined && brand !== null && brand !== "") {
+      updateData.brand = brand;
+    } else if (brand === "") {
+      updateData.brand = undefined;
+    }
     const product = await Product.findOneAndUpdate(
       { _id: productId, seller: req.userId },
       updateData,
@@ -224,8 +222,16 @@ export const updateProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { populateCategory, populateSubcategory } = req.query;
+    const { populateCategory, populateSubcategory, categoryId, brand } = req.query;
     let query = Product.find({});
+
+    if (categoryId) {
+      query = query.where('category').equals(categoryId);
+    }
+
+    if (brand) {
+      query = query.where('brand').equals(brand);
+    }
 
     if (populateCategory === "true") {
       query = query.populate("category");

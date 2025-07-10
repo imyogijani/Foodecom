@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import "./restaurant.css";
+import "./Menu.css";
 import "./HomeLayout.css";
 import "./shops-modern.css";
 import "./theme-override.css";

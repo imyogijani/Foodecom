@@ -42,6 +42,11 @@ const productSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+    brand: {
+      type: String,
+      required: false,
+      trim: true,
+    },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",

@@ -10,6 +10,8 @@ const Categories = () => {
   const [categoryName, setCategoryName] = useState("");
   const [subCategoryName, setSubCategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [brandName, setBrandName] = useState("");
+  const [selectedBrands, setSelectedBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -60,6 +62,7 @@ const Categories = () => {
       const formData = new FormData();
       formData.append("name", categoryName.trim());
       formData.append("image", categoryImage);
+      selectedBrands.forEach(brand => formData.append("brands[]", brand));
       // Debug: log the file
       console.log("Uploading category image:", categoryImage);
       // Use your custom axios instance
@@ -69,6 +72,7 @@ const Categories = () => {
       );
       setCategoryName("");
       setCategoryImage(null);
+      setSelectedBrands([]); // Clear selected brands after adding category
       toast.success(`Category '${categoryName}' added.`);
       await initialLoad();
     } catch (err) {
@@ -107,6 +111,7 @@ const Categories = () => {
   const handleUpdateCategory = (category) => {
     setEditingCategory(category);
     setNewCategoryName(category.name);
+    setSelectedBrands(category.brands || []); // Populate brands when editing
     setShowEditCategoryModal(true);
   };
 
@@ -153,6 +158,7 @@ const Categories = () => {
       const formData = new FormData();
       formData.append("name", newCategoryName.trim());
       if (editCategoryImage) formData.append("image", editCategoryImage);
+      selectedBrands.forEach(brand => formData.append("brands[]", brand));
       await axiosInstance.post(`/api/category/update-category/${editingCategory._id}`, formData); // Removed manual Content-Type
       toast.success("Category updated successfully.");
       await initialLoad();
@@ -182,11 +188,24 @@ const Categories = () => {
     }
   };
 
+  const handleAddBrand = () => {
+    if (brandName.trim() && !selectedBrands.includes(brandName.trim())) {
+      setSelectedBrands([...selectedBrands, brandName.trim()]);
+      setBrandName("");
+    }
+  };
+
+  const handleRemoveBrand = (brandToRemove) => {
+    setSelectedBrands(selectedBrands.filter(brand => brand !== brandToRemove));
+  };
+
   const resetEditState = () => {
     setEditingCategory(null);
     setEditingSubCategory(null);
     setNewCategoryName("");
     setNewSubCategoryName("");
+    setEditCategoryImage(null);
+    setSelectedBrands([]); // Clear selected brands on reset
     setShowEditCategoryModal(false);
   };
 
@@ -207,25 +226,32 @@ const Categories = () => {
             placeholder="Category Name"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
-            className="form-input"
+            required
           />
           <input
             type="file"
             accept="image/*"
             onChange={handleCategoryImageChange}
-            className="form-input"
-            style={{ marginTop: 8 }}
+            required
           />
-          {categoryImage && (
-            <img
-              src={URL.createObjectURL(categoryImage)}
-              alt="Preview"
-              style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 8, marginTop: 8 }}
+          <div className="brand-input-container">
+            <input
+              type="text"
+              placeholder="Brand Name (e.g., Nike, Adidas)"
+              value={brandName}
+              onChange={(e) => setBrandName(e.target.value)}
             />
-          )}
-          <button type="submit" className="btn btn-primary">
-            Add Category
-          </button>
+            <button type="button" onClick={handleAddBrand}>Add Brand</button>
+          </div>
+          <div className="selected-brands-list">
+            {selectedBrands.map((brand, index) => (
+              <span key={index} className="brand-tag">
+                {brand}
+                <button type="button" onClick={() => handleRemoveBrand(brand)}>x</button>
+              </span>
+            ))}
+          </div>
+          <button type="submit">Add Category</button>
         </form>
       </div>
 
@@ -313,32 +339,31 @@ const Categories = () => {
             <h2>{editingCategory ? "Edit Category" : "Edit Subcategory"}</h2>
             <input
               type="text"
-              value={editingCategory ? newCategoryName : newSubCategoryName}
-              onChange={(e) =>
-                editingCategory
-                  ? setNewCategoryName(e.target.value)
-                  : setNewSubCategoryName(e.target.value)
-              }
-              className="form-input"
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
             />
-            {editingCategory && (
-              <>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleEditCategoryImageChange}
-                  className="form-input"
-                  style={{ marginTop: 8 }}
-                />
-                {(editCategoryImage || editingCategory.image) && (
-                  <img
-                    src={editCategoryImage ? URL.createObjectURL(editCategoryImage) : (editingCategory.image ? `http://localhost:8080${editingCategory.image}` : undefined)}
-                    alt="Preview"
-                    style={{ width: 70, height: 70, objectFit: "cover", borderRadius: 10, marginTop: 8 }}
-                  />
-                )}
-              </>
-            )}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleEditCategoryImageChange}
+            />
+            <div className="brand-input-container">
+              <input
+                type="text"
+                placeholder="Brand Name (e.g., Nike, Adidas)"
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
+              />
+              <button type="button" onClick={handleAddBrand}>Add Brand</button>
+            </div>
+            <div className="selected-brands-list">
+              {selectedBrands.map((brand, index) => (
+                <span key={index} className="brand-tag">
+                  {brand}
+                  <button type="button" onClick={() => handleRemoveBrand(brand)}>x</button>
+                </span>
+              ))}
+            </div>
             <div className="modal-actions">
               <button
                 className="btn btn-primary"

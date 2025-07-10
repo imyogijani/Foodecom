@@ -11,7 +11,7 @@
 /* Hero Banner */
 .hero-banner {
   background: transparent;
-  color: white !important;
+  color: #fff;
   padding: 40px 0;
   position: relative;
   overflow: hidden;
@@ -20,7 +20,7 @@
 .hero-content {
   background: linear-gradient(135deg, #232f3e 0%, #131a22 100%);
   border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
@@ -41,14 +41,14 @@
   font-weight: 700;
   margin-bottom: 20px;
   line-height: 1.2;
-  color: white !important;
+  color: #fff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .hero-text p {
   font-size: 1.2rem;
   margin-bottom: 25px;
-  color: white !important;
+  color: #fff;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   line-height: 1.4;
 }
@@ -60,7 +60,7 @@
 
 .search-container {
   display: flex;
-  background: white;
+  background: #fff;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -83,7 +83,7 @@
 
 .search-btn {
   background: #ff9900;
-  color: white;
+  color: #fff;
   border: none;
   padding: 12px 20px;
   font-weight: 600;
@@ -108,18 +108,14 @@
 
 /* Trust Badges */
 .trust-badges {
-  background: white;
-  padding: 20px 0;
+  background: #fff;
+  padding: 20px;
   border-bottom: 1px solid #ddd;
-}
-
-.trust-badges {
   display: flex;
   justify-content: center;
   gap: 60px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
 }
 
 .trust-badge {
@@ -136,7 +132,7 @@
 
 /* Categories Section */
 .categories-section {
-  background: white;
+  background: #fff;
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
@@ -157,7 +153,7 @@
 }
 
 .category-tile {
-  background: white;
+  background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -217,7 +213,7 @@
 
 /* Filter and Sort Bar */
 .filter-sort-bar {
-  background: white;
+  background: #fff;
   padding: 15px 20px;
   border-bottom: 1px solid #ddd;
   display: flex;
@@ -242,17 +238,18 @@
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  background: white;
+  background: #fff;
   font-size: 14px;
   cursor: pointer;
 }
 
 /* Products Section */
 .products-section {
-  background: white;
+  background: #fff;
   padding: 40px 20px;
   max-width: 1200px;
   margin: 0 auto;
+  margin-top: 20px;
 }
 
 .section-header {
@@ -279,7 +276,7 @@
 
 /* Amazon-style Product Card */
 .amazon-product-card {
-  background: white;
+  background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -310,14 +307,12 @@
   transform: scale(1.05);
 }
 
-
-
 .discount-badge {
   position: absolute;
   top: 10px;
   left: 10px;
   background: #e47911;
-  color: white;
+  color: #fff;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
@@ -391,7 +386,7 @@
 
 .prime-badge {
   background: #0066cc;
-  color: white;
+  color: #fff;
   padding: 2px 6px;
   border-radius: 3px;
   font-size: 11px;
@@ -407,7 +402,7 @@
 .add-to-cart-btn {
   width: 100%;
   background: #ff9900;
-  color: white;
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 4px;
@@ -432,7 +427,7 @@
 }
 
 .product-skeleton {
-  background: white;
+  background: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
@@ -485,7 +480,7 @@
 }
 
 .deal-card-modern {
-  background: white;
+  background: #fff;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -514,7 +509,7 @@
   top: 10px;
   right: 10px;
   background: #e47911;
-  color: white;
+  color: #fff;
   padding: 5px 10px;
   border-radius: 4px;
   font-weight: 600;
@@ -571,7 +566,7 @@
 }
 
 .business-card {
-  background: white;
+  background: #fff;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
@@ -598,7 +593,7 @@
 
 .business-btn {
   background: #ff9900;
-  color: white;
+  color: #fff;
   border: none;
   padding: 12px 24px;
   border-radius: 4px;
@@ -627,7 +622,7 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 60px 20px;
-  background: white;
+  background: #fff;
   border-radius: 8px;
   border: 2px dashed #ddd;
 }
@@ -689,44 +684,20 @@
   .hero-text h1 {
     font-size: 2.2rem;
     line-height: 1.1;
-    color: white !important;
+    color: #fff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
   }
 
   .hero-text p {
     font-size: 1.1rem;
     margin-bottom: 25px;
-    color: white !important;
+    color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
   }
 
   .hero-search-bar {
     max-width: 100%;
   }
-}
-
-@media (max-width: 480px) {
-  .hero-banner {
-    padding: 25px 0;
-  }
-
-  .hero-content {
-    padding: 8px;
-    gap: 20px;
-  }
-
-  .hero-text h1 {
-    font-size: 1.8rem;
-    color: white !important;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  .hero-text p {
-    font-size: 1rem;
-    color: white !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  }
-}
 
   .trust-badges {
     grid-template-columns: repeat(2, 1fr);
@@ -787,13 +758,13 @@
 
   .hero-text h1 {
     font-size: 1.8rem;
-    color: white !important;
+    color: #fff;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
   }
 
   .hero-text p {
     font-size: 1rem;
-    color: white !important;
+    color: #fff;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
   }
 
@@ -839,11 +810,6 @@
 
   .business-content {
     grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
-  .hero-content {
-    padding: 0 10px;
     gap: 20px;
   }
 }

@@ -29,6 +29,12 @@ const categorySchema = new mongoose.Schema(
       type: String, // URL or path to the image
       default: "",
     },
+    brands: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
   },
   { timestamps: true }
 );

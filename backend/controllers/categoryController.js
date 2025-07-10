@@ -11,7 +11,7 @@ export const createCategoryController = async (req, res) => {
   try {
     console.log("[DEBUG] req.body:", req.body);
     console.log("[DEBUG] req.file:", req.file);
-    const { name, parent } = req.body;
+    const { name, parent, brands } = req.body;
     let image = "";
     if (req.file) {
       console.log("Category image upload:", req.file);
@@ -31,6 +31,7 @@ export const createCategoryController = async (req, res) => {
       slug: slugify(name),
       parent: parent || null,
       image,
+      brands: brands || [],
     });
 
     if (parent) {
@@ -168,7 +169,7 @@ export const deleteCategoryController = async (req, res) => {
 // Update category
 export const updateCategoryController = async (req, res) => {
   try {
-    const { name, parent } = req.body;
+    const { name, parent, brands } = req.body;
     const updateData = {};
     if (name) {
       updateData.name = name;
@@ -176,6 +177,9 @@ export const updateCategoryController = async (req, res) => {
     }
     if (typeof parent !== "undefined") {
       updateData.parent = parent;
+    }
+    if (brands !== undefined) {
+      updateData.brands = brands;
     }
     let oldImagePath = null;
     if (req.file) {

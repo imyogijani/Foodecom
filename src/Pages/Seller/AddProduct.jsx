@@ -219,7 +219,11 @@ const AddProduct = () => {
         </div>
       </div>
       <div className="products-container">
-        <form onSubmit={handleSubmit} className="add-product-form">
+        <form
+          onSubmit={handleSubmit}
+          className="add-product-form"
+          style={{ width: "100%" }}
+        >
           <div className="form-group">
             <label htmlFor="name">Product Name *</label>
             <input
