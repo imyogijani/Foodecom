@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
-import { FaEdit, FaTrashAlt } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 import "./Categories.css"; // Assuming you'll create this CSS file
@@ -62,14 +62,11 @@ const Categories = () => {
       const formData = new FormData();
       formData.append("name", categoryName.trim());
       formData.append("image", categoryImage);
-      selectedBrands.forEach(brand => formData.append("brands[]", brand));
+      selectedBrands.forEach((brand) => formData.append("brands[]", brand));
       // Debug: log the file
       console.log("Uploading category image:", categoryImage);
       // Use your custom axios instance
-      const { data } = await axiosInstance.post(
-        "/api/category",
-        formData
-      );
+      const { data } = await axiosInstance.post("/api/category", formData);
       setCategoryName("");
       setCategoryImage(null);
       setSelectedBrands([]); // Clear selected brands after adding category
@@ -131,7 +128,9 @@ const Categories = () => {
     if (!itemToDelete?._id) return;
 
     try {
-      await axiosInstance.delete(`/api/category/delete-category/${itemToDelete._id}`);
+      await axiosInstance.delete(
+        `/api/category/delete-category/${itemToDelete._id}`
+      );
       toast.success(`${itemTypeToDelete} deleted successfully.`);
       await initialLoad();
     } catch (err) {
@@ -158,8 +157,11 @@ const Categories = () => {
       const formData = new FormData();
       formData.append("name", newCategoryName.trim());
       if (editCategoryImage) formData.append("image", editCategoryImage);
-      selectedBrands.forEach(brand => formData.append("brands[]", brand));
-      await axiosInstance.post(`/api/category/update-category/${editingCategory._id}`, formData); // Removed manual Content-Type
+      selectedBrands.forEach((brand) => formData.append("brands[]", brand));
+      await axiosInstance.post(
+        `/api/category/update-category/${editingCategory._id}`,
+        formData
+      ); // Removed manual Content-Type
       toast.success("Category updated successfully.");
       await initialLoad();
       resetEditState();
@@ -196,7 +198,9 @@ const Categories = () => {
   };
 
   const handleRemoveBrand = (brandToRemove) => {
-    setSelectedBrands(selectedBrands.filter(brand => brand !== brandToRemove));
+    setSelectedBrands(
+      selectedBrands.filter((brand) => brand !== brandToRemove)
+    );
   };
 
   const resetEditState = () => {
@@ -220,8 +224,13 @@ const Categories = () => {
 
       <div className="category-section">
         <h2>Add New Category</h2>
-        <form onSubmit={handleAddCategory} className="category-form" encType="multipart/form-data">
+        <form
+          onSubmit={handleAddCategory}
+          className="category-form"
+          encType="multipart/form-data"
+        >
           <input
+            className="form-input"
             type="text"
             placeholder="Category Name"
             value={categoryName}
@@ -236,22 +245,27 @@ const Categories = () => {
           />
           <div className="brand-input-container">
             <input
+              className="form-input"
               type="text"
               placeholder="Brand Name (e.g., Nike, Adidas)"
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
             />
-            <button type="button" onClick={handleAddBrand}>Add Brand</button>
+            <button type="button" onClick={handleAddBrand} className="btn btn-secondary">
+              Add Brand
+            </button>
           </div>
           <div className="selected-brands-list">
             {selectedBrands.map((brand, index) => (
               <span key={index} className="brand-tag">
                 {brand}
-                <button type="button" onClick={() => handleRemoveBrand(brand)}>x</button>
+                <button type="button" onClick={() => handleRemoveBrand(brand)}>
+                  x
+                </button>
               </span>
             ))}
           </div>
-          <button type="submit">Add Category</button>
+          <button type="submit" className="btn btn-primary">Add Category</button>
         </form>
       </div>
 
@@ -294,19 +308,32 @@ const Categories = () => {
             <div key={cat._id} className="category-item enhanced-category-card">
               <div className="category-image-wrapper">
                 <img
-                  src={cat.image ? `http://localhost:8080${cat.image}` : "/vite.svg"}
+                  src={
+                    cat.image
+                      ? `http://localhost:8080${cat.image}`
+                      : "/vite.svg"
+                  }
                   alt={cat.name}
-                  onError={e => { e.target.onerror = null; e.target.src = "/vite.svg"; }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/vite.svg";
+                  }}
                   className="category-image"
                 />
               </div>
               <div className="category-info">
                 <span className="category-title">{cat.name}</span>
                 <div className="category-actions">
-                  <button className="btn btn-edit" onClick={() => handleUpdateCategory(cat)}>
+                  <button
+                    className="btn btn-edit"
+                    onClick={() => handleUpdateCategory(cat)}
+                  >
                     <FaEdit />
                   </button>
-                  <button className="btn btn-delete" onClick={() => handleDeleteCategory(cat)}>
+                  <button
+                    className="btn btn-delete"
+                    onClick={() => handleDeleteCategory(cat)}
+                  >
                     <FaTrashAlt />
                   </button>
                 </div>
@@ -316,10 +343,16 @@ const Categories = () => {
                       <div key={subCat._id} className="subcategory-item">
                         <span>{subCat.name}</span>
                         <div className="subcategory-actions">
-                          <button className="btn btn-edit" onClick={() => handleUpdateSubCategory(subCat)}>
+                          <button
+                            className="btn btn-edit"
+                            onClick={() => handleUpdateSubCategory(subCat)}
+                          >
                             <FaEdit />
                           </button>
-                          <button className="btn btn-delete" onClick={() => handleDeleteSubCategory(subCat)}>
+                          <button
+                            className="btn btn-delete"
+                            onClick={() => handleDeleteSubCategory(subCat)}
+                          >
                             <FaTrashAlt />
                           </button>
                         </div>
@@ -354,20 +387,31 @@ const Categories = () => {
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
               />
-              <button type="button" onClick={handleAddBrand}>Add Brand</button>
+              <button type="button" onClick={handleAddBrand}>
+                Add Brand
+              </button>
             </div>
             <div className="selected-brands-list">
               {selectedBrands.map((brand, index) => (
                 <span key={index} className="brand-tag">
                   {brand}
-                  <button type="button" onClick={() => handleRemoveBrand(brand)}>x</button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveBrand(brand)}
+                  >
+                    x
+                  </button>
                 </span>
               ))}
             </div>
             <div className="modal-actions">
               <button
                 className="btn btn-primary"
-                onClick={editingCategory ? handleSaveCategoryUpdate : handleSaveSubCategoryUpdate}
+                onClick={
+                  editingCategory
+                    ? handleSaveCategoryUpdate
+                    : handleSaveSubCategoryUpdate
+                }
               >
                 Save
               </button>

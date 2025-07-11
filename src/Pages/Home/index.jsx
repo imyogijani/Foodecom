@@ -1,6 +1,5 @@
 /* eslint-disable no-unused-vars */
 import "./Home.css";
-import "./HomeLayout.css";
 import "./theme-override.css";
 import React, { useState, useEffect } from "react";
 import axios from "../../utils/axios";
