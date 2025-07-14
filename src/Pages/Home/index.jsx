@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+// Logic/JavaScript Part
 import "./Home.css";
 import "./theme-override.css";
 import React, { useState, useEffect } from "react";
@@ -19,6 +20,7 @@ import {
 } from "lucide-react";
 
 export default function Home() {
+  // State management
   const { addToCart } = useCart();
   const [activeCategory, setActiveCategory] = useState("");
   const [products, setProducts] = useState([]);
@@ -29,14 +31,16 @@ export default function Home() {
   const [sortBy, setSortBy] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter and sort products
+  // Memoized filtered products
   const filteredProducts = React.useMemo(() => {
     let filtered = products;
+
+    // Category filter
     if (activeCategory) {
-      filtered = filtered.filter(
-        (p) => p.category && p.category.name === activeCategory
-      );
+      filtered = filtered.filter((p) => p.category?.name === activeCategory);
     }
+
+    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
         (p) =>
@@ -44,6 +48,8 @@ export default function Home() {
           p.description?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
+    // Sort products
     if (sortBy === "low") {
       filtered = [...filtered].sort((a, b) => a.price - b.price);
     } else if (sortBy === "high") {
@@ -53,22 +59,20 @@ export default function Home() {
         (a, b) => (b.rating || 4.5) - (a.rating || 4.5)
       );
     }
+
     return filtered;
   }, [products, activeCategory, sortBy, searchQuery]);
 
+  // Navigation handler
   const handleGetStarted = () => {
     window.location.href = "/menu";
   };
 
+  // Initial data fetch
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        await Promise.all([
-          fetchCategories(),
-          fetchProducts(),
-          fetchDeals(),
-          // fetchOffers(), // Removed to prevent race condition
-        ]);
+        await Promise.all([fetchCategories(), fetchProducts(), fetchDeals()]);
       } catch (error) {
         console.error("Error fetching initial data:", error);
       }
@@ -77,6 +81,7 @@ export default function Home() {
     fetchInitialData();
   }, []);
 
+  // API calls
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
@@ -84,6 +89,7 @@ export default function Home() {
       );
       const categoriesData = response.data.categories || [];
       setCategories(categoriesData);
+
       if (categoriesData.length > 0) {
         setActiveCategory(categoriesData[0].name);
       }
@@ -117,57 +123,58 @@ export default function Home() {
 
   const fetchDeals = async () => {
     try {
-      // Use absolute URL to avoid baseURL/proxy issues
       const offersRes = await axios.get(
         "http://localhost:8080/api/offers/today"
       );
       const offers = offersRes.data.offers || [];
-      // Map offers to deal-like objects for display
-      const mappedOffers = offers.map((offer) => {
-        let image = offer.product?.image;
-        // Fix: handle both relative and absolute image URLs
-        if (image && image.startsWith("/uploads")) {
-          image = `http://localhost:8080${image}`;
-        } else if (!image || image === "") {
-          image = "/images/offer1.png"; // fallback to a local default offer image
-        }
-        return {
-          _id: offer._id,
-          title: offer.title || offer.product?.name || "Today's Offer",
-          description:
-            offer.description ||
-            offer.product?.description ||
-            "Special offer for today only!",
-          image,
-          dealPrice:
-            offer.price ||
-            (offer.product?.price
-              ? Math.round(
-                  offer.product.price * (1 - (offer.discount || 0) / 100)
-                )
-              : undefined),
-          originalPrice: offer.product?.price || offer.price,
-          discountPercentage: offer.discount || 0,
-          shopName:
-            offer.shop?.shopName ||
-            offer.shop?.names ||
-            offer.shop?.email ||
-            "Shop",
-          isOffer: true,
-          // Add fallback fields for UI compatibility
-          rating: offer.product?.rating || 4.5,
-          reviewCount: offer.product?.reviewCount || 100,
-        };
-      });
-      // Fetch regular deals as before
+
+      const mappedOffers = offers.map((offer) => ({
+        _id: offer._id,
+        title: offer.title || offer.product?.name || "Today's Offer",
+        description:
+          offer.description ||
+          offer.product?.description ||
+          "Special offer for today only!",
+        image: processImageUrl(offer.product?.image),
+        dealPrice: calculateDealPrice(offer),
+        originalPrice: offer.product?.price || offer.price,
+        discountPercentage: offer.discount || 0,
+        shopName: getShopName(offer),
+        isOffer: true,
+        rating: offer.product?.rating || 4.5,
+        reviewCount: offer.product?.reviewCount || 100,
+      }));
+
       const response = await axios.get("/api/deals/active");
       const allDeals = [...mappedOffers, ...(response.data.deals || [])];
       setDeals(allDeals);
-      console.log("Today's Deals (offers + deals):", allDeals);
     } catch (error) {
       console.error("Deals fetch error:", error);
       setDeals([]);
     }
+  };
+
+  // Helper functions
+  const processImageUrl = (image) => {
+    if (image && image.startsWith("/uploads")) {
+      return `http://localhost:8080${image}`;
+    }
+    return image || "/images/offer1.png";
+  };
+
+  const calculateDealPrice = (offer) => {
+    return (
+      offer.price ||
+      (offer.product?.price
+        ? Math.round(offer.product.price * (1 - (offer.discount || 0) / 100))
+        : undefined)
+    );
+  };
+
+  const getShopName = (offer) => {
+    return (
+      offer.shop?.shopName || offer.shop?.names || offer.shop?.email || "Shop"
+    );
   };
 
   const handleAddToCart = (product) => {
@@ -204,14 +211,12 @@ export default function Home() {
     return stars;
   };
 
+  // Component definitions
   const ProductCard = ({ product }) => {
-    let image = product.image;
-    if (image && image.startsWith("/uploads")) {
-      image = `http://localhost:8080${image}`;
-    } else if (!image || image === "") {
-      image =
-        "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
-    }
+    const image =
+      processImageUrl(product.image) ||
+      "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
+
     return (
       <div className="card-base card-large product-card">
         <div className="card-image-container">
@@ -220,77 +225,14 @@ export default function Home() {
             alt={product.name}
             className="card-image"
             loading="lazy"
+            style={{ objectFit: "contain" }}
           />
         </div>
-
         <div className="card-content">
           <h3 className="card-title">{product.name}</h3>
-          <div className="product-rating" style={{ margin: "6px 0" }}>
-            <div className="stars">{renderStars(product.rating || 4.5)}</div>
-            <span
-              className="rating-count"
-              style={{ fontSize: "11px", color: "#0066cc" }}
-            >
-              ({product.reviewCount || Math.floor(Math.random() * 500) + 50})
-            </span>
-          </div>
-
-          <div className="card-description" style={{ margin: "6px 0" }}>
-            <span
-              className="current-price"
-              style={{ fontSize: "16px", fontWeight: "600", color: "#232f3e" }}
-            >
-              ₹{product.price}
-            </span>
-            {product.originalPrice && (
-              <span
-                className="original-price"
-                style={{
-                  fontSize: "12px",
-                  color: "#666",
-                  textDecoration: "line-through",
-                  marginLeft: "8px",
-                }}
-              >
-                ₹{product.originalPrice}
-              </span>
-            )}
-          </div>
-
-          {product.discount && (
-            <div
-              style={{
-                color: "#ff4757",
-                fontSize: "12px",
-                margin: "0 0 6px 0",
-              }}
-            >
-              -{product.discount}% OFF
-            </div>
-          )}
-
-          <div style={{ margin: "6px 0", fontSize: "10px" }}>
-            <span
-              className="prime-badge"
-              style={{
-                background: "#0066cc",
-                color: "white",
-                padding: "2px 4px",
-                borderRadius: "3px",
-                fontSize: "9px",
-                marginRight: "6px",
-              }}
-            >
-              Prime
-            </span>
-            <span
-              className="free-delivery"
-              style={{ color: "#007600", fontSize: "10px" }}
-            >
-              FREE Delivery
-            </span>
-          </div>
-
+          <ProductRating product={product} renderStars={renderStars} />
+          <ProductPrice product={product} />
+          <ProductBadges product={product} />
           <div className="card-actions">
             <button
               className="card-button"
@@ -305,311 +247,350 @@ export default function Home() {
     );
   };
 
+  // JSX/Template Part
   return (
     <div className="amazon-home-container">
-      {/* Hero Section */}
-      <div className="hero-banner">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1>Welcome to E-Mall World</h1>
-            <p>Discover millions of products from thousands of brands</p>
-            <div className="hero-search-bar">
-              <div className="search-container">
-                <Search size={20} className="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Search for products, brands and more..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="hero-search-input"
-                />
-                <button className="search-btn">Search</button>
-              </div>
-            </div>
-          </div>
-          <div className="hero-image">
-            <img
-              src="https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
-              alt="Shopping Experience"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Trust Badges */}
-      <div className="trust-badges">
-        <div className="trust-badge">
-          <Truck size={24} />
-          <span>Fast Delivery</span>
-        </div>
-        <div className="trust-badge">
-          <Shield size={24} />
-          <span>Secure Payment</span>
-        </div>
-        <div className="trust-badge">
-          <RefreshCw size={24} />
-          <span>Easy Returns</span>
-        </div>
-        <div className="trust-badge">
-          <Award size={24} />
-          <span>Quality Assured</span>
-        </div>
-      </div>
-
-      {/* Categories Section */}
-      <div className="categories-section">
-        <h2>Shop by Category</h2>
-        <div className="cards-grid cards-grid-medium">
-          {categories.map((cat) => (
-            <div
-              className="card-base card-medium category-card"
-              key={cat._id}
-              onClick={() => setActiveCategory(cat.name)}
-            >
-              <div className="card-image-container">
-                <img
-                  src={
-                    cat.image
-                      ? `http://localhost:8080${cat.image}`
-                      : "https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg"
-                  }
-                  alt={cat.name}
-                  className="card-image"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src =
-                      "https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg";
-                  }}
-                />
-              </div>
-              <div className="card-content">
-                <h3 className="card-title">{cat.name}</h3>
-                <p className="card-subtitle">{cat.shopCount || 0} stores</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Filter and Sort Bar */}
-      <div className="filter-sort-bar">
-        <div className="filter-options">
-          <Filter size={18} />
-          <span>Filter by:</span>
-          <select
-            value={activeCategory}
-            onChange={(e) => setActiveCategory(e.target.value)}
-            className="filter-select"
-          >
-            <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat.name}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="sort-options">
-          <span>Sort by:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-select"
-          >
-            <option value="">Relevance</option>
-            <option value="low">Price: Low to High</option>
-            <option value="high">Price: High to Low</option>
-            <option value="rating">Customer Rating</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Featured Products */}
-      <div className="products-section">
-        <div className="section-header">
-          <h2>Featured Products</h2>
-          <p>Handpicked items just for you</p>
-        </div>
-
-        {loading ? (
-          <div className="loading-grid">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="product-skeleton">
-                <div className="skeleton-image"></div>
-                <div className="skeleton-text"></div>
-                <div className="skeleton-text short"></div>
-                <div className="skeleton-text"></div>
-              </div>
-            ))}
-          </div>
-        ) : filteredProducts.length === 0 ? (
-          <div className="under-development">
-            <h3>🚧 Products Coming Soon! 🚧</h3>
-            <p>We're working hard to bring you amazing products</p>
-          </div>
-        ) : (
-          <div className="cards-grid cards-grid-large">
-            {filteredProducts.slice(0, 12).map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Debug: Show loaded deals/offers for troubleshooting
-      <div
-        style={{
-          background: "#fffbe6",
-          color: "#b36b00",
-          padding: "8px",
-          margin: "16px 0",
-          fontSize: "13px",
-          border: "1px solid #ffe58f",
-          borderRadius: "6px",
-        }}
-      >
-        <b>DEBUG:</b> Loaded deals/offers:
-        <br />
-        <pre
-          style={{
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-all",
-            margin: 0,
-            maxHeight: 200,
-            overflow: "auto",
-          }}
-        >
-          {JSON.stringify(deals, null, 2)}
-        </pre>
-      </div> */}
-
-      {/* Today's Deals */}
-      <div className="deals-section">
-        <div className="section-header">
-          <h2>Today's Deals</h2>
-          <p>Limited time offers</p>
-        </div>
-
-        <div className="cards-grid cards-grid-large">
-          {deals.length === 0 ? (
-            <div className="under-development">
-              <h3>🚧 Deals coming soon! 🚧</h3>
-              <p>We're working hard to bring you amazing deals</p>
-            </div>
-          ) : (
-            deals.map((deal) => (
-              <div className="card-base card-large deal-card" key={deal._id}>
-                <div className="card-image-container">
-                  <img
-                    src={
-                      deal.image ||
-                      "https://images.pexels.com/photos/3119215/pexels-photo-3119215.jpeg"
-                    }
-                    alt={deal.title || deal.name}
-                    className="card-image"
-                  />
-                  <div className="card-badge card-badge-discount">
-                    {deal.discountPercentage
-                      ? `-${deal.discountPercentage}%`
-                      : "DEAL"}
-                  </div>
-                  {deal.isOffer && (
-                    <div
-                      className="card-badge card-badge-offer"
-                      style={{
-                        background: "#ff4757",
-                        color: "#fff",
-                        top: 40,
-                        left: 10,
-                        position: "absolute",
-                        padding: "2px 8px",
-                        borderRadius: 4,
-                        fontSize: 12,
-                        fontWeight: 600,
-                      }}
-                    >
-                      TODAY'S OFFER
-                    </div>
-                  )}
-                </div>
-                <div className="card-content">
-                  <h4 className="card-title">{deal.title || deal.name}</h4>
-                  <p className="card-description">{deal.description}</p>
-                  <div className="card-subtitle">
-                    <span
-                      style={{
-                        fontSize: "16px",
-                        fontWeight: "600",
-                        color: "#232f3e",
-                      }}
-                    >
-                      ₹{deal.dealPrice || deal.price}
-                    </span>
-                    {deal.originalPrice && (
-                      <span
-                        style={{
-                          fontSize: "12px",
-                          color: "#666",
-                          textDecoration: "line-through",
-                          marginLeft: "8px",
-                        }}
-                      >
-                        ₹{deal.originalPrice}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Business Partnership Section */}
-      <div className="business-section">
-        <div className="business-content">
-          <div className="business-card">
-            <div className="business-text">
-              <h3>Sell on E-Mall World</h3>
-              <p>Reach millions of customers and grow your business</p>
-              <button className="business-btn" onClick={handleGetStarted}>
-                Start Selling
-              </button>
-            </div>
-            <div className="business-image">
-              <img
-                src="https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg"
-                alt="Business"
-              />
-            </div>
-          </div>
-
-          <div className="business-card">
-            <div className="business-text">
-              <h3>Become a Delivery Partner</h3>
-              <p>Earn money by delivering packages in your area</p>
-              <button className="business-btn" onClick={handleGetStarted}>
-                Join Now
-              </button>
-            </div>
-            <div className="business-image">
-              <img
-                src="https://images.pexels.com/photos/13968342/pexels-photo-13968342.jpeg"
-                alt="Delivery"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Footer Content */}
-      <div className="footer-content">
-        <div className="additional-sections">
-          <DealsList />
-          <BottomCard />
-        </div>
-      </div>
+      <HeroSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <TrustBadges />
+      <CategoriesSection
+        categories={categories}
+        setActiveCategory={setActiveCategory}
+      />
+      <FilterSortBar
+        categories={categories}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
+      <FeaturedProducts
+        loading={loading}
+        filteredProducts={filteredProducts}
+        ProductCard={ProductCard}
+      />
+      <DealsSection deals={deals} />
+      {/* <BusinessSection handleGetStarted={handleGetStarted} /> */}
+      {/* <FooterContent /> */}
     </div>
   );
 }
+
+// Subcomponents
+const HeroSection = ({ searchQuery, setSearchQuery }) => (
+  <div className="hero-banner">
+    <div className="hero-content">
+      <div className="hero-text">
+        <h1>Welcome to E-Mall World</h1>
+        <p>Discover millions of products from thousands of brands</p>
+        <div className="hero-search-bar">
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search for products, brands and more..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="hero-search-input"
+            />
+            <button className="search-btn">
+              <Search />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="hero-image">
+        <img
+          src="https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
+          alt="Shopping Experience"
+        />
+      </div>
+    </div>
+  </div>
+);
+
+const TrustBadges = () => (
+  <div className="trust-badges">
+    {[
+      { Icon: Truck, text: "Fast Delivery" },
+      { Icon: Shield, text: "Secure Payment" },
+      { Icon: RefreshCw, text: "Easy Returns" },
+      { Icon: Award, text: "Quality Assured" },
+    ].map(({ Icon, text }) => (
+      <div key={text} className="trust-badge">
+        <Icon size={24} />
+        <span>{text}</span>
+      </div>
+    ))}
+  </div>
+);
+
+const CategoriesSection = ({ categories, setActiveCategory }) => (
+  <div className="categories-section">
+    <h2>Shop by Category</h2>
+    <div className="cards-grid cards-grid-medium">
+      {categories.map((cat) => (
+        <CategoryCard
+          key={cat._id}
+          category={cat}
+          setActiveCategory={setActiveCategory}
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const CategoryCard = ({ category, setActiveCategory }) => (
+  <div
+    className="card-base card-medium category-card"
+    onClick={() => setActiveCategory(category.name)}
+  >
+    <div className="card-image-container">
+      <img
+        src={
+          category.image
+            ? `http://localhost:8080${category.image}`
+            : "https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg"
+        }
+        alt={category.name}
+        className="card-image"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src =
+            "https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg";
+        }}
+      />
+    </div>
+    <div className="card-content">
+      <h3 className="card-title">{category.name}</h3>
+      <p className="card-subtitle">{category.shopCount || 0} stores</p>
+    </div>
+  </div>
+);
+
+const FilterSortBar = ({
+  categories,
+  activeCategory,
+  setActiveCategory,
+  sortBy,
+  setSortBy,
+}) => (
+  <div className="filter-sort-bar">
+    <div className="filter-options">
+      <Filter size={18} />
+      <span>Filter by:</span>
+      <select
+        value={activeCategory}
+        onChange={(e) => setActiveCategory(e.target.value)}
+        className="filter-select"
+      >
+        <option value="">All Categories</option>
+        {categories.map((cat) => (
+          <option key={cat._id} value={cat.name}>
+            {cat.name}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div className="sort-options">
+      <span>Sort by:</span>
+      <select
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value)}
+        className="sort-select"
+      >
+        <option value="">Relevance</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
+        <option value="rating">Customer Rating</option>
+      </select>
+    </div>
+  </div>
+);
+
+const FeaturedProducts = ({ loading, filteredProducts, ProductCard }) => (
+  <div className="products-section">
+    <div className="section-header">
+      <h2
+        style={{
+          fontWeight: "bold",
+          borderBottom: "2px solid #232f3e",
+          paddingBottom: "10px",
+          display: "block",
+          width: "fit-content",
+          textAlign: "center",
+          margin: "0 auto 30px",
+        }}
+      >
+        Featured Products
+      </h2>
+      <p>Handpicked items just for you</p>
+    </div>
+
+    {loading ? (
+      <LoadingGrid />
+    ) : filteredProducts.length === 0 ? (
+      <EmptyState />
+    ) : (
+      <div className="cards-grid cards-grid-large">
+        {filteredProducts.slice(0, 12).map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
+      </div>
+    )}
+  </div>
+);
+
+const LoadingGrid = () => (
+  <div className="loading-grid">
+    {Array.from({ length: 8 }).map((_, i) => (
+      <div key={i} className="product-skeleton">
+        <div className="skeleton-image"></div>
+        <div className="skeleton-text"></div>
+        <div className="skeleton-text short"></div>
+        <div className="skeleton-text"></div>
+      </div>
+    ))}
+  </div>
+);
+
+const EmptyState = () => (
+  <div className="under-development">
+    <h3>🚧 Products Coming Soon! 🚧</h3>
+    <p>We're working hard to bring you amazing products</p>
+  </div>
+);
+
+const DealsSection = ({ deals }) => (
+  <div className="deals-section">
+    <div className="section-header">
+      <h2
+        style={{
+          fontWeight: "bold",
+          borderBottom: "2px solid #232f3e",
+          paddingBottom: "10px",
+          display: "block",
+          width: "fit-content",
+          textAlign: "center",
+          margin: "0 auto 30px",
+        }}
+      >
+        Today's Deals
+      </h2>
+      <p>Limited time offers</p>
+    </div>
+
+    <div className="cards-grid cards-grid-large">
+      {deals.length === 0 ? (
+        <EmptyState />
+      ) : (
+        deals.map((deal) => <DealCard key={deal._id} deal={deal} />)
+      )}
+    </div>
+  </div>
+);
+
+const DealCard = ({ deal }) => (
+  <div className="card-base card-large deal-card">
+    <div className="card-image-container">
+      <img
+        src={
+          deal.image ||
+          "https://images.pexels.com/photos/3119215/pexels-photo-3119215.jpeg"
+        }
+        alt={deal.title || deal.name}
+        className="card-image"
+      />
+      <div className="card-badge card-badge-discount">
+        {deal.discountPercentage ? `-${deal.discountPercentage}%` : "DEAL"}
+      </div>
+      {deal.isOffer && (
+        <div className="card-badge card-badge-offer">TODAY'S OFFER</div>
+      )}
+    </div>
+    <div className="card-content">
+      <h4 className="card-title">{deal.title || deal.name}</h4>
+      <p className="card-description">{deal.description}</p>
+      <div className="card-subtitle">
+        <span className="deal-price">₹{deal.dealPrice || deal.price}</span>
+        {deal.originalPrice && (
+          <span className="original-price">₹{deal.originalPrice}</span>
+        )}
+      </div>
+    </div>
+  </div>
+);
+
+// const BusinessSection = ({ handleGetStarted }) => (
+//   <div className="business-section">
+//     <div className="business-content">
+//       <BusinessCard
+//         title="Sell on E-Mall World"
+//         description="Reach millions of customers and grow your business"
+//         buttonText="Start Selling"
+//         image="https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg"
+//         onClick={handleGetStarted}
+//       />
+//       <BusinessCard
+//         title="Become a Delivery Partner"
+//         description="Earn money by delivering packages in your area"
+//         buttonText="Join Now"
+//         image="https://images.pexels.com/photos/13968342/pexels-photo-13968342.jpeg"
+//         onClick={handleGetStarted}
+//       />
+//     </div>
+//   </div>
+// );
+
+// const BusinessCard = ({ title, description, buttonText, image, onClick }) => (
+//   <div className="business-card">
+//     <div className="business-text">
+//       <h3>{title}</h3>
+//       <p>{description}</p>
+//       <button className="business-btn" onClick={onClick}>
+//         {buttonText}
+//       </button>
+//     </div>
+//     <div className="business-image">
+//       <img src={image} alt={title} />
+//     </div>
+//   </div>
+// );
+
+const FooterContent = () => (
+  <div className="footer-content">
+    <div className="additional-sections">
+      <DealsList />
+      {/* <BottomCard /> */}
+    </div>
+  </div>
+);
+
+const ProductRating = ({ product, renderStars }) => (
+  <div className="product-rating" style={{ margin: "6px 0" }}>
+    <div className="stars">{renderStars(product.rating || 4.5)}</div>
+    <span className="rating-count">
+      ({product.reviewCount || Math.floor(Math.random() * 500) + 50})
+    </span>
+  </div>
+);
+
+const ProductPrice = ({ product }) => (
+  <div className="card-description" style={{ margin: "6px 0" }}>
+    <span className="current-price">₹{product.price}</span>
+    {product.originalPrice && (
+      <span className="original-price">₹{product.originalPrice}</span>
+    )}
+  </div>
+);
+
+const ProductBadges = ({ product }) => (
+  <>
+    {product.discount && (
+      <div className="discount-badge">-{product.discount}% OFF</div>
+    )}
+    <div className="delivery-badges">
+      <span className="prime-badge">Prime</span>
+      <span className="free-delivery">FREE Delivery</span>
+    </div>
+  </>
+);

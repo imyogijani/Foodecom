@@ -96,65 +96,43 @@ const SellerCustomers = () => {
             </button>
           </div>
         </div>
-        <div className="customers-table-container">
-          <table className="customers-table">
-            <thead>
-              <tr>
-                <th>Customer ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Total Orders</th>
-                <th>Total Spent</th>
-                <th>Last Order</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCustomers.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="9"
-                    style={{ textAlign: "center", color: "#888" }}
+        <div className="customers-grid">
+          {filteredCustomers.length === 0 ? (
+            <p className="no-customers-found">No customers found.</p>
+          ) : (
+            filteredCustomers.map((customer) => (
+              <div key={customer.id} className="customer-card">
+                <div className="customer-card-header">
+                  <h3>{customer.name}</h3>
+                  <span className="customer-id">ID: {customer.id}</span>
+                </div>
+                <div className="customer-card-body">
+                  <p><strong>Email:</strong> {customer.email}</p>
+                  <p><strong>Phone:</strong> {customer.phone}</p>
+                  <p><strong>City:</strong> {customer.city}</p>
+                  <p><strong>Total Orders:</strong> {customer.orders.length}</p>
+                  <p><strong>Total Spent:</strong> ₹{customer.totalSpent.toFixed(2)}</p>
+                  <p><strong>Last Order:</strong> {customer.lastOrder}</p>
+                </div>
+                <div className="customer-card-actions">
+                  <button
+                    className="action-btn view"
+                    onClick={() => handleViewCustomer(customer)}
+                    title="View Customer Details"
                   >
-                    No customers found.
-                  </td>
-                </tr>
-              ) : (
-                filteredCustomers.map((customer) => (
-                  <tr key={customer.id}>
-                    <td>{customer.id}</td>
-                    <td>{customer.name}</td>
-                    <td>{customer.email}</td>
-                    <td>{customer.phone}</td>
-                    <td>{customer.city}</td>
-                    <td>{customer.orders.length}</td>
-                    <td>₹{customer.totalSpent.toFixed(2)}</td>
-                    <td>{customer.lastOrder}</td>
-                    <td>
-                      <div className="action-buttons">
-                        <button
-                          className="action-btn view"
-                          onClick={() => handleViewCustomer(customer)}
-                          title="View Customer Details"
-                        >
-                          <FaEye />
-                        </button>
-                        <button
-                          className="action-btn edit"
-                          onClick={() => handleViewOrders(customer)}
-                          title="View Order History"
-                        >
-                          <FaListAlt />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                    <FaEye /> View Details
+                  </button>
+                  <button
+                    className="action-btn orders"
+                    onClick={() => handleViewOrders(customer)}
+                    title="View Order History"
+                  >
+                    <FaListAlt /> View Orders
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

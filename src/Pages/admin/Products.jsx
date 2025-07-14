@@ -27,10 +27,11 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [editStatus, setEditStatus] = useState("");
-  const [editStock, setEditStock] = useState("");
-  const [editPrice, setEditPrice] = useState("");
-  const [editLoading, setEditLoading] = useState(false);
+  // Removed edit state variables as admin will only view and delete
+  // const [editStatus, setEditStatus] = useState("");
+  // const [editStock, setEditStock] = useState("");
+  // const [editPrice, setEditPrice] = useState("");
+  // const [editLoading, setEditLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -152,44 +153,39 @@ const Products = () => {
     }
   };
 
-  useEffect(() => {
-    if (showProductModal && selectedProduct) {
-      setEditStatus(selectedProduct.status || "");
-      setEditStock(selectedProduct.stock);
-      setEditPrice(selectedProduct.price);
-    }
-  }, [showProductModal, selectedProduct]);
 
-  const handleModalUpdate = async (e) => {
-    e.preventDefault();
-    if (!selectedProduct) return;
-    setEditLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `/api/admin/products/${selectedProduct._id}`,
-        {
-          status: editStatus,
-          stock: Number(editStock) || 0,
-          price: Number(editPrice) || 0,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      toast.success("Product updated successfully");
-      fetchProducts();
-      closeProductModal();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Error updating product");
-    } finally {
-      setEditLoading(false);
-    }
-  };
+
+  // Removed handleModalUpdate as admin will only view and delete
+  // const handleModalUpdate = async (e) => {
+  //   e.preventDefault();
+  //   if (!selectedProduct) return;
+  //   setEditLoading(true);
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     await axios.put(
+  //       `/api/admin/products/${selectedProduct._id}`,
+  //       {
+  //         status: editStatus,
+  //         stock: Number(editStock) || 0,
+  //         price: Number(editPrice) || 0,
+  //       },
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       }
+  //     );
+  //     toast.success("Product updated successfully");
+  //     fetchProducts();
+  //     closeProductModal();
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.message || "Error updating product");
+  //   } finally {
+  //     setEditLoading(false);
+  //   }
+  // };
 
   const filteredProducts = products.filter((product) => {
     const matchesShop =
-      selectedShop === "all" || product.seller._id === selectedShop; // Assuming product.seller is populated with shop details
+      selectedShop === "all" || (product.seller && product.seller._id === selectedShop); // Assuming product.seller is populated with shop details
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -373,203 +369,137 @@ const Products = () => {
         </div>
       </div>
 
-      <div className="products-table-container">
-        <table className="products-table">
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Shop</th>
-              <th>Category</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.map((product) => {
-              let imageUrl = "";
-              if (product.image) {
-                if (product.image.startsWith("/uploads/products/")) {
-                  imageUrl = `http://localhost:8080${product.image}`;
-                } else if (product.image.startsWith("/uploads/")) {
-                  imageUrl = `http://localhost:8080${product.image}`;
-                } else {
-                  imageUrl = `http://localhost:8080/uploads/products/${product.image}`;
+          <div className="products-grid-container">
+            <div className="product-cards-container">
+              {filteredProducts.map((product) => {
+                let imageUrl = "";
+                if (product.image) {
+                  if (product.image.startsWith("/uploads/products/")) {
+                    imageUrl = `http://localhost:8080${product.image}`;
+                  } else if (product.image.startsWith("/uploads/")) {
+                    imageUrl = `http://localhost:8080${product.image}`;
+                  } else {
+                    imageUrl = `http://localhost:8080/uploads/products/${product.image}`;
+                  }
                 }
-              }
-              return (
-                <tr
-                  key={product._id}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleRowClick(product)}
-                >
-                  <td>
-                    {imageUrl ? (
-                      <img
-                        src={imageUrl}
-                        alt={product.name}
-                        className="product-thumbnail"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/vite.svg";
-                        }}
-                      />
-                    ) : null}
-                  </td>
-                  <td>{product.name}</td>
-                  <td>
-                    <div className="shop-info">
-                      <FaStore className="shop-icon" />
-                      <span>{product.shopName}</span>
+                return (
+                  <div key={product._id} className="product-card">
+                    <div className="product-card-header">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={product.name}
+                          className="product-card-image"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/vite.svg";
+                          }}
+                        />
+                      ) : null}
+                      <h3 className="product-card-name">{product.name}</h3>
                     </div>
-                  </td>
-                  <td>
-                    {product.category?.name}
-                    {product.subcategory?.name &&
-                      ` (${product.subcategory.name})`}
-                  </td>
-                  <td>₹{product.price.toFixed(2)}</td>
-                  <td>{product.stock}</td>
-                  <td>
-                    <span className={`status ${product.status.toLowerCase()}`}>
-                      {product.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div
-                      className="action-buttons"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    <div className="product-card-body">
+                      <p className="product-card-detail">
+                        <strong>Category:</strong> {product.category?.name}
+                        {product.subcategory?.name &&
+                          ` (${product.subcategory.name})`}
+                      </p>
+                      <p className="product-card-detail">
+                        <strong>Price:</strong> ₹{product.price.toFixed(2)}
+                      </p>
+                      <p className="product-card-detail">
+                        <strong>Stock:</strong> {product.stock}
+                      </p>
+                      <p className="product-card-detail">
+                        <strong>Status:</strong>
+                        <span
+                          className={`status ${product.status.toLowerCase()}`}
+                        >
+                          {product.status}
+                        </span>
+                      </p>
+                      <p className="product-card-detail">
+                        <strong>Shop:</strong>
+                        <div className="shop-info">
+                          <FaStore className="shop-icon" />
+                          <span>{product.shopName}</span>
+                        </div>
+                      </p>
+                    </div>
+                    <div className="product-card-actions">
                       <button
-                        className="edit-btn product-action-icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleRowClick(product);
-                        }}
-                        title="Edit Product"
+                        className="view-product-btn"
+                        onClick={() => handleRowClick(product)}
                       >
-                        <FaEdit />
+                        <FaEdit /> View Details
                       </button>
                       <button
-                        className="delete-btn product-action-icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteProduct(product._id);
-                        }}
-                        title="Delete Product"
+                        className="delete-btn"
+                        onClick={() => handleDeleteProduct(product._id)}
                       >
-                        <FaTrash />
+                        <FaTrash /> Delete
                       </button>
                     </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
       {showProductModal && selectedProduct && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <div className="modal-header">
-              <h2>Product Details</h2>
-              <button className="close-btn" onClick={closeProductModal}>
-                &times;
-              </button>
-            </div>
-            <div className="modal-body">
-              <img
-                className="product-modal-image"
-                src={
-                  selectedProduct.image &&
-                  (selectedProduct.image.startsWith("/uploads")
-                    ? `http://localhost:8080${selectedProduct.image}`
-                    : `http://localhost:8080/uploads/products/${selectedProduct.image}`)
-                }
-                alt={selectedProduct.name}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/vite.svg";
-                }}
-              />
-              <div className="product-modal-details">
-                <h3>{selectedProduct.name}</h3>
-                <p>{selectedProduct.description}</p>
-                <div className="product-meta">
-                  <b>Shop:</b> {selectedProduct.shopName}
-                  <br />
-                  <b>Category:</b> {selectedProduct.category?.name}
-                  {selectedProduct.subcategory?.name &&
-                    ` (${selectedProduct.subcategory.name})`}
+            <h2>Product Details</h2>
+            {selectedProduct && (
+              <div className="product-details-view">
+                <div className="detail-group">
+                  <strong>Product Name:</strong>
+                  <span>{selectedProduct.name}</span>
                 </div>
-                <form
-                  className="product-modal-form"
-                  onSubmit={handleModalUpdate}
-                >
-                  <div className="form-group">
-                    <label>Price (₹)</label>
-                    <input
-                      type="number"
-                      value={editPrice}
-                      onChange={(e) => setEditPrice(e.target.value)}
-                      min="0"
-                      step="0.01"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Stock</label>
-                    <input
-                      type="number"
-                      value={editStock}
-                      onChange={(e) => setEditStock(e.target.value)}
-                      min="0"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Status</label>
-                    <select
-                      value={editStatus}
-                      onChange={(e) => setEditStatus(e.target.value)}
-                      required
-                    >
-                      <option value="In Stock">In Stock</option>
-                      <option value="Low Stock">Low Stock</option>
-                      <option value="Out of Stock">Out of Stock</option>
-                    </select>
-                  </div>
-                  <div className="modal-actions">
-                    <button
-                      type="submit"
-                      className="product-modal-glass-btn product-modal-primary"
-                      disabled={editLoading}
-                    >
-                      {editLoading ? "Saving..." : "Update"}
-                    </button>
-                    <button
-                      type="button"
-                      className="product-modal-glass-btn product-modal-danger"
-                      onClick={handleModalDelete}
-                      disabled={editLoading}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      type="button"
-                      className="product-modal-glass-btn product-modal-secondary"
-                      onClick={closeProductModal}
-                      disabled={editLoading}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
+                <div className="detail-group">
+                  <strong>Description:</strong>
+                  <span>{selectedProduct.description}</span>
+                </div>
+                <div className="detail-group">
+                  <strong>Category:</strong>
+                  <span>{selectedProduct.category?.name || "N/A"}</span>
+                </div>
+                <div className="detail-group">
+                  <strong>Price:</strong>
+                  <span>₹{selectedProduct.price.toFixed(2)}</span>
+                </div>
+                <div className="detail-group">
+                  <strong>Stock:</strong>
+                  <span>{selectedProduct.stock}</span>
+                </div>
+                <div className="detail-group">
+                  <strong>Status:</strong>
+                  <span
+                    className={`status ${selectedProduct.status
+                      .toLowerCase()
+                      .replace(" ", "-")}`}
+                  >
+                    {selectedProduct.status}
+                  </span>
+                </div>
+                <div className="detail-group">
+                  <strong>Shop:</strong>
+                  <span>{selectedProduct.seller?.shopName || "N/A"}</span>
+                </div>
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    onClick={handleModalDelete}
+                    className="delete-btn"
+                  >
+                    <FaTrash /> Delete Product
+                  </button>
+                  <button type="button" onClick={closeProductModal}>
+                    Close
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       )}

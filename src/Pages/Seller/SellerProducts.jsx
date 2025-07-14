@@ -158,28 +158,30 @@ const SellerProducts = () => {
       </div>
 
       <div className="products-container">
-        <div className="products-table-container">
-          <table className="products-table">
-            <thead>
-              <tr>
-                <th>No.</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredProducts.map((product, idx) => (
-                <tr key={product._id}>
-                  <td>{idx + 1}</td>
-                  <td>{product.name}</td>
-                  <td>{product.category.name}</td>
-                  <td>₹{product.price.toFixed(2)}</td>
-                  <td>{product.stock}</td>
-                  <td>
+        <div className="products-grid-container">
+          <div className="product-cards-container">
+            {filteredProducts.map((product) => (
+              <div key={product._id} className="product-card">
+                <div className="product-card-header">
+                  <img
+                    src={product.images[0]}
+                    alt={product.name}
+                    className="product-card-image"
+                  />
+                  <h3 className="product-card-name">{product.name}</h3>
+                </div>
+                <div className="product-card-body">
+                  <p className="product-card-detail">
+                    <strong>Category:</strong> {product.category.name}
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Price:</strong> ₹{product.price.toFixed(2)}
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Stock:</strong> {product.stock}
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Status:</strong>
                     <span
                       className={`status ${product.status
                         .toLowerCase()
@@ -187,22 +189,103 @@ const SellerProducts = () => {
                     >
                       {product.status}
                     </span>
-                  </td>
-                  <td>
-                    <button
-                      className="edit-icon-btn"
-                      onClick={() => handleEdit(product)}
-                      title="Edit Product"
-                    >
-                      <FaEdit />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </p>
+                </div>
+                <div className="product-card-actions">
+                  <button
+                    className="edit-product-btn"
+                    onClick={() => handleEdit(product)}
+                  >
+                    <FaEdit /> Edit
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {showEditModal && editProduct && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>Edit Product</h2>
+            <form onSubmit={handleSaveEdit}>
+              <div className="form-group">
+                <label htmlFor="productName">Product Name</label>
+                <input
+                  type="text"
+                  id="productName"
+                  value={editProduct.name}
+                  disabled
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="productDescription">Description</label>
+                <textarea
+                  id="productDescription"
+                  value={editProduct.description}
+                  disabled
+                ></textarea>
+              </div>
+              <div className="form-group">
+                <label htmlFor="productPrice">Price</label>
+                <input
+                  type="number"
+                  id="productPrice"
+                  value={editProduct.price}
+                  disabled
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="productStock">Stock</label>
+                <input
+                  type="number"
+                  id="productStock"
+                  value={editProduct.stock}
+                  disabled
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="editCategory">Category</label>
+                <select
+                  id="editCategory"
+                  value={editCategory}
+                  onChange={(e) => setEditCategory(e.target.value)}
+                >
+                  {categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="editStatus">Status</label>
+                <select
+                  id="editStatus"
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value)}
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              <div className="modal-actions">
+                <button type="submit" className="save-btn">
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="cancel-btn"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Edit Product Modal */}
       {showEditModal && (

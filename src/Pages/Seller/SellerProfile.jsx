@@ -36,6 +36,7 @@ const SellerProfile = () => {
       });
     } catch (err) {
       toast.error("Failed to load profile");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -73,6 +74,7 @@ const SellerProfile = () => {
       fetchProfile();
     } catch (err) {
       toast.error("Failed to update profile");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -234,7 +236,9 @@ const SellerProfile = () => {
                 />
               </div>
               <div className="seller-profile-row">
-                <label className="seller-profile-label">Subscription Plan</label>
+                <label className="seller-profile-label">
+                  Subscription Plan
+                </label>
                 <input
                   className="seller-profile-input"
                   value={
@@ -253,24 +257,25 @@ const SellerProfile = () => {
                   }}
                 />
               </div>
-              {profile.subscription && profile.subscription.includedFeatures && (
-                <div
-                  className="seller-profile-row"
-                  style={{ alignItems: "start" }}
-                >
-                  <label
-                    className="seller-profile-label"
-                    style={{ marginTop: 6 }}
+              {profile.subscription &&
+                profile.subscription.includedFeatures && (
+                  <div
+                    className="seller-profile-row"
+                    style={{ alignItems: "start" }}
                   >
-                    Plan Features
-                  </label>
-                  <ul className="seller-profile-features">
-                    {profile.subscription.includedFeatures.map((f, i) => (
-                      <li key={i}>{f}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                    <label
+                      className="seller-profile-label"
+                      style={{ marginTop: 6 }}
+                    >
+                      Plan Features
+                    </label>
+                    <ul className="seller-profile-features">
+                      {profile.subscription.includedFeatures.map((f, i) => (
+                        <li key={i}>{f}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               <div className="seller-profile-actions">
                 <button
                   type="button"
@@ -288,7 +293,12 @@ const SellerProfile = () => {
                 { label: "Full Name", name: "names" },
                 { label: "Shop Owner Name", name: "shopownerName" },
                 { label: "Shop Name", name: "shopName" },
-                { label: "Email", name: "email", disabled: true, readOnly: true },
+                {
+                  label: "Email",
+                  name: "email",
+                  disabled: true,
+                  readOnly: true,
+                },
                 { label: "Phone", name: "phone" },
                 { label: "Address", name: "address" },
               ].map((field, idx) => (
@@ -305,7 +315,9 @@ const SellerProfile = () => {
                 </div>
               ))}
               <div className="seller-profile-row">
-                <label className="seller-profile-label">Subscription Plan</label>
+                <label className="seller-profile-label">
+                  Subscription Plan
+                </label>
                 <input
                   className="seller-profile-input"
                   value={
@@ -324,24 +336,25 @@ const SellerProfile = () => {
                   }}
                 />
               </div>
-              {profile.subscriptionFeatures && profile.subscriptionFeatures.length > 0 && (
-                <div
-                  className="seller-profile-row"
-                  style={{ alignItems: "start" }}
-                >
-                  <label
-                    className="seller-profile-label"
-                    style={{ marginTop: 6 }}
+              {profile.subscriptionFeatures &&
+                profile.subscriptionFeatures.length > 0 && (
+                  <div
+                    className="seller-profile-row"
+                    style={{ alignItems: "start" }}
                   >
-                    Plan Features
-                  </label>
-                  <ul className="seller-profile-features">
-                    {profile.subscriptionFeatures.map((f, i) => (
-                      <li key={i}>{f}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                    <label
+                      className="seller-profile-label"
+                      style={{ marginTop: 6 }}
+                    >
+                      Plan Features
+                    </label>
+                    <ul className="seller-profile-features">
+                      {profile.subscriptionFeatures.map((f, i) => (
+                        <li key={i}>{f}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               <div className="seller-profile-actions">
                 <button type="submit" className="btn btn-primary">
                   Save

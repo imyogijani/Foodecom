@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./Menu.css";
-import "./HomeLayout.css";
 import "./offers-modern.css";
 import "./theme-override.css";
 import { useCart } from "../../context/CartContext";
@@ -141,23 +140,18 @@ export default function Offers() {
             desc: offer.description,
             image: offer.product?.image,
             currentPrice:
-              offer.price ||
-              (offer.product?.price * (1 - offer.discount / 100)),
+              offer.price || offer.product?.price * (1 - offer.discount / 100),
             originalPrice: offer.product?.price,
             discount: offer.discount,
             store:
-              offer.shop?.shopName ||
-              offer.shop?.names ||
-              offer.shop?.email,
+              offer.shop?.shopName || offer.shop?.names || offer.shop?.email,
             badge: "TODAY'S OFFER",
             rating: offer.product?.rating || 4.5,
             reviews: offer.product?.reviewCount || 100,
             timeLeft: "Today only",
             savings:
               offer.product?.price && offer.discount
-                ? `₹${Math.round(
-                    (offer.product.price * offer.discount) / 100,
-                  )}`
+                ? `₹${Math.round((offer.product.price * offer.discount) / 100)}`
                 : undefined,
           }));
           setOffers(mapped);
@@ -180,7 +174,7 @@ export default function Offers() {
         (deal) =>
           deal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           deal.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          deal.store.toLowerCase().includes(searchQuery.toLowerCase()),
+          deal.store.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -206,7 +200,7 @@ export default function Offers() {
       filtered = [...filtered].sort(
         (a, b) =>
           parseInt(a.currentPrice.replace(/[₹,]/g, "")) -
-          parseInt(b.currentPrice.replace(/[₹,]/g, "")),
+          parseInt(b.currentPrice.replace(/[₹,]/g, ""))
       );
     } else if (sortBy === "rating") {
       filtered = [...filtered].sort((a, b) => b.rating - a.rating);
@@ -233,13 +227,13 @@ export default function Offers() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={i} className="star-filled" size={14} fill="currentColor" />,
+        <Star key={i} className="star-filled" size={14} fill="currentColor" />
       );
     }
 
     if (hasHalfStar) {
       stars.push(
-        <Star key="half" className="star-half" size={14} fill="currentColor" />,
+        <Star key="half" className="star-half" size={14} fill="currentColor" />
       );
     }
 

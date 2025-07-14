@@ -3,46 +3,61 @@
 /* Main Container */
 .amazon-home-container {
   width: 100%;
-  background: #f7f7f7;
+  /* background: #dfb782; */
   min-height: 100vh;
   overflow-x: hidden;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-in forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Hero Banner */
 .hero-banner {
-  background: transparent;
+  /* background: transparent; */
   color: #fff;
-  padding: 40px 0;
   position: relative;
   overflow: hidden;
+  padding: 40px 0;
 }
 
 .hero-banner .hero-content {
-  background: linear-gradient(135deg, #232f3e 0%, #131a22 100%);
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  text-align: left;
+  background: linear-gradient(135deg, #1f2229 0%, #4b413b 100%);
+  border-radius: 15px;
+  color: #fc8a06;
 }
 
+.hero-banner .hero-image {
+  width: 20%;
+  padding: 20px;
+}
+
+.hero-banner .hero-image img {
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.2));
+  border-radius: 8px;
+}
 .hero-text {
   flex: 1;
   max-width: 600px;
 }
 
 .hero-text h1 {
+  color: #cc6f05 !important;
   font-size: 2.8rem;
   font-weight: 700;
   margin-bottom: 20px;
   line-height: 1.2;
   color: #000;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  /* text-shadow: 2px 2px 4px rgb(112, 107, 107); */
 }
 
 .hero-text p {
@@ -82,11 +97,12 @@
 }
 
 .search-btn {
+  margin: 12px;
   background: #ff9900;
   color: #fff;
   border: none;
   padding: 12px 20px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
   transition: background 0.3s;
 }
@@ -141,14 +157,19 @@
 .categories-section h2 {
   font-size: 2rem;
   color: #232f3e;
-  margin-bottom: 30px;
+  margin: 0 auto 30px;
   text-align: center;
+  font-weight: bold;
+  border-bottom: 2px solid #232f3e;
+  padding-bottom: 10px;
+  display: block;
+  width: fit-content;
 }
 
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
+  gap: 24px;
   padding: 0 10px;
 }
 
@@ -467,8 +488,12 @@
 
 /* Deals Section */
 .deals-section {
-  background: #f7f7f7;
+  background: #fff;
   padding: 40px 20px;
+}
+
+.deals-section .section-header h2 {
+  font-weight: bold;
 }
 
 .deals-grid {
@@ -640,7 +665,7 @@
 
 /* Footer Content */
 .footer-content {
-  background: #f7f7f7;
+  background: #fff;
   padding: 40px 0;
 }
 

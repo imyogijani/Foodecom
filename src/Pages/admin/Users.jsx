@@ -181,80 +181,83 @@ const Users = () => {
       </div>
 
       <div className="users-table-container">
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Subscription Plan</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="no-users">
-                  No users found
-                </td>
-              </tr>
-            ) : (
-              filteredUsers.map((user) => (
-                <tr key={user._id}
-                  style={{ cursor: user.role === "shopowner" ? "pointer" : undefined }}
-                  onClick={() => {
-                    if (user.role === "shopowner") fetchShopownerDetails(user._id);
-                  }}
-                >
-                  <td>{user.name || user.shopownerName}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <span className={`role-badge ${user.role.toLowerCase()}`}>
-                      {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+        <div className="users-grid">
+          {filteredUsers.length === 0 ? (
+            <p className="no-users">No users found</p>
+          ) : (
+            filteredUsers.map((user) => (
+              <div key={user._id} className="user-card">
+                <div className="user-card-header">
+                  {getRoleIcon(user.role)}
+                  <h3 className="user-name">
+                    {user.role === "shopowner"
+                      ? user.shopownerName
+                      : user.names}
+                  </h3>
+                </div>
+                <div className="user-card-body">
+                  <p className="user-email">{user.email}</p>
+                  <p>
+                    Role:{" "}
+                    <span className={`role-badge ${user.role}`}>
+                      {user.role}
                     </span>
-                  </td>
-                  <td>
-                    <span className={`status-badge ${user.status ? user.status.toLowerCase() : 'inactive'}`}>
-                      {user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Inactive'}
+                  </p>
+                  <p>
+                    Status:{" "}
+                    <span className={`status-badge ${user.status}`}>
+                      {user.status}
                     </span>
-                  </td>
-                  <td>
-                    {user.role === "shopowner" && user.subscription && user.subscription.planName
-                      ? user.subscription.planName
-                      : user.role === "shopowner" && typeof user.subscription === "string"
-                        ? user.subscription
-                        : "-"}
-                  </td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="action-btn edit"
-                        onClick={e => {
-                          e.stopPropagation();
-                          setRoleToSet(user.role);
-                          setFormData({ ...formData, status: user.status || 'inactive' });
-                          setModal({ type: "edit", user });
-                        }}
-                      >
-                        <FaUserCog />
-                      </button>
-                      <button
-                        className="action-btn delete"
-                        onClick={e => {
-                          e.stopPropagation();
-                          setModal({ type: "delete", user });
-                        }}
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </p>
+                  {user.role === "shopowner" && user.subscription && (
+                    <p>
+                      Subscription:{" "}
+                      <span className="subscription-name">
+                        {user.subscription.name}
+                      </span>
+                    </p>
+                  )}
+                </div>
+                <div className="user-card-actions">
+                  <button
+                    className="action-btn edit"
+                    onClick={() => {
+                      setModal({
+                        type: "edit",
+                        user: user,
+                      });
+                      setFormData({
+                        role: user.role,
+                        status: user.status,
+                      });
+                    }}
+                  >
+                    <FaUserCog /> Edit
+                  </button>
+                  <button
+                    className="action-btn delete"
+                    onClick={() =>
+                      setModal({
+                        type: "delete",
+                        user: user,
+                      })
+                    }
+                  >
+                    <FaTrash /> Delete
+                  </button>
+                  {user.role === "shopowner" && (
+                    <button
+                      className="action-btn view-details"
+                      onClick={() => fetchShopownerDetails(user._id)}
+                    >
+                      <FaStore /> Details
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Modal Popups */}

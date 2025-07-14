@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "./BottomCard.css";
-import "./HomeLayout.css";
 import image1 from "../../images/image1.png";
 import offer1 from "../../images/image2.png";
 import offer2 from "../../images/image.png";
@@ -102,58 +101,60 @@ export default function BottomCard() {
 
   return (
     <>
-      <h2 className="bottom-card-title">Know more about us!</h2>
-      <div className="bottom-card-tabs">
-        {faqTabs.map((tab, idx) => (
-          <button
-            key={tab.label}
-            className={`bottom-card-tab${activeTab === idx ? " active" : ""}`}
-            onClick={() => {
-              setActiveTab(idx);
-              setOpenFaq(null);
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      <div className="bottom-card-container">
-        <div className="bottom-card-faqs">
-          <ul className="faq-list">
-            {faqs.length === 0 ? (
-              <li className="faq-empty">Coming soon...</li>
-            ) : (
-              faqs.map((item, idx) => (
-                <li
-                  key={idx}
-                  className={""}
-                  onClick={() => handleFaqClick(idx)}
-                  style={{ cursor: "pointer" }}
-                >
-                  {item.q}
-                  {openFaq === idx && item.a && (
-                    <div className="faq-answer">{item.a}</div>
-                  )}
-                </li>
-              ))
-            )}
-          </ul>
+      <div className="bottom-card">
+        <h2 className="bottom-card-title">Know more about us!</h2>
+        <div className="bottom-card-tabs">
+          {faqTabs.map((tab, idx) => (
+            <button
+              key={tab.label}
+              className={`bottom-card-tab${activeTab === idx ? " active" : ""}`}
+              onClick={() => {
+                setActiveTab(idx);
+                setOpenFaq(null);
+              }}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
-        <div className="bottom-card-steps">
-          <div className="steps-row">
-            {steps.map((step, idx) => (
-              <div className="step-card" key={idx}>
-                <img src={step.img} alt={step.title} className="step-img" />
-                <div className="step-title">{step.title}</div>
-                <div className="step-desc">{step.desc}</div>
-              </div>
-            ))}
+        <div className="bottom-card-container">
+          <div className="bottom-card-faqs">
+            <ul className="faq-list">
+              {faqs.length === 0 ? (
+                <li className="faq-empty">Coming soon...</li>
+              ) : (
+                faqs.map((item, idx) => (
+                  <li
+                    key={idx}
+                    className={""}
+                    onClick={() => handleFaqClick(idx)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {item.q}
+                    {openFaq === idx && item.a && (
+                      <div className="faq-answer">{item.a}</div>
+                    )}
+                  </li>
+                ))
+              )}
+            </ul>
           </div>
-          <div className="desc bottom-card-desc">
-            E-Mall World simplifies online shopping like never before. Browse
-            through our vast catalog of products, compare prices, read reviews,
-            and checkout securely. Your favorite products will be delivered to
-            your doorstep with care and speed!
+          <div className="bottom-card-steps">
+            <div className="steps-row">
+              {steps.map((step, idx) => (
+                <div className="step-card" key={idx}>
+                  <img src={step.img} alt={step.title} className="step-img" />
+                  <div className="step-title">{step.title}</div>
+                  <div className="step-desc">{step.desc}</div>
+                </div>
+              ))}
+            </div>
+            <div className="desc bottom-card-desc">
+              E-Mall World simplifies online shopping like never before. Browse
+              through our vast catalog of products, compare prices, read
+              reviews, and checkout securely. Your favorite products will be
+              delivered to your doorstep with care and speed!
+            </div>
           </div>
         </div>
       </div>

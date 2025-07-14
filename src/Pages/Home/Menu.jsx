@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./Menu.css";
-import "./HomeLayout.css";
 import "./theme-override.css";
 import { useCart } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";

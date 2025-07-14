@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../utils/axios";
-import "./HomeLayout.css";
 
 function DealsList() {
   const [approvedDeals, setApprovedDeals] = useState([]);
@@ -29,7 +28,19 @@ function DealsList() {
 
   return (
     <>
-      <h2>Available Deals</h2>
+      <h2
+        style={{
+          fontWeight: "bold",
+          borderBottom: "2px solid #232f3e",
+          paddingBottom: "10px",
+          display: "block",
+          width: "fit-content",
+          textAlign: "center",
+          margin: "0 auto 30px",
+        }}
+      >
+        Available Deals
+      </h2>
       <ul style={{ listStyle: "none", padding: 0 }}>
         {loading && <li>Loading...</li>}
         {!loading && approvedDeals.length === 0 && <li>No deals available.</li>}

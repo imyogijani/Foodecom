@@ -77,39 +77,76 @@
   min-width: 150px;
 }
 
-.users-table-container {
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.user-card {
   background: var(--bg-color-light);
   border-radius: 16px;
-  padding: 1.2rem 0.5rem;
-  overflow-x: auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease-in-out;
 }
 
-.users-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;
-  min-width: unset;
+.user-card:hover {
+  transform: translateY(-5px);
 }
 
-.users-table th,
-.users-table td {
-  padding: 1.15rem 0.7rem;
-  font-size: 1.08rem;
-  word-break: break-word;
+.user-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.users-table th {
-  font-weight: 700;
+.role-icon {
+  font-size: 1.8rem;
+  margin-right: 0.8rem;
+}
+
+.role-icon.admin {
+  color: var(--yellow);
+}
+
+.role-icon.seller {
+  color: #8b5cf6;
+}
+
+.role-icon.user {
+  color: #22c55e;
+}
+
+.user-name {
+  font-size: 1.4rem;
   color: var(--text-color-dark);
-  opacity: 0.9;
-  background: #f8f9fa;
+  margin: 0;
 }
 
-.role-badge {
+.user-card-body p {
+  margin-bottom: 0.5rem;
+  color: var(--text-color-dark);
+  font-size: 0.95rem;
+}
+
+.user-card-body p:last-child {
+  margin-bottom: 0;
+}
+
+.user-email {
+  color: var(--text-color-light);
+}
+
+.role-badge,
+.status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .role-badge.admin {
@@ -127,52 +164,71 @@
   color: #22c55e;
 }
 
-.status-badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-}
-
 .status-badge.active {
   background: rgba(34, 197, 94, 0.1);
   color: #22c55e;
 }
 
+.status-badge.inactive {
+  background: rgba(255, 159, 64, 0.1);
+  color: #ff9f40;
+}
+
+.status-badge.banned {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.subscription-name {
+  font-weight: 600;
+  color: var(--yellow);
+}
+
+.user-card-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .action-btn {
-  padding: 0.5rem;
+  padding: 0.6rem 1rem;
   border: none;
   border-radius: 8px;
-  background: none;
-  color: var(--text-color-dark);
   cursor: pointer;
-  transition: color 0.2s, transform 0.2s;
-  margin-right: 0.3rem;
-  margin-bottom: 0;
+  transition: background 0.2s, color 0.2s;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
-.users-table td {
-  vertical-align: middle;
-}
-
-.users-table td:last-child {
-  white-space: nowrap;
-}
-
-.action-btn:hover {
-  background: none;
-  color: var(--yellow);
-  transform: scale(1.1);
+.action-btn.edit {
+  background: var(--yellow);
+  color: white;
 }
 
 .action-btn.edit:hover {
-  color: var(--yellow);
+  background: var(--yellow-dark);
+}
+
+.action-btn.delete {
+  background: #ef4444;
+  color: white;
 }
 
 .action-btn.delete:hover {
-  color: #ef4444;
+  background: #dc2626;
+}
+
+.action-btn.view-details {
+  background: var(--dark-blue);
+  color: white;
+}
+
+.action-btn.view-details:hover {
+  background: rgba(0, 0, 20, 0.95);
 }
 
 .no-users {
@@ -180,16 +236,27 @@
   padding: 2rem;
   color: var(--text-color-dark);
   opacity: 0.7;
+  grid-column: 1 / -1; /* Span across all columns in the grid */
 }
 
-@media (max-width: 1024px) {
-  .users-table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+@media (max-width: 768px) {
+  .users-grid {
+    grid-template-columns: 1fr;
   }
-  
-  .users-table {
-    min-width: 700px;
+}
+
+@media (max-width: 480px) {
+  .user-card {
+    padding: 1rem;
+  }
+
+  .user-name {
+    font-size: 1.2rem;
+  }
+
+  .action-btn {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.8rem;
   }
 }
 

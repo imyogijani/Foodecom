@@ -184,6 +184,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
+## 📄 Creds
+
+Admin: yogij@mail.com
+Pass: 123456789
+
+Seller: amd@mail.com
+Pass: 123456789
+
+---
+
 <div align="center">
 
 Made with ❤️ by E-Mall Team

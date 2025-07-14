@@ -79,37 +79,57 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Table Container */
-.products-table-container {
-  overflow-x: auto;
+/* Product Cards Container */
+.products-grid-container {
   margin-top: 20px;
 }
 
-/* Product Table */
-.products-table {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 8px;
+.product-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.product-card {
   background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.products-table th,
-.products-table td {
-  padding: 12px 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.product-card-header {
+  position: relative;
+  padding: 15px;
+  background-color: #f8f9fa;
+}
+
+.product-card-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.product-card-name {
+  margin-top: 10px;
+  font-size: 1.2rem;
   color: #222;
-  font-weight: 500;
 }
 
-.products-table th {
-  background-color: #0d1b2a;
-  color: #fff;
-  font-weight: 600;
+.product-card-body {
+  padding: 15px;
 }
 
-.products-table tr:hover {
-  background-color: #f2f2f2;
+.product-card-detail {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  color: #555;
 }
 
 /* Status Badges */
@@ -135,69 +155,144 @@
   color: #f57c00;
 }
 
-/* Action Buttons */
-.action-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  font-size: 0.85em;
-  margin-right: 8px;
-  cursor: pointer;
+/* Product Card Actions */
+.product-card-actions {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.action-btn.edit {
+.edit-product-btn {
+  padding: 8px 16px;
   background-color: #0d1b2a;
   color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
 }
 
-.action-btn.delete {
-  background-color: #dc3545;
-  color: white;
+.edit-product-btn:hover {
+  background-color: #1a2b3c;
 }
 
-.action-btn:hover {
-  opacity: 0.9;
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-/* Add Product Form */
-.add-product-form {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+.modal-content {
   background-color: #fff;
+  padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
   color: #222;
 }
 
-/* Form Elements */
-.form-group {
+.modal-content h2 {
+  margin-top: 0;
   margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: var(--dark-blue);
 }
 
-.form-group label {
+.modal-content .form-group {
+  margin-bottom: 15px;
+}
+
+.modal-content label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 5px;
   font-weight: 500;
+  color: #333;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1em;
-  background-color: #fff;
+  background-color: #f9f9f9;
   color: #222;
-  font-weight: 500;
 }
 
-.form-group select option {
-  background-color: #fff;
-  color: #222;
+.modal-content input:disabled,
+.modal-content textarea:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.modal-actions .save-btn,
+.modal-actions .cancel-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.modal-actions .save-btn {
+  background-color: var(--dark-blue);
+  color: #fff;
+}
+
+.modal-actions .save-btn:hover {
+  background-color: #0a151f;
+}
+
+.modal-actions .cancel-btn {
+  background-color: #ccc;
+  color: #333;
+}
+
+.modal-actions .cancel-btn:hover {
+  background-color: #bbb;
+}
+
+/* Responsive adjustments for cards */
+@media (max-width: 768px) {
+  .product-cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .product-cards-container {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+}
 }
 
 .form-group input:focus,

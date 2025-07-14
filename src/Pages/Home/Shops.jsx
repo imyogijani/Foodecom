@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./Menu.css";
-import "./HomeLayout.css";
 import "./shops-modern.css";
 import "./theme-override.css";
 import { useCart } from "../../context/CartContext";
@@ -157,7 +156,7 @@ export default function Shops() {
       const [catRes, prodRes] = await Promise.all([
         axios.get("/api/category/get-category-with-shop-count"),
         axios.get(
-          "/api/products?populateCategory=true&populateSubcategory=true",
+          "/api/products?populateCategory=true&populateSubcategory=true"
         ),
       ]);
       setCategories(catRes.data.categories || []);
@@ -179,13 +178,13 @@ export default function Shops() {
         (store) =>
           store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           store.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          store.category.toLowerCase().includes(searchQuery.toLowerCase()),
+          store.category.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     if (selectedCategory !== "All Stores") {
       filtered = filtered.filter(
-        (store) => store.category === selectedCategory,
+        (store) => store.category === selectedCategory
       );
     }
 
@@ -221,13 +220,13 @@ export default function Shops() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={i} className="star-filled" size={14} fill="currentColor" />,
+        <Star key={i} className="star-filled" size={14} fill="currentColor" />
       );
     }
 
     if (hasHalfStar) {
       stars.push(
-        <Star key="half" className="star-half" size={14} fill="currentColor" />,
+        <Star key="half" className="star-half" size={14} fill="currentColor" />
       );
     }
 
@@ -408,7 +407,9 @@ export default function Shops() {
           {storeCategories.map((category) => (
             <button
               key={category.name}
-              className={`category-filter-btn ${selectedCategory === category.name ? "active" : ""}`}
+              className={`category-filter-btn ${
+                selectedCategory === category.name ? "active" : ""
+              }`}
               onClick={() => setSelectedCategory(category.name)}
             >
               <category.icon size={18} />

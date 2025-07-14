@@ -155,8 +155,10 @@ export const getSellerProducts = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const { productId } = req.params;
-    const { category, subcategory, discount, brand, ...updateData } = req.body;
+    const { id: productId } = req.params;
+    const { category, subcategory, discount, brand, status, stock, price, ...otherUpdateData } = req.body;
+
+    let updateData = { ...otherUpdateData };
 
     if (category) {
       const categoryDoc = await Category.findById(category);
@@ -179,7 +181,6 @@ export const updateProduct = async (req, res) => {
       }
       updateData.subcategory = subcategory;
     } else if (subcategory === "") {
-      // If subcategory is explicitly set to empty, remove it from the product
       updateData.subcategory = undefined;
     }
 
@@ -194,10 +195,29 @@ export const updateProduct = async (req, res) => {
     } else if (brand === "") {
       updateData.brand = undefined;
     }
+
+    // Handle specific fields for admin updates
+    if (status !== undefined) {
+      updateData.status = status;
+    }
+    if (stock !== undefined) {
+      updateData.stock = Number(stock);
+    }
+    if (price !== undefined) {
+      updateData.price = Number(price);
+    }
+
+    let findQuery = { _id: productId };
+
+    // If the request is not from an admin, ensure the seller owns the product
+    if (req.user && req.user.role !== 'admin') {
+      findQuery.seller = req.userId;
+    }
+
     const product = await Product.findOneAndUpdate(
-      { _id: productId, seller: req.userId },
+      findQuery,
       updateData,
-      { new: true }
+      { new: true, runValidators: true }
     );
     if (!product) {
       return res.status(404).json({

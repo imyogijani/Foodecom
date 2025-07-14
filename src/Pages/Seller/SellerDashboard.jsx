@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./SellerDashboard.css";
 import {
   LineChart,
@@ -19,23 +19,62 @@ import {
 } from "react-icons/fa";
 import SellerNotification from "../../Components/SellerNotification";
 
-const data = [
-  { name: "Jan", sales: 4000, orders: 2400 },
-  { name: "Feb", sales: 3000, orders: 1398 },
-  { name: "Mar", sales: 2000, orders: 9800 },
-  { name: "Apr", sales: 2780, orders: 3908 },
-  { name: "May", sales: 1890, orders: 4800 },
-  { name: "Jun", sales: 2390, orders: 3800 },
-  { name: "Jul", sales: 3490, orders: 4300 },
-];
-
-const recentOrders = [
-  { id: 1, customer: "John Doe", amount: 89.99, status: "Delivered" },
-  { id: 2, customer: "Jane Smith", amount: 149.99, status: "Processing" },
-  { id: 3, customer: "Mike Johnson", amount: 75.5, status: "Pending" },
-];
-
 const SellerDashboard = () => {
+  const [salesData, setSalesData] = useState([]);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [dashboardStats, setDashboardStats] = useState({
+    todaySales: 0,
+    totalProducts: 0,
+    pendingOrders: 0,
+    customerRating: 0,
+    salesGrowth: 0,
+    productsGrowth: 0,
+    ordersGrowth: 0,
+    ratingGrowth: 0,
+  });
+
+  useEffect(() => {
+    // Fetch sales data
+    const fetchSalesData = async () => {
+      try {
+        // Replace with your actual API endpoint
+        const response = await fetch("/api/sales-data");
+        const data = await response.json();
+        setSalesData(data);
+      } catch (error) {
+        console.error("Error fetching sales data:", error);
+      }
+    };
+
+    // Fetch dashboard statistics
+    const fetchDashboardStats = async () => {
+      try {
+        // Replace with your actual API endpoint
+        const response = await fetch("/api/dashboard-stats");
+        const data = await response.json();
+        setDashboardStats(data);
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+      }
+    };
+
+    // Fetch recent orders
+    const fetchRecentOrders = async () => {
+      try {
+        // Replace with your actual API endpoint
+        const response = await fetch("/api/recent-orders");
+        const data = await response.json();
+        setRecentOrders(data);
+      } catch (error) {
+        console.error("Error fetching recent orders:", error);
+      }
+    };
+
+    fetchSalesData();
+    fetchDashboardStats();
+    fetchRecentOrders();
+  }, []);
+
   return (
     <div className="seller-dashboard">
       <SellerNotification />
@@ -75,7 +114,7 @@ const SellerDashboard = () => {
                     color: "#232f3e",
                   }}
                 >
-                  ₹1,890
+                  ₹{dashboardStats.todaySales}
                 </p>
                 <p
                   className="card-description"
@@ -87,7 +126,7 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +10.2% from yesterday
+                  <FaArrowUp /> +{dashboardStats.salesGrowth}% from yesterday
                 </p>
               </div>
             </div>
@@ -122,7 +161,7 @@ const SellerDashboard = () => {
                     color: "#232f3e",
                   }}
                 >
-                  157
+                  {dashboardStats.totalProducts}
                 </p>
                 <p
                   className="card-description"
@@ -134,7 +173,7 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +5 new this week
+                  <FaArrowUp /> +{dashboardStats.productsGrowth} new this week
                 </p>
               </div>
             </div>
@@ -169,7 +208,7 @@ const SellerDashboard = () => {
                     color: "#232f3e",
                   }}
                 >
-                  24
+                  {dashboardStats.pendingOrders}
                 </p>
                 <p
                   className="card-description"
@@ -181,7 +220,7 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +3 from yesterday
+                  <FaArrowUp /> +{dashboardStats.ordersGrowth} from yesterday
                 </p>
               </div>
             </div>
@@ -216,7 +255,7 @@ const SellerDashboard = () => {
                     color: "#232f3e",
                   }}
                 >
-                  4.8
+                  {dashboardStats.customerRating}
                 </p>
                 <p
                   className="card-description"
@@ -228,7 +267,7 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +0.2 this month
+                  <FaArrowUp /> +{dashboardStats.ratingGrowth} this month
                 </p>
               </div>
             </div>
@@ -240,7 +279,7 @@ const SellerDashboard = () => {
         <h2 className="sales-overview-title">Sales & Orders Overview</h2>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={data}
+            data={salesData}
             margin={{
               top: 5,
               right: 30,
