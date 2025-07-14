@@ -8,6 +8,7 @@ import {
   deleteProduct,
   getAllProducts,
   deleteAllProducts,
+  getSingleProductById
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -23,6 +24,9 @@ router.put("/:productId", authenticateToken, updateProduct);
 
 // Get all products
 router.get("/", getAllProducts);
+
+//singleProduct
+router.get("/:id", getSingleProductById);
 
 // Delete product
 router.delete("/:productId", authenticateToken, deleteProduct);

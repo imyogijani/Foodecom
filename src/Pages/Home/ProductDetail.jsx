@@ -24,6 +24,7 @@ import {
   ThumbsDown,
 } from "lucide-react";
 import "./ProductDetail.css";
+import axios from "../../utils/axios";
 
 // Import product categories data
 const mallItemsByCategory = {
@@ -225,6 +226,8 @@ export default function ProductDetail() {
   const { id } = useParams();
   const { addToCart } = useCart();
   const item = location.state?.item;
+  const [itemData, setItemData] = useState(item);
+  const [loading, setLoading] = useState(!item);
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -323,6 +326,28 @@ export default function ProductDetail() {
     setSelectedVariant(productVariants[0]);
   }, []);
 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`/api/products/${id}`);
+        setItemData(response.data.product);
+        console.log(response);
+      } catch (error) {
+        console.error("Product not found:", error);
+        setItemData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!item) {
+      fetchProduct();
+    } else {
+      setItemData(item); // Use passed state
+    }
+  }, [id, item]);
+
   if (!item) {
     return (
       <div className="product-not-found">
@@ -361,13 +386,13 @@ export default function ProductDetail() {
 
     for (let i = 0; i < fullStars; i++) {
       stars.push(
-        <Star key={i} className="star-filled" size={14} fill="currentColor" />,
+        <Star key={i} className="star-filled" size={14} fill="currentColor" />
       );
     }
 
     if (hasHalfStar) {
       stars.push(
-        <Star key="half" className="star-half" size={14} fill="currentColor" />,
+        <Star key="half" className="star-half" size={14} fill="currentColor" />
       );
     }
 
@@ -413,7 +438,9 @@ export default function ProductDetail() {
             {productImages.map((img, index) => (
               <div
                 key={index}
-                className={`thumbnail ${selectedImage === index ? "active" : ""}`}
+                className={`thumbnail ${
+                  selectedImage === index ? "active" : ""
+                }`}
                 onClick={() => setSelectedImage(index)}
               >
                 <img src={img} alt={`Product view ${index + 1}`} />
@@ -528,7 +555,9 @@ export default function ProductDetail() {
                 {productVariants.map((variant) => (
                   <button
                     key={variant.id}
-                    className={`variant-option ${selectedVariant?.id === variant.id ? "selected" : ""} ${!variant.inStock ? "out-of-stock" : ""}`}
+                    className={`variant-option ${
+                      selectedVariant?.id === variant.id ? "selected" : ""
+                    } ${!variant.inStock ? "out-of-stock" : ""}`}
                     onClick={() =>
                       variant.inStock && setSelectedVariant(variant)
                     }
@@ -730,7 +759,9 @@ export default function ProductDetail() {
       <div className="product-details-tabs">
         <div className="tab-navigation">
           <button
-            className={`tab-button ${activeTab === "description" ? "active" : ""}`}
+            className={`tab-button ${
+              activeTab === "description" ? "active" : ""
+            }`}
             onClick={() => setActiveTab("description")}
           >
             Product Details
@@ -805,7 +836,17 @@ export default function ProductDetail() {
                           <div
                             className="rating-fill"
                             style={{
-                              width: `${star === 5 ? 70 : star === 4 ? 20 : star === 3 ? 5 : star === 2 ? 3 : 2}%`,
+                              width: `${
+                                star === 5
+                                  ? 70
+                                  : star === 4
+                                  ? 20
+                                  : star === 3
+                                  ? 5
+                                  : star === 2
+                                  ? 3
+                                  : 2
+                              }%`,
                             }}
                           ></div>
                         </div>
@@ -813,12 +854,12 @@ export default function ProductDetail() {
                           {star === 5
                             ? "70%"
                             : star === 4
-                              ? "20%"
-                              : star === 3
-                                ? "5%"
-                                : star === 2
-                                  ? "3%"
-                                  : "2%"}
+                            ? "20%"
+                            : star === 3
+                            ? "5%"
+                            : star === 2
+                            ? "3%"
+                            : "2%"}
                         </span>
                       </div>
                     ))}

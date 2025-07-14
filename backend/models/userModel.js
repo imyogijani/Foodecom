@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
     address: {
       type: String,
       required: function () {
-        return this.role === "Client" || this.role === "shopowner";
+        return this.role === "client" || this.role === "shopowner";
       },
     },
     phone: {
