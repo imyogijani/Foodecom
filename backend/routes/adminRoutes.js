@@ -9,7 +9,8 @@ import {
   deleteUser,
   updateUser,
   updateShopownerSubscription,
-  getShopownerDetails
+  getShopownerDetails,
+  getSellerDetails
 } from '../controllers/adminController.js';
 import { updateProduct } from '../controllers/productController.js';
 import { getAllOrdersAdmin } from '../controllers/orderController.js';
@@ -41,7 +42,8 @@ router.get('/shops', getAllShops);
 
 // Users management
 router.get('/users', getAllUsers);
-router.delete('/users/:id', deleteUser);
+router.delete('/users/:id', authenticateToken, authorizeAdmin, deleteUser);
+router.get('/sellers/:id', authenticateToken, authorizeAdmin, getSellerDetails);
 router.patch('/users/:id', updateUser);
 router.patch('/users/:id/subscription', updateShopownerSubscription);
 
