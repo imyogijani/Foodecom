@@ -15,6 +15,7 @@ import {
   Truck,
   Shield,
 } from "lucide-react";
+import axios from "../../utils/axios";
 
 // Mall info configuration
 const mallInfo = {
@@ -46,6 +47,8 @@ export default function Menu() {
   const [sortBy, setSortBy] = useState("relevance");
   const [filterOpen, setFilterOpen] = useState(false);
   const [priceRange, setPriceRange] = useState([0, 200000]);
+  const [allProducts, setAllProducts] = useState([]); // holds original unfiltered list
+  const [products, setProducts] = useState([]);
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -55,6 +58,27 @@ export default function Menu() {
     return () => clearTimeout(timer);
   }, [activeTab]);
 
+  const getAllProducts = async () => {
+    try {
+      const response = await axios.get("/api/products");
+      console.log("Fetched products:", response.data.products);
+      return response.data.products || [];
+    } catch (error) {
+      console.error("Error fetching all products:", error);
+      return [];
+    }
+  };
+  const handleGetAllProducts = async () => {
+    setIsLoading(true);
+    const fetched = await getAllProducts();
+    setAllProducts(fetched); // Store full list
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    handleGetAllProducts();
+  }, []);
+
   const filterAndSortItems = (items) => {
     if (!items) return [];
 
@@ -63,30 +87,34 @@ export default function Menu() {
     if (searchQuery) {
       filtered = filtered.filter(
         (item) =>
-          item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.desc?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
     filtered = filtered.filter((item) => {
-      const price = parseInt(item.price.replace(/[₹,]/g, ""));
+      const price = Number(item.price); // 👈 Just this
       return price >= priceRange[0] && price <= priceRange[1];
     });
 
     switch (sortBy) {
       case "price-low":
-        filtered.sort(
-          (a, b) =>
-            parseInt(a.price.replace(/[₹,]/g, "")) -
-            parseInt(b.price.replace(/[₹,]/g, ""))
-        );
+        // filtered.sort(
+        //   (a, b) =>
+        //     parseInt(a.price.replace(/[₹,]/g, "")) -
+        //     parseInt(b.price.replace(/[₹,]/g, ""))
+        // );
+
+        filtered.sort((a, b) => Number(a.price) - Number(b.price));
         break;
       case "price-high":
-        filtered.sort(
-          (a, b) =>
-            parseInt(b.price.replace(/[₹,]/g, "")) -
-            parseInt(a.price.replace(/[₹,]/g, ""))
-        );
+        // filtered.sort(
+        //   (a, b) =>
+        //     parseInt(b.price.replace(/[₹,]/g, "")) -
+        //     parseInt(a.price.replace(/[₹,]/g, ""))
+        // );
+
+        filtered.sort((a, b) => Number(b.price) - Number(a.price));
         break;
       case "rating":
         filtered.sort((a, b) => (b.rating || 4.0) - (a.rating || 4.0));
@@ -97,7 +125,8 @@ export default function Menu() {
       default:
         break;
     }
-
+    // console.log("Search Query:", searchQuery);
+    // console.log("Items:", items);
     return filtered;
   };
 
@@ -135,14 +164,24 @@ export default function Menu() {
 
     return stars;
   };
+  const processImageUrl = (image) => {
+    if (image && image.startsWith("/uploads")) {
+      return `http://localhost:8080${image}`;
+    }
+    return image || "/images/offer1.png";
+  };
 
   const ProductCard = ({ item, isListView = false }) => (
     <div
       className={`modern-product-card ${isListView ? "list-view" : ""}`}
-      onClick={() => navigate(`/product/${item.id}`, { state: { item } })}
+      onClick={() => navigate(`/product/${item._id}`, { state: { item } })}
     >
       <div className="product-image-wrapper">
-        <img src={item.image} alt={item.title} loading="lazy" />
+        <img
+          src={processImageUrl(item.image)}
+          alt={item.title}
+          loading="lazy"
+        />
         {item.discount && (
           <div className="discount-label">-{item.discount}%</div>
         )}
@@ -150,8 +189,8 @@ export default function Menu() {
       </div>
 
       <div className="product-details">
-        <h3 className="product-name">{item.title}</h3>
-        <p className="product-description">{item.desc}</p>
+        <h3 className="product-name">{item.name}</h3>
+        <p className="product-description">{item.description}</p>
 
         <div className="product-rating-row">
           <div className="rating-stars">{renderStars(item.rating || 4.0)}</div>
@@ -207,7 +246,19 @@ export default function Menu() {
     }
 
     const items = getItemsByCategory(activeTab);
-    const filteredItems = filterAndSortItems(items);
+
+    const isFilterApplied = () =>
+      searchQuery.trim() !== "" ||
+      sortBy !== "relevance" ||
+      priceRange[0] !== 0 ||
+      priceRange[1] !== 200000;
+
+    const filteredItems = isFilterApplied()
+      ? filterAndSortItems(allProducts)
+      : allProducts;
+    {
+      /* const filteredItems = filterAndSortItems(allProducts); */
+    }
 
     if (filteredItems.length === 0) {
       return (
@@ -222,7 +273,7 @@ export default function Menu() {
       <div className={`products-container ${viewMode}`}>
         {filteredItems.map((item) => (
           <ProductCard
-            key={item.id}
+            key={item._id}
             item={item}
             isListView={viewMode === "list"}
           />

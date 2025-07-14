@@ -113,6 +113,7 @@ export default function Home() {
         "/api/products?populateCategory=true&populateSubcategory=true"
       );
       setProducts(response.data.products);
+      console.log("Index fetch data : --", response.data.products);
     } catch (error) {
       toast.error("Error fetching products");
       console.log(error);
@@ -212,7 +213,7 @@ export default function Home() {
   };
 
   // Component definitions
-  const ProductCard = ({ product }) => {
+ const ProductCard = ({ product }) => {
     const image =
       processImageUrl(product.image) ||
       "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";

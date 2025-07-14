@@ -86,6 +86,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
 import gaProxyRoutes from "./routes/gaProxyRoutes.js";
 import offerRoutes from "./routes/offerRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js"
 
 app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -99,6 +100,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/analytics", gaProxyRoutes);
 app.use("/api", offerRoutes);
+app.use("/api/cart", cartRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 
