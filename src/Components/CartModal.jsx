@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
 import "./CartModal.css";
 
 export default function CartModal({ open, onClose }) {
@@ -24,8 +25,19 @@ export default function CartModal({ open, onClose }) {
 
   const handleCheckout = () => {
     if (cartItems.length === 0) return;
-    onClose(); // Close the modal
-    navigate("/checkout"); // Navigate to checkout page
+
+    // Check if user is logged in and is a customer
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!token || !user || user.role !== "customer") {
+      toast.warning("Please login as a customer to checkout.");
+      onClose();
+      navigate("/login", { state: { returnUrl: "/checkout", customerOnly: true } });
+      return;
+    }
+
+    onClose();
+    navigate("/checkout");
   };
 
   const handleQuantityChange = (itemId, newQuantity) => {

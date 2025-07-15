@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
 import {
@@ -20,11 +20,42 @@ import "./Checkout.css";
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { cartItems, getTotalPrice, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [showCouponInput, setShowCouponInput] = useState(false);
+
+  // Check authentication on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login to proceed with checkout");
+      navigate("/login", { state: { returnUrl: location.pathname } });
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty!");
+      navigate("/");
+      return;
+    }
+  }, [cartItems.length, navigate, location.pathname]);
+
+  // Try to pre-fill user details from localStorage if available
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user) {
+      setBillingDetails((prev) => ({
+        ...prev,
+        firstName: user.firstName || user.names?.split(" ")[0] || "",
+        lastName: user.lastName || user.names?.split(" ")[1] || "",
+        email: user.email || "",
+        phone: user.phone || "",
+      }));
+    }
+  }, []);
 
   // Billing Details State
   const [billingDetails, setBillingDetails] = useState({
