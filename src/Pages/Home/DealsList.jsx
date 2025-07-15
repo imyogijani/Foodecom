@@ -12,6 +12,7 @@ function DealsList() {
         const response = await axios.get(
           "/api/deals/admin/all?status=approved"
         );
+        console.log("Deals-- ", response);
         if (response.data.success) {
           setApprovedDeals(response.data.deals);
         } else {

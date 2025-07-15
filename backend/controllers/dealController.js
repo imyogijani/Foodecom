@@ -236,21 +236,28 @@ export const getSellerDeals = async (req, res) => {
 
 // Get active deals for offers page
 export const getActiveDeals = async (req, res) => {
+  const featured = req.query.featured === "true";
   try {
     const now = new Date();
     const deals = await Deal.find({
       status: "approved",
       startDate: { $lte: now },
       endDate: { $gte: now },
-      featuredInOffers: true,
+      ...(featured ? { featuredInOffers: true } : {}),
     })
-      .populate("product", "name image description")
-      .populate("seller", "names")
+      .populate("product", "name image description averageRating totalReviews")
+      .populate("seller", "names shopName")
       .sort({ createdAt: -1 });
-
+    const enrichedDeals = deals.map((deal) => {
+      const moneySaved = deal.originalPrice - deal.dealPrice;
+      return {
+        ...deal._doc,
+        moneySaved,
+      };
+    });
     res.status(200).json({
       success: true,
-      deals,
+      deals: enrichedDeals,
     });
   } catch (error) {
     console.error(error);

@@ -193,9 +193,11 @@ export default function Menu() {
         <p className="product-description">{item.description}</p>
 
         <div className="product-rating-row">
-          <div className="rating-stars">{renderStars(item.rating || 4.0)}</div>
-          <span className="rating-value">{item.rating || 4.0}</span>
-          <span className="review-count">({item.reviews || 0})</span>
+          <div className="rating-stars">
+            {renderStars(item.averageRating || 0)}
+          </div>
+          <span className="rating-value">{item.averageRating || 0}</span>
+          <span className="review-count">({item.totalReviews || 0})</span>
         </div>
 
         <div className="pricing-section">

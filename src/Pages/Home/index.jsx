@@ -213,7 +213,7 @@ export default function Home() {
   };
 
   // Component definitions
- const ProductCard = ({ product }) => {
+  const ProductCard = ({ product }) => {
     const image =
       processImageUrl(product.image) ||
       "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";

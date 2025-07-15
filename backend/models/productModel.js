@@ -58,6 +58,14 @@ const productSchema = new mongoose.Schema(
       enum: ["In Stock", "Low Stock", "Out of Stock"],
       default: "In Stock",
     },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
