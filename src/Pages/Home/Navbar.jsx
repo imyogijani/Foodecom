@@ -182,7 +182,16 @@ const Navbar = () => {
                           setShowProfile(true);
                         }}
                       >
-                        <FaCog /> Profile Settings
+                        <FaCog /> My Profile
+                      </button>
+                      <button
+                        className="menu-item dashboard-dropdown"
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          navigate('/profile-edit'); // Assuming a route for editing profile
+                        }}
+                      >
+                        <FaCog /> Edit Profile
                       </button>
                       <button
                         className="menu-item dashboard-dropdown logout"

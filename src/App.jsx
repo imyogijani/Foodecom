@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
@@ -128,6 +129,8 @@ function LayoutWrapper() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<Payment />} />
         <Route path="/invoice/:orderId" element={<Invoice />} />
+
+        <Route path="/profile-edit" element={<UserProfile />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/cookies" element={<Cookies />} />

@@ -20,7 +20,7 @@ const UserProfile = ({ onClose }) => {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(false); // Add isLoading state for avatar upload
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     names: "",
     shopownerName: "",
@@ -77,19 +77,14 @@ const UserProfile = ({ onClose }) => {
       const token = localStorage.getItem("token");
       const updateData = {
         ...formData,
-        // Send only the appropriate name field based on role
         names: formData.role === "shopowner" ? undefined : formData.names,
         shopownerName:
           formData.role === "shopowner" ? formData.shopownerName : undefined,
       };
 
-      const response = await axios.put(
-        "/api/v1/auth/update-profile",
-        updateData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await axios.put("/api/auth/update-profile", updateData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data.success) {
         const updatedUser = response.data.user;
@@ -98,7 +93,6 @@ const UserProfile = ({ onClose }) => {
         setIsEditing(false);
         toast.success("Profile updated successfully");
 
-        // Update formData with the new values
         setFormData((prev) => ({
           ...prev,
           names: updatedUser.names || prev.names,
@@ -118,13 +112,11 @@ const UserProfile = ({ onClose }) => {
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Check file type
       if (!file.type.startsWith("image/")) {
         toast.error("Please select an image file");
         return;
       }
 
-      // Check file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error("Image size should be less than 5MB");
         return;
@@ -135,37 +127,27 @@ const UserProfile = ({ onClose }) => {
         const formData = new FormData();
         formData.append("avatar", file);
 
-        // Create a local preview URL
         const previewUrl = URL.createObjectURL(file);
         setFormData((prev) => ({ ...prev, avatar: previewUrl }));
 
         const token = localStorage.getItem("token");
-        const response = await axios.post(
-          "/api/v1/auth/upload-avatar",
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.post("/api/auth/upload-avatar", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         if (response.data.success) {
-          // Create a local URL for immediate display
-          const localUrl = URL.createObjectURL(file);
-          setFormData((prev) => ({ ...prev, avatar: localUrl }));
+          const avatarUrl = response.data.avatarUrl;
+          setFormData((prev) => ({
+            ...prev,
+            avatar: avatarUrl,
+          }));
 
-          // Update the form data with the server URL after it's saved
-          if (response.data.avatarUrl) {
-            setFormData((prev) => ({
-              ...prev,
-              avatar: response.data.avatarUrl,
-            }));
-          }
           toast.success("Profile picture updated successfully");
 
-          // Update the user state and localStorage
-          const updatedUser = { ...user, avatar: response.data.avatarUrl };
+          const updatedUser = { ...user, avatar: avatarUrl };
           setUser(updatedUser);
           localStorage.setItem("user", JSON.stringify(updatedUser));
         }
@@ -210,7 +192,7 @@ const UserProfile = ({ onClose }) => {
               <img
                 src={
                   formData.avatar
-                    ? `http://localhost:8080${formData.avatar}`
+                    ? `/uploads/avatars${formData.avatar}`
                     : MaleUser
                 }
                 alt="Profile"

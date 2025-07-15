@@ -155,7 +155,7 @@ export const updateProfileController = async (req, res) => {
     // If multipart/form-data, handle file upload
     if (req.file) {
       // Save shop image path
-      updateData.shopImage = `/uploads/${req.file.filename}`;
+      updateData.shopImage = `/public/uploads/avatars/${req.file.filename}`;
     }
     // Accept both JSON and multipart
     const { names, shopownerName, shopName, phone, address } = req.body;
@@ -209,7 +209,7 @@ const uploadAvatarController = async (req, res) => {
     }
 
     // Create the URL for the uploaded avatar
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    const avatarUrl = `/public/uploads/avatars/${req.file.filename}`;
 
     // Remove old avatar file if it exists
     if (user.avatar) {
