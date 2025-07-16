@@ -8,7 +8,18 @@ const __dirname = path.dirname(__filename);
 
 export const addProduct = async (req, res) => {
   try {
-    const { name, description, price, discount, category, subcategory, stock, status, brand } = req.body;
+    const {
+      name,
+      description,
+      price,
+      discount,
+      category,
+      subcategory,
+      stock,
+      status,
+      brand,
+      variants,
+    } = req.body;
 
     // Validate subcategory if provided
     let subcategoryDoc = null;
@@ -28,16 +39,41 @@ export const addProduct = async (req, res) => {
         message: "Category not found",
       });
     }
-    let image = "";
+    // let image = "";
 
-    // Handle file upload (multer)
-    if (req.file) {
-      image = `/uploads/products/${req.file.filename}`;
+    // // Handle file upload (multer)
+    // if (req.file) {
+    //   image = `/uploads/products/${req.file.filename}`;
+    // } else {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Product image is required",
+    //   });
+    // }
+
+    let image = [];
+    if (req.files && req.files.length > 0) {
+      image = req.files.map((file) => `/uploads/products/${file.filename}`);
     } else {
-      return res.status(400).json({
-        success: false,
-        message: "Product image is required",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "At least one image is required" });
+    }
+
+    let parsedVariants = [];
+    if (variants) {
+      try {
+        parsedVariants = JSON.parse(variants);
+        if (!Array.isArray(parsedVariants)) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Variants must be an array" });
+        }
+      } catch (e) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid JSON in variants" });
+      }
     }
 
     // --- Dynamic Subscription Feature Enforcement ---
@@ -106,7 +142,8 @@ export const addProduct = async (req, res) => {
       subcategory: subcategory || undefined, // Only add if provided
       stock: Number(stock),
       status,
-      image,
+      image: image,
+      variants: parsedVariants,
       brand: brand || undefined,
       seller: req.userId,
     });
@@ -156,7 +193,16 @@ export const getSellerProducts = async (req, res) => {
 export const updateProduct = async (req, res) => {
   try {
     const { id: productId } = req.params;
-    const { category, subcategory, discount, brand, status, stock, price, ...otherUpdateData } = req.body;
+    const {
+      category,
+      subcategory,
+      discount,
+      brand,
+      status,
+      stock,
+      price,
+      ...otherUpdateData
+    } = req.body;
 
     let updateData = { ...otherUpdateData };
 
@@ -210,15 +256,14 @@ export const updateProduct = async (req, res) => {
     let findQuery = { _id: productId };
 
     // If the request is not from an admin, ensure the seller owns the product
-    if (req.user && req.user.role !== 'admin') {
+    if (req.user && req.user.role !== "admin") {
       findQuery.seller = req.userId;
     }
 
-    const product = await Product.findOneAndUpdate(
-      findQuery,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const product = await Product.findOneAndUpdate(findQuery, updateData, {
+      new: true,
+      runValidators: true,
+    });
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -242,15 +287,16 @@ export const updateProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { populateCategory, populateSubcategory, categoryId, brand } = req.query;
+    const { populateCategory, populateSubcategory, categoryId, brand } =
+      req.query;
     let query = Product.find({});
 
     if (categoryId) {
-      query = query.where('category').equals(categoryId);
+      query = query.where("category").equals(categoryId);
     }
 
     if (brand) {
-      query = query.where('brand').equals(brand);
+      query = query.where("brand").equals(brand);
     }
 
     if (populateCategory === "true") {
@@ -307,7 +353,6 @@ export const getSingleProductById = async (req, res) => {
   }
 };
 
-
 export const deleteAllProducts = async (req, res) => {
   try {
     // Ensure only admin can delete all products
@@ -356,5 +401,3 @@ export const deleteProduct = async (req, res) => {
     });
   }
 };
-
-

@@ -8,13 +8,13 @@ import {
   deleteProduct,
   getAllProducts,
   deleteAllProducts,
-  getSingleProductById
+  getSingleProductById,
 } from "../controllers/productController.js";
 
 const router = express.Router();
 
 // Add new product
-router.post("/add", authenticateToken, upload.single("image"), addProduct);
+router.post("/add", authenticateToken, upload.array("images", 10), addProduct);
 
 // Get seller's products
 router.get("/seller-products", authenticateToken, getSellerProducts);
@@ -33,11 +33,11 @@ router.delete("/:productId", authenticateToken, deleteProduct);
 
 // Delete all products (for testing/admin purposes)
 router.delete("/all", authenticateToken, (req, res) => {
-    if (req.user.role !== 'admin') {
-        return res.status(403).json({ message: 'Access denied. Admins only.' });
-    }
-    // This will be handled by a controller function later
-    deleteAllProducts(req, res);
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
+  // This will be handled by a controller function later
+  deleteAllProducts(req, res);
 });
 
 export default router;

@@ -33,9 +33,18 @@ const productSchema = new mongoose.Schema(
       required: false, // Subcategory is optional
     },
     image: {
-      type: String,
+      type: [String], // Array of image URLs
+      validate: [(arr) => arr.length <= 10, "Max 10 images allowed"],
       required: true,
     },
+  // VARIANTS ARRAY
+    variants: [
+      {
+        name: { type: String, required: true }, // "Default", "Premium", etc.
+        price: { type: Number, required: true },
+        inStock: { type: Boolean, default: true },
+      },
+    ],
     stock: {
       type: Number,
       required: true,

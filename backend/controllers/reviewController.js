@@ -4,7 +4,7 @@ import Product from "../models/productModel.js";
 
 export const addReview = async (req, res) => {
   try {
-    const { product, rating, comment } = req.body;
+    const { product, rating, title, comment, verified } = req.body;
 
     // 1 Validate input
     if (!product || !rating || !comment) {
@@ -34,7 +34,9 @@ export const addReview = async (req, res) => {
       user: req.user?._id || "000000000000000000000000",
       product,
       rating,
+      title,
       comment,
+      verified: verified !== undefined ? verified : true,
     });
 
     await review.save();
@@ -117,5 +119,79 @@ export const deleteReview = async (req, res) => {
     res.status(200).json({ message: "Review deleted" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting review", err });
+  }
+};
+
+export const toggleHelpful = async (req, res) => {
+  try {
+    const reviewId = req.params.id;
+    const userId = req.user._id;
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    const isAlreadyHelpful = review.helpfulBy.includes(userId);
+
+    if (isAlreadyHelpful) {
+      // Remove user (unhelpful)
+      review.helpfulBy = review.helpfulBy.filter(
+        (id) => id.toString() !== userId.toString()
+      );
+    } else {
+      // Add user (helpful)
+      review.helpfulBy.push(userId);
+    }
+
+    await review.save();
+
+    res.status(200).json({
+      success: true,
+      message: isAlreadyHelpful
+        ? "Removed from helpful"
+        : "Marked as helpful",
+      helpfulCount: review.helpfulBy.length,
+      isHelpful: !isAlreadyHelpful,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error: err.message,
+    });
+  }
+};
+
+
+
+export const getReviewSummary = async (req, res) => {
+  const { productId } = req.params;
+
+  try {
+    const summary = await Review.aggregate([
+      {
+        $match: { product: new mongoose.Types.ObjectId(productId) },
+      },
+      {
+        $group: {
+          _id: "$rating",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Convert to proper format (1-5 keys)
+    const ratingSummary = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    summary.forEach(({ _id, count }) => {
+      ratingSummary[_id] = count;
+    });
+
+    res.status(200).json({
+      success: true,
+      ratings: ratingSummary,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error in rating summary", error: err.message });
   }
 };

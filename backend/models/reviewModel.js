@@ -18,10 +18,25 @@ const reviewSchema = new mongoose.Schema(
       min: 1,
       max: 5,
     },
+    title: {
+      type: String,
+      maxlength: 100,
+    },
     comment: {
       type: String,
       trim: true,
       maxlength: 300,
+    },
+    helpfulBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+      },
+    ],
+
+    verified: {
+      type: Boolean,
+      default: true,
     },
   },
   {

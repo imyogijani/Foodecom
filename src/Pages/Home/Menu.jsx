@@ -17,6 +17,7 @@ import {
   Shield,
 } from "lucide-react";
 import axios from "../../utils/axios";
+import { addToCartAPI } from "../../api/cartApi/cartApi";
 
 // Mall info configuration
 const mallInfo = {
@@ -125,14 +126,46 @@ export default function Menu() {
     return filtered;
   };
 
-  const handleAddToCart = (e, item) => {
+  // const handleAddToCart = (e, item) => {
+  //   e.stopPropagation();
+  //   addToCart({
+  //     ...item,
+  //     quantity: 1,
+  //     addedAt: new Date().toISOString(),
+  //   });
+  //   toast.success(`${item.title} added to cart! 🛒`);
+  // };
+
+  const handleAddToCart = async (e, product) => {
     e.stopPropagation();
-    addToCart({
-      ...item,
-      quantity: 1,
-      addedAt: new Date().toISOString(),
-    });
-    toast.success(`${item.title} added to cart! 🛒`);
+
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // console.log("User 1211431243", user);
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user?._id;
+
+      if (!userId) {
+        toast.error("User not logged in");
+        return;
+      }
+
+      const productData = {
+        productId: product._id,
+        quantity: 1,
+        price: product.price,
+        title: product.name,
+        // image: product.image,
+        discount: product.discount,
+      };
+
+      const response = await addToCartAPI(userId, productData);
+
+      toast.success(`${product.name} added to cart!`);
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      toast.error("Failed to add to cart.");
+    }
   };
 
   const renderStars = (rating) => {
@@ -159,13 +192,24 @@ export default function Menu() {
 
     return stars;
   };
+  // const processImageUrl = (image) => {
+  //   if (image && image.startsWith("/uploads")) {
+  //     return `http://localhost:8080${image}`;
+  //   }
+  //   return image || "/images/offer1.png";
+  // };
   const processImageUrl = (image) => {
-    if (image && image.startsWith("/uploads")) {
-      return `http://localhost:8080${image}`;
-    }
-    return image || "/images/offer1.png";
-  };
+    const getFullUrl = (img) =>
+      img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
 
+    if (Array.isArray(image) && image.length > 0) {
+      return getFullUrl(image[0]);
+    } else if (typeof image === "string" && image.length > 0) {
+      return getFullUrl(image);
+    }
+
+    return "/images/offer1.png";
+  };
   const ProductCard = ({ item, isListView = false }) => (
     <div
       className={`modern-product-card ${isListView ? "list-view" : ""}`}

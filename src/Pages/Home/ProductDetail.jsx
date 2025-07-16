@@ -248,21 +248,22 @@ export default function ProductDetail() {
 
   // Mock product variants
   const productVariants = [
-    { id: 1, name: "Default", price: item?.price, inStock: true },
+    {
+      id: 1,
+      name: "Default",
+      price: item?.price,
+      inStock: true,
+    },
     {
       id: 2,
       name: "Premium",
-      price: item?.price
-        ? `₹${parseInt(item.price.replace(/[₹,]/g, "")) + 500}`
-        : "₹1500",
+      price: item?.price ? `₹${parseInt(item.price) + 500}` : "₹1500",
       inStock: true,
     },
     {
       id: 3,
       name: "Deluxe",
-      price: item?.price
-        ? `₹${parseInt(item.price.replace(/[₹,]/g, "")) + 1000}`
-        : "��2000",
+      price: item?.price ? `₹${parseInt(item.price) + 1000}` : "₹2000",
       inStock: false,
     },
   ];
@@ -326,28 +327,44 @@ export default function ProductDetail() {
     setSelectedVariant(productVariants[0]);
   }, []);
 
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await axios.get(`/api/products/${id}`);
+  //       setItemData(response.data.product);
+  //       console.log("Product details", response.data.product);
+  //     } catch (error) {
+  //       console.error("Product not found:", error);
+  //       setItemData(null);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   if (!item) {
+  //     fetchProduct();
+  //   } else {
+  //     setItemData(item); // Use passed state
+  //   }
+  // }, [id, item]);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        setLoading(true);
         const response = await axios.get(`/api/products/${id}`);
         setItemData(response.data.product);
-        console.log(response);
-      } catch (error) {
-        console.error("Product not found:", error);
-        setItemData(null);
+        console.log("Product details", response.data.product);
+      } catch (err) {
+        console.error("Product not found", err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (!item) {
-      fetchProduct();
-    } else {
-      setItemData(item); // Use passed state
-    }
-  }, [id, item]);
-
+    fetchProduct(); // Always fetch from server
+  }, [id]);
+  // console.log("Data of details product", itemData);
   if (!item) {
     return (
       <div className="product-not-found">
@@ -411,11 +428,39 @@ export default function ProductDetail() {
 
   const calculateSavings = () => {
     if (!item.originalPrice) return null;
-    const original = parseInt(item.originalPrice.replace(/[₹,]/g, ""));
-    const current = parseInt(item.price.replace(/[₹,]/g, ""));
+    const original = parseInt(item.originalPrice);
+    const current = parseInt(item.price);
     return original - current;
   };
+  // const processImageUrl = (image) => {
+  //   if (image && image.startsWith("/uploads")) {
+  //     return `http://localhost:8080${image}`;
+  //   }
+  //   return image || "/images/offer1.png";
+  // };
 
+  const processImageUrl = (image) => {
+    const getFullUrl = (img) =>
+      img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
+
+    if (Array.isArray(image) && image.length > 0) {
+      return getFullUrl(image[0]);
+    } else if (typeof image === "string" && image.length > 0) {
+      return getFullUrl(image);
+    }
+
+    return "/images/offer1.png";
+  };
+
+  const calculateDiscountedPriceFinal = (price, discount) => {
+    if (!discount || discount <= 0) return price;
+    return price - (price * discount) / 100;
+  };
+
+  const calculateSavingsFinal = (price, discount) => {
+    if (!price || !discount || discount <= 0) return 0;
+    return Math.round((price * discount) / 100);
+  };
   return (
     <div className="amazon-product-detail">
       {/* Breadcrumb */}
@@ -428,7 +473,7 @@ export default function ProductDetail() {
           Products
         </span>
         <ChevronRight size={14} />
-        <span className="breadcrumb-current">{item.title}</span>
+        <span className="breadcrumb-current">{item.name}</span>
       </div>
 
       <div className="product-main-container">
@@ -450,8 +495,12 @@ export default function ProductDetail() {
 
           <div className="main-image-container">
             <img
-              src={productImages[selectedImage] || item.image}
-              alt={item.title}
+              // src={productImages[selectedImage] || processImageUrl(item.image)}
+              src={
+                processImageUrl(productImages[selectedImage]) ||
+                processImageUrl(item.image)
+              }
+              alt={item.name}
               className="main-product-image"
               onClick={() => setShowZoom(true)}
             />
@@ -470,25 +519,35 @@ export default function ProductDetail() {
           <div className="pricing-section">
             <div className="price-row">
               <span className="current-price">
-                {calculateDiscountedPrice()}
+                ₹{calculateDiscountedPriceFinal(item.price, item.discount)}
               </span>
-              {item.originalPrice && (
+              {/* {item.originalPrice && (
                 <span className="original-price">
                   M.R.P: <span className="strike">{item.originalPrice}</span>
                 </span>
+              )} */}
+
+              {item.price && (
+                <span className="original-price">
+                  M.R.P: <span className="strike">{item.price}</span>
+                </span>
               )}
             </div>
-            {calculateSavings() && (
+            {/* {calculateSavings() && (
               <div className="savings-info">
                 You save: ₹{calculateSavings().toLocaleString()} (
                 {item.discount}%)
               </div>
-            )}
+            )} */}
+            <div className="savings-info">
+              You save: ₹{calculateSavingsFinal(item.price, item.discount)} (
+              {item.discount}%)
+            </div>
+
             <div className="price-details">
               <span className="inclusive-text">Inclusive of all taxes</span>
               <span className="emi-text">
-                EMI starts at ₹
-                {Math.floor(parseInt(item.price.replace(/[₹,]/g, "")) / 12)}
+                EMI starts at ₹{Math.floor(parseInt(item.price) / 12)}
                 /month
               </span>
             </div>
@@ -498,7 +557,7 @@ export default function ProductDetail() {
         {/* Product Info Section */}
         <div className="product-info-section">
           <div className="product-title-area">
-            <h1 className="product-title">{item.title}</h1>
+            <h1 className="product-title">{item.name}</h1>
             <div className="product-actions">
               <button className="share-button">
                 <Share2 size={18} />
@@ -508,11 +567,12 @@ export default function ProductDetail() {
 
           <div className="rating-section">
             <div className="stars-container">
-              {renderStars(item.rating || 4.5)}
+              {renderStars(item.averageRating ?? 4.5)}
             </div>
-            <span className="rating-value">{item.rating || 4.5}</span>
+            {/* <span className="rating-value">{item.averageRating || 4.5}</span> */}
+            <span className="rating-value">{item.averageRating ?? 4.5}</span>
             <span className="review-count">
-              ({item.reviews || 1234} reviews)
+              ({item.totalReviews ?? 100} reviews)
             </span>
             <span className="answered-questions">| 89 answered questions</span>
           </div>
@@ -522,25 +582,35 @@ export default function ProductDetail() {
             <div className="pricing-section">
               <div className="price-row">
                 <span className="current-price">
-                  {calculateDiscountedPrice()}
+                  ₹{calculateDiscountedPriceFinal(item.price, item.discount)}
                 </span>
-                {item.originalPrice && (
+                {/* {item.originalPrice && (
                   <span className="original-price">
                     M.R.P: <span className="strike">{item.originalPrice}</span>
                   </span>
+                )} */}
+
+                {item.price && (
+                  <span className="original-price">
+                    M.R.P: <span className="strike">{item.price}</span>
+                  </span>
                 )}
               </div>
-              {calculateSavings() && (
+              {/* {calculateSavings() && (
                 <div className="savings-info">
                   You save: ₹{calculateSavings().toLocaleString()} (
                   {item.discount}%)
                 </div>
-              )}
+              )} */}
+
+              <div className="savings-info">
+                You save: ₹{calculateSavingsFinal(item.price, item.discount)} (
+                {item.discount}%)
+              </div>
               <div className="price-details">
                 <span className="inclusive-text">Inclusive of all taxes</span>
                 <span className="emi-text">
-                  EMI starts at ₹
-                  {Math.floor(parseInt(item.price.replace(/[₹,]/g, "")) / 12)}
+                  EMI starts at ₹{Math.floor(parseInt(item.price) / 12)}
                   /month
                 </span>
               </div>
@@ -548,11 +618,11 @@ export default function ProductDetail() {
           </div>
 
           {/* Variants Selection */}
-          {productVariants && (
+          {item.variants && (
             <div className="variants-section">
               <h4>Choose a variant:</h4>
               <div className="variants-grid">
-                {productVariants.map((variant) => (
+                {item.variants.map((variant) => (
                   <button
                     key={variant.id}
                     className={`variant-option ${
@@ -622,8 +692,8 @@ export default function ProductDetail() {
             <h4>About this item</h4>
             <p className="description-text">
               {showFullDescription
-                ? item.desc
-                : `${item.desc?.substring(0, 150)}...`}
+                ? item.description
+                : `${item.description?.substring(0, 150)}...`}
               <button
                 className="read-more-btn"
                 onClick={() => setShowFullDescription(!showFullDescription)}
@@ -784,7 +854,7 @@ export default function ProductDetail() {
           {activeTab === "description" && (
             <div className="description-tab">
               <h3>Product Description</h3>
-              <p>{item.desc}</p>
+              <p>{item.description}</p>
 
               <h4>Technical Details</h4>
               <table className="product-specs">
@@ -820,12 +890,14 @@ export default function ProductDetail() {
                 <h3>Customer Reviews</h3>
                 <div className="review-stats">
                   <div className="overall-rating">
-                    <span className="rating-number">{item.rating || 4.5}</span>
+                    <span className="rating-number">
+                      {item.averageRating ?? 4.5}
+                    </span>
                     <div className="stars-large">
-                      {renderStars(item.rating || 4.5)}
+                      {renderStars(item.averageRating ?? 4.5)}
                     </div>
                     <span className="total-reviews">
-                      {item.reviews || 1234} global ratings
+                      {item.totalReviews ?? 1234} global ratings
                     </span>
                   </div>
                   <div className="rating-breakdown">

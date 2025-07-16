@@ -18,6 +18,7 @@ import {
   RefreshCw,
   Award,
 } from "lucide-react";
+import { addToCartAPI } from "../../api/cartApi/cartApi";
 
 export default function Home() {
   // State management
@@ -156,11 +157,23 @@ export default function Home() {
   };
 
   // Helper functions
+  // const processImageUrl = (image) => {
+  //   if (image && image.startsWith("/uploads")) {
+  //     return `http://localhost:8080${image}`;
+  //   }
+  //   return image || "/images/offer1.png";
+  // };
   const processImageUrl = (image) => {
-    if (image && image.startsWith("/uploads")) {
-      return `http://localhost:8080${image}`;
+    const getFullUrl = (img) =>
+      img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
+
+    if (Array.isArray(image) && image.length > 0) {
+      return getFullUrl(image[0]);
+    } else if (typeof image === "string" && image.length > 0) {
+      return getFullUrl(image);
     }
-    return image || "/images/offer1.png";
+
+    return "/images/offer1.png";
   };
 
   const calculateDealPrice = (offer) => {
@@ -178,14 +191,14 @@ export default function Home() {
     );
   };
 
-  const handleAddToCart = (product) => {
-    addToCart({
-      ...product,
-      quantity: 1,
-      addedAt: new Date().toISOString(),
-    });
-    toast.success(`${product.name || product.title} added to cart! 🛒`);
-  };
+  // const handleAddToCart = (product) => {
+  //   addToCart({
+  //     ...product,
+  //     quantity: 1,
+  //     addedAt: new Date().toISOString(),
+  //   });
+  //   toast.success(`${product.name || product.title} added to cart! 🛒`);
+  // };
 
   const renderStars = (rating) => {
     const stars = [];
@@ -237,7 +250,7 @@ export default function Home() {
           <div className="card-actions">
             <button
               className="card-button"
-              onClick={() => handleAddToCart(product)}
+              onClick={(e) => handleAddToCart(e, product)}
               title="Add to Cart"
             >
               <ShoppingCart size={16} />
@@ -247,7 +260,37 @@ export default function Home() {
       </div>
     );
   };
+  const handleAddToCart = async (e, product) => {
+    e.stopPropagation();
 
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // console.log("User 1211431243", user);
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user?._id;
+
+      if (!userId) {
+        toast.error("User not logged in");
+        return;
+      }
+
+      const productData = {
+        productId: product._id,
+        quantity: 1,
+        price: product.price,
+        title: product.name,
+        // image: product.image,
+        discount: product.discount,
+      };
+
+      const response = await addToCartAPI(userId, productData);
+
+      toast.success("Added to cart!");
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      toast.error("Failed to add to cart.");
+    }
+  };
   // JSX/Template Part
   return (
     <div className="amazon-home-container">
@@ -568,9 +611,9 @@ const FooterContent = () => (
 
 const ProductRating = ({ product, renderStars }) => (
   <div className="product-rating" style={{ margin: "6px 0" }}>
-    <div className="stars">{renderStars(product.rating || 4.5)}</div>
+    <div className="stars">{renderStars(product.averageRating || 4.5)}</div>
     <span className="rating-count">
-      ({product.reviewCount || Math.floor(Math.random() * 500) + 50})
+      ({product.totalReviews || Math.floor(Math.random() * 500) + 50})
     </span>
   </div>
 );

@@ -16,11 +16,12 @@ const AddProduct = () => {
     category: "",
     subcategory: "",
     stock: "",
-    image: null,
+    image: [],
     status: "In Stock",
+    variants: [],
   });
   const [loading, setLoading] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState([]);
   const imageInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -96,7 +97,17 @@ const AddProduct = () => {
       }));
     }
   };
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
 
+    setFormData((prev) => ({
+      ...prev,
+      image: files, //  store array of files
+    }));
+
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImagePreview(previews);
+  };
   const validateForm = () => {
     if (!formData.name.trim()) {
       toast.error("Product name is required");
@@ -155,7 +166,9 @@ const AddProduct = () => {
       const productData = new FormData();
       Object.keys(formData).forEach((key) => {
         if (key === "image") {
-          productData.append("image", formData.image);
+          formData.image.forEach((img) => {
+            productData.append("images", img);
+          });
         } else if (key === "subcategory" && !formData.subcategory) {
           // Skip appending subcategory if it's empty
           return;
@@ -165,6 +178,8 @@ const AddProduct = () => {
         ) {
           // Skip appending discount if it's empty or null
           return;
+        } else if (key === "variants") {
+          productData.append("variants", JSON.stringify(formData.variants));
         } else {
           productData.append(key, formData[key]);
         }
@@ -187,10 +202,11 @@ const AddProduct = () => {
           category: "",
           subcategory: "",
           stock: "",
-          image: null,
+          image: [],
           status: "In Stock",
+          variants: [],
         });
-        setImagePreview(null);
+        setImagePreview([]);
         if (imageInputRef.current) {
           imageInputRef.current.value = "";
         }
@@ -208,6 +224,19 @@ const AddProduct = () => {
   const handleCancel = () => {
     if (loading) return;
     navigate("/seller/products");
+  };
+  const addVariant = () => {
+    const newVariants = [
+      ...formData.variants,
+      { name: "", price: "", inStock: true },
+    ];
+    setFormData({ ...formData, variants: newVariants });
+  };
+
+  const updateVariant = (index, field, value) => {
+    const updated = [...formData.variants];
+    updated[index][field] = value;
+    setFormData({ ...formData, variants: updated });
   };
 
   return (
@@ -334,21 +363,62 @@ const AddProduct = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="image">Product Image *</label>
+            <label htmlFor="image">Product Images *</label>
             <input
               type="file"
               id="image"
               name="image"
-              onChange={handleChange}
+              onChange={handleImageChange}
               accept="image/*"
+              multiple
               required
               ref={imageInputRef}
             />
-            {imagePreview && (
+            {/* {imagePreview && (
               <div className="image-preview">
                 <img src={imagePreview} alt="Preview" />
               </div>
+            )} */}
+            {imagePreview.length > 0 && (
+              <div className="image-preview-group">
+                {imagePreview.map((src, index) => (
+                  <img key={index} src={src} alt={`Preview ${index}`} />
+                ))}
+              </div>
             )}
+          </div>
+
+          <div className="form-group">
+            <label>Variants (optional)</label>
+            <button type="button" onClick={addVariant}>
+              + Add Variant
+            </button>
+            {formData.variants.map((variant, index) => (
+              <div key={index} className="variant-row">
+                <input
+                  type="text"
+                  placeholder="Variant Name"
+                  value={variant.name}
+                  onChange={(e) => updateVariant(index, "name", e.target.value)}
+                />
+                <input
+                  type="number"
+                  placeholder="Price"
+                  value={variant.price}
+                  onChange={(e) =>
+                    updateVariant(index, "price", e.target.value)
+                  }
+                />
+                <input
+                  type="checkbox"
+                  checked={variant.inStock}
+                  onChange={(e) =>
+                    updateVariant(index, "inStock", e.target.checked)
+                  }
+                />
+                <label>In Stock</label>
+              </div>
+            ))}
           </div>
 
           <div className="form-actions">

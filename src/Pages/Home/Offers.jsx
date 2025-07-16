@@ -267,7 +267,6 @@ export default function Offers() {
         quantity: 1,
         price: deal.dealPrice,
         title: deal.product.name,
-        image: deal.product.image,
         discount: deal.discountPercentage,
       };
 
@@ -304,11 +303,24 @@ export default function Offers() {
     return stars;
   };
 
+  // const processImageUrl = (image) => {
+  //   if (image && image.startsWith("/uploads")) {
+  //     return `http://localhost:8080${image}`;
+  //   }
+  //   return image || "/images/offer1.png";
+  // };
+
   const processImageUrl = (image) => {
-    if (image && image.startsWith("/uploads")) {
-      return `http://localhost:8080${image}`;
+    const getFullUrl = (img) =>
+      img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
+
+    if (Array.isArray(image) && image.length > 0) {
+      return getFullUrl(image[0]);
+    } else if (typeof image === "string" && image.length > 0) {
+      return getFullUrl(image);
     }
-    return image || "/images/offer1.png";
+
+    return "/images/offer1.png";
   };
   const DealCard = ({ deal }) => (
     <div

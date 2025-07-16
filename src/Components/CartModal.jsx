@@ -1,25 +1,30 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { toast } from "react-toastify";
 import "./CartModal.css";
-import { getCartByUserAPI, updateCartItemAPI } from "../api/cartApi/cartApi";
-import { toast } from "react-toastify";
+import {
+  getCartByUserAPI,
+  updateCartItemAPI,
+  clearCartAPI,
+  removeCartItemAPI,
+} from "../api/cartApi/cartApi";
+
 export default function CartModal({ open, onClose }) {
   const navigate = useNavigate();
-  const {
-    cartItems,
-    removeFromCart,
-    updateQuantity,
-    getTotalPrice,
-    clearCart,
-  } = useCart();
-  const [hoveredItem, setHoveredItem] = useState(null);
+  // const {
+  //   cartItems,
+  //   removeFromCart,
+  //   updateQuantity,
+  //   getTotalPrice,
+  //   clearCart,
+  // } = useCart();
+  // const [hoveredItem, setHoveredItem] = useState(null);
 
   const [cartData, setCartData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
   const userId = user?._id;
 
   useEffect(() => {
@@ -28,7 +33,7 @@ export default function CartModal({ open, onClose }) {
       try {
         const response = await getCartByUserAPI(userId);
         setCartData(response);
-        console.log("Cart Moadal", response);
+        // console.log("Cart Moadal", response);
 
         setLoading(false);
       } catch (err) {
@@ -40,36 +45,19 @@ export default function CartModal({ open, onClose }) {
     if (open) fetchCart();
   }, [open, userId]);
 
-  if (!open) return null;
-  if (loading) return <div className="cart-modal-overlay">Loading...</div>;
-
-  const { cart, totalPrice } = cartData;
-  const items = cart.items || [];
-
-  // console.log("Cart items data set other variable", items);
-  // Calculate subtotal, discount, delivery, total
-  const subtotal = totalPrice || 0;
-  const discount = subtotal > 500 ? 50 : 0;
-  const delivery = subtotal > 0 ? 25 : 0;
-  const total = subtotal - discount + delivery;
-
   const handleCheckout = () => {
-<<<<<<< HEAD
-    if (items.length === 0) return;
-=======
-    if (cartItems.length === 0) return;
-
     // Check if user is logged in and is a customer
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user") || "null");
     if (!token || !user || user.role !== "customer") {
       toast.warning("Please login as a customer to checkout.");
       onClose();
-      navigate("/login", { state: { returnUrl: "/checkout", customerOnly: true } });
+      navigate("/login", {
+        state: { returnUrl: "/checkout", customerOnly: true },
+      });
       return;
     }
 
->>>>>>> 89c73af04afca788210f2448ad190f6a3793e788
     onClose();
     navigate("/checkout");
   };
@@ -77,41 +65,105 @@ export default function CartModal({ open, onClose }) {
   // const handleQuantityChange = (itemId, newQuantity) => {
   //   updateQuantity(itemId, parseInt(newQuantity));
   // };
-  const handleQuantityChange = async (productId, newQuantity) => {
-    if (newQuantity < 1) return;
 
-    try {
-      await updateCartItemAPI(userId, productId, newQuantity);
-      // toast.success("Quantity updated!");
+  // const user = useMemo(() => JSON.parse(localStorage.getItem("user")), []);
+  // const userId = user?._id;
+  const handleQuantityChange = useCallback(
+    async (productId, newQuantity) => {
+      if (!userId || newQuantity < 1) return;
 
-      //  Live update local cart state without re-fetching
-      setCartData((prevCartData) => {
-        const updatedItems = prevCartData.cart.items.map((item) => {
-          if (item.productId === productId) {
-            return { ...item, quantity: newQuantity };
-          }
-          return item;
+      try {
+        await updateCartItemAPI(userId, productId, newQuantity);
+
+        setCartData((prevCartData) => {
+          const updatedItems = prevCartData.cart.items.map((item) =>
+            item.productId === productId
+              ? { ...item, quantity: newQuantity }
+              : item
+          );
+
+          const newTotalPrice = updatedItems.reduce(
+            (acc, item) => acc + item.quantity * item.price,
+            0
+          );
+
+          return {
+            ...prevCartData,
+            cart: { ...prevCartData.cart, items: updatedItems },
+            totalPrice: newTotalPrice,
+          };
         });
+      } catch (err) {
+        console.error("Failed to update cart:", err);
+        toast.error("Failed to update quantity");
+      }
+    },
+    [userId] // dependency
+  );
 
-        // Recalculate totalPrice
-        const newTotalPrice = updatedItems.reduce((acc, item) => {
-          return acc + item.quantity * item.price;
-        }, 0);
-
-        return {
-          ...prevCartData,
-          cart: {
-            ...prevCartData.cart,
-            items: updatedItems,
-          },
-          totalPrice: newTotalPrice,
-        };
-      });
+  const handleClearCart = useCallback(async () => {
+    try {
+      await clearCartAPI(userId);
+      toast.success("Cart cleared!");
+      setCartData((prev) => ({
+        ...prev,
+        cart: { ...prev.cart, items: [] },
+        totalPrice: 0,
+      }));
     } catch (err) {
-      console.error("Failed to update cart:", err);
-      toast.error("Failed to update quantity");
+      console.error("Failed to clear cart:", err);
+      toast.error("Failed to clear cart");
     }
+  }, [userId]);
+
+  const handleRemoveItem = useCallback(
+    async (productId) => {
+      try {
+        await removeCartItemAPI(userId, productId);
+        toast.success("Item removed from cart");
+
+        setCartData((prevCartData) => {
+          const updatedItems = prevCartData.cart.items.filter(
+            (item) => item.productId !== productId
+          );
+
+          const newTotalPrice = updatedItems.reduce(
+            (acc, item) => acc + item.price * item.quantity,
+            0
+          );
+
+          return {
+            ...prevCartData,
+            cart: {
+              ...prevCartData.cart,
+              items: updatedItems,
+            },
+            totalPrice: newTotalPrice,
+          };
+        });
+      } catch (error) {
+        console.error("Failed to remove item:", error);
+        toast.error("Failed to remove item");
+      }
+    },
+    [userId]
+  );
+  const { cart, totalPrice } = cartData || {
+    cart: { items: [] },
+    totalPrice: 0,
   };
+  const items = cart.items || [];
+
+  const subtotal = useMemo(() => totalPrice || 0, [totalPrice]);
+  const discount = useMemo(() => (subtotal > 500 ? 50 : 0), [subtotal]);
+  const delivery = useMemo(() => (subtotal > 0 ? 25 : 0), [subtotal]);
+  const total = useMemo(
+    () => subtotal - discount + delivery,
+    [subtotal, discount, delivery]
+  );
+
+  if (!open) return null;
+  if (loading) return <div className="cart-modal-overlay">Loading...</div>;
 
   return (
     <div className="cart-modal-overlay">
@@ -164,7 +216,7 @@ export default function CartModal({ open, onClose }) {
                       </div>
 
                       <button
-                        onClick={() => removeFromCart(itemId)}
+                        onClick={() => handleRemoveItem(item.productId)}
                         className="cart-modal-remove"
                       >
                         Remove
@@ -200,15 +252,15 @@ export default function CartModal({ open, onClose }) {
             <div className="cart-modal-actions">
               <button
                 className="cart-modal-clear"
-                onClick={clearCart}
-                disabled={cartItems.length === 0}
+                onClick={handleClearCart}
+                disabled={items.length === 0}
               >
                 Clear Cart
               </button>
               <button
                 className="cart-modal-checkout"
                 onClick={handleCheckout}
-                disabled={cartItems.length === 0}
+                disabled={items.length === 0}
               >
                 Checkout (₹{total.toFixed(2)})
               </button>

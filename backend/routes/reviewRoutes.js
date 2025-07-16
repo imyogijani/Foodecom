@@ -3,6 +3,8 @@ import {
   addReview,
   getProductReviews,
   deleteReview,
+  getReviewSummary,
+  toggleHelpful,
 } from "../controllers/reviewController.js";
 // import { protect } from "../middlewares/authMiddleware.js";
 import {
@@ -23,5 +25,9 @@ router.delete("/:id", authenticateToken, authorizeAdmin, deleteReview);
 router.get("/product/:productId", getProductReviews);
 // router.get("/:productId", getAverageRatingByProduct);
 // router.delete("/:id", deleteReview);
+
+router.patch("/helpful/:id", authenticateToken, fetchUser, toggleHelpful); // review id
+
+router.get("/product/:productId/summary", getReviewSummary);
 
 export default router;
