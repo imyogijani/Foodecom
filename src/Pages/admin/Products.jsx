@@ -59,7 +59,8 @@ const Products = () => {
   const fetchProducts = async () => {
     try {
       const token = localStorage.getItem("token");
-      let url = "/api/admin/all-products?populateCategory=true&populateSubcategory=true";
+      let url =
+        "/api/admin/all-products?populateCategory=true&populateSubcategory=true";
       if (selectedCategory) {
         url += `&categoryId=${selectedCategory}`;
       }
@@ -153,8 +154,6 @@ const Products = () => {
     }
   };
 
-
-
   // Removed handleModalUpdate as admin will only view and delete
   // const handleModalUpdate = async (e) => {
   //   e.preventDefault();
@@ -185,15 +184,29 @@ const Products = () => {
 
   const filteredProducts = products.filter((product) => {
     const matchesShop =
-      selectedShop === "all" || (product.seller && product.seller._id === selectedShop); // Assuming product.seller is populated with shop details
+      selectedShop === "all" ||
+      (product.seller && product.seller._id === selectedShop); // Assuming product.seller is populated with shop details
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "" || (product.category && product.category._id === selectedCategory);
-    const matchesSubcategory = selectedSubcategory === "" || (product.subcategory && product.subcategory._id === selectedSubcategory);
-    const matchesBrand = selectedBrand === "" || (product.brand && product.brand.toLowerCase() === selectedBrand.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "" ||
+      (product.category && product.category._id === selectedCategory);
+    const matchesSubcategory =
+      selectedSubcategory === "" ||
+      (product.subcategory && product.subcategory._id === selectedSubcategory);
+    const matchesBrand =
+      selectedBrand === "" ||
+      (product.brand &&
+        product.brand.toLowerCase() === selectedBrand.toLowerCase());
 
-    return matchesShop && matchesSearch && matchesCategory && matchesSubcategory && matchesBrand;
+    return (
+      matchesShop &&
+      matchesSearch &&
+      matchesCategory &&
+      matchesSubcategory &&
+      matchesBrand
+    );
   });
 
   const getProductStats = () => {
@@ -297,7 +310,9 @@ const Products = () => {
               {selectedSubcategory &&
                 categories
                   .find((cat) => cat._id === selectedCategory)
-                  ?.children.find((subcat) => subcat._id === selectedSubcategory)
+                  ?.children.find(
+                    (subcat) => subcat._id === selectedSubcategory
+                  )
                   ?.brands.map((brand, index) => (
                     <option key={index} value={brand}>
                       {brand}
@@ -369,82 +384,81 @@ const Products = () => {
         </div>
       </div>
 
-          <div className="products-grid-container">
-            <div className="product-cards-container">
-              {filteredProducts.map((product) => {
-                let imageUrl = "";
-                if (product.image) {
-                  if (product.image.startsWith("/uploads/products/")) {
-                    imageUrl = `http://localhost:8080${product.image}`;
-                  } else if (product.image.startsWith("/uploads/")) {
-                    imageUrl = `http://localhost:8080${product.image}`;
-                  } else {
-                    imageUrl = `http://localhost:8080/uploads/products/${product.image}`;
-                  }
-                }
-                return (
-                  <div key={product._id} className="product-card">
-                    <div className="product-card-header">
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt={product.name}
-                          className="product-card-image"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/vite.svg";
-                          }}
-                        />
-                      ) : null}
-                      <h3 className="product-card-name">{product.name}</h3>
+      <div className="products-grid-container">
+        <div className="product-cards-container">
+          {filteredProducts.map((product) => {
+            let imageUrl = "";
+            if (product.image) {
+              if (product.image.startsWith("/uploads/products/")) {
+                imageUrl = `http://localhost:8080${product.image}`;
+              } else if (product.image.startsWith("/uploads/")) {
+                imageUrl = `http://localhost:8080${product.image}`;
+              } else {
+                imageUrl = `http://localhost:8080/uploads/products/${product.image}`;
+              }
+            }
+            return (
+              <div key={product._id} className="product-card">
+                <div className="product-card-header">
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={product.name}
+                      className="product-card-image"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/vite.svg";
+                      }}
+                    />
+                  ) : null}
+                  <h3 className="product-card-name">{product.name}</h3>
+                </div>
+                <div className="product-card-body">
+                  <p className="product-card-detail">
+                    <strong>Category:</strong> {product.category?.name}
+                    {product.subcategory?.name &&
+                      ` (${product.subcategory.name})`}
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Price:</strong> ₹{product.price.toFixed(2)}
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Stock:</strong> {product.stock}
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Status:</strong>
+                    <span className={`status ${product.status.toLowerCase()}`}>
+                      {product.status}
+                    </span>
+                  </p>
+                  <p className="product-card-detail">
+                    <strong>Shop:</strong>
+                    <div className="shop-info">
+                      <FaStore className="shop-icon" />
+                      <span>{product.shopName}</span>
                     </div>
-                    <div className="product-card-body">
-                      <p className="product-card-detail">
-                        <strong>Category:</strong> {product.category?.name}
-                        {product.subcategory?.name &&
-                          ` (${product.subcategory.name})`}
-                      </p>
-                      <p className="product-card-detail">
-                        <strong>Price:</strong> ₹{product.price.toFixed(2)}
-                      </p>
-                      <p className="product-card-detail">
-                        <strong>Stock:</strong> {product.stock}
-                      </p>
-                      <p className="product-card-detail">
-                        <strong>Status:</strong>
-                        <span
-                          className={`status ${product.status.toLowerCase()}`}
-                        >
-                          {product.status}
-                        </span>
-                      </p>
-                      <p className="product-card-detail">
-                        <strong>Shop:</strong>
-                        <div className="shop-info">
-                          <FaStore className="shop-icon" />
-                          <span>{product.shopName}</span>
-                        </div>
-                      </p>
-                    </div>
-                    <div className="product-card-actions">
-                      <button
-                        className="view-product-btn"
-                        onClick={() => handleRowClick(product)}
-                      >
-                        <FaEdit /> View Details
-                      </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDeleteProduct(product._id)}
-                      >
-                        <FaTrash /> Delete
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                  </p>
+                </div>
+                <div className="product-card-actions">
+                  <button
+                    className="view-product-btn"
+                    onClick={() => handleRowClick(product)}
+                  >
+                    <FaEdit /> View Details
+                  </button>
+                  <button
+                    className="delete-btn"
+                    onClick={() => handleDeleteProduct(product._id)}
+                    style={{ marginLeft: "10px" }}
+                  >
+                    <FaTrash /> Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
       {showProductModal && selectedProduct && (
         <div className="modal-overlay">

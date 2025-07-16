@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./Menu.css";
 import "./theme-override.css";
@@ -30,14 +31,8 @@ const mallInfo = {
   address: "Serving Worldwide",
 };
 
-// Categories list
-const mallCategories = [];
-
-// Product data store
-const mallItemsByCategory = {};
-
-const getItemsByCategory = (category) => mallItemsByCategory[category] || [];
-const getAllMallItems = () => Object.values(mallItemsByCategory).flat();
+const getItemsByCategory = (category) => [];
+const getAllMallItems = () => [];
 
 export default function Menu() {
   const [activeTab, setActiveTab] = useState("Electronics");
@@ -389,7 +384,7 @@ export default function Menu() {
 
       <div className="category-navigation">
         <div className="category-tabs">
-          {mallCategories.map((cat) => (
+          {[].map((cat) => (
             <button
               key={cat}
               className={`category-tab ${activeTab === cat ? "active" : ""}`}
@@ -409,17 +404,15 @@ export default function Menu() {
             <h3>📋 Catalog Info</h3>
             <div className="info-item">
               <span className="label">Categories:</span>
-              <span className="value">{mallCategories.length}</span>
+              <span className="value">0</span>
             </div>
             <div className="info-item">
               <span className="label">Total Products:</span>
-              <span className="value">{getAllMallItems().length}</span>
+              <span className="value">0</span>
             </div>
             <div className="info-item">
               <span className="label">Prime Products:</span>
-              <span className="value">
-                {getAllMallItems().filter((item) => item?.prime).length}
-              </span>
+              <span className="value">0</span>
             </div>
           </div>
 

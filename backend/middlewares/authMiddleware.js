@@ -111,3 +111,10 @@ export const isAdmin = async (req, res, next) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+export function customerOnly(req, res, next) {
+  if (!req.user || req.user.role !== "customer") {
+    return res.status(403).json({ success: false, message: "Customer login required" });
+  }
+  next();
+}

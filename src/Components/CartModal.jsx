@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { toast } from "react-toastify";
 import "./CartModal.css";
 import { getCartByUserAPI, updateCartItemAPI } from "../api/cartApi/cartApi";
 import { toast } from "react-toastify";
@@ -53,7 +54,22 @@ export default function CartModal({ open, onClose }) {
   const total = subtotal - discount + delivery;
 
   const handleCheckout = () => {
+<<<<<<< HEAD
     if (items.length === 0) return;
+=======
+    if (cartItems.length === 0) return;
+
+    // Check if user is logged in and is a customer
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!token || !user || user.role !== "customer") {
+      toast.warning("Please login as a customer to checkout.");
+      onClose();
+      navigate("/login", { state: { returnUrl: "/checkout", customerOnly: true } });
+      return;
+    }
+
+>>>>>>> 89c73af04afca788210f2448ad190f6a3793e788
     onClose();
     navigate("/checkout");
   };

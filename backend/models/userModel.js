@@ -88,6 +88,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );

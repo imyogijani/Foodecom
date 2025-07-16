@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
 import { FaUserCircle } from "react-icons/fa";
@@ -11,32 +11,44 @@ const Login = () => {
     email: "",
     password: "",
   });
-
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if login is for customer-only checkout
+  const customerOnly = location.state?.customerOnly;
+  const returnUrl = location.state?.returnUrl || "/";
 
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem("token");
       const user = localStorage.getItem("user");
-
       if (token && user) {
         try {
           const response = await axios.get("/api/auth/verify-token");
           if (response.data.success) {
-            redirectBasedOnRole(JSON.parse(user).role);
+            const userObj = JSON.parse(user);
+            if (customerOnly) {
+              if (userObj.role === "customer") {
+                navigate(returnUrl);
+              } else {
+                setError(
+                  "Only customers can checkout. Please login/register as a customer."
+                );
+              }
+            } else {
+              redirectBasedOnRole(userObj.role);
+            }
           }
         } catch (error) {
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          console.log(error);
         }
       }
     };
-
     checkAuth();
-  }, []);
+  }, [customerOnly, returnUrl, navigate]);
 
   const redirectBasedOnRole = (role) => {
     if (role === "admin") {
@@ -70,27 +82,31 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) {
       return;
     }
-
     setIsLoading(true);
     setError("");
-
     try {
       const response = await axios.post("/api/auth/login", formData);
-
       if (response.data.success) {
-        // Store token and user data
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
-
-        // Set httpOnly cookie for additional security
         document.cookie = `token=${response.data.token}; path=/; max-age=86400; secure; samesite=strict`;
-
         toast.success("Welcome back! 👋");
-        redirectBasedOnRole(response.data.user.role);
+        if (customerOnly) {
+          if (response.data.user.role === "customer") {
+            navigate(returnUrl);
+          } else {
+            setError(
+              "Only customers can checkout. Please login/register as a customer."
+            );
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+          }
+        } else {
+          redirectBasedOnRole(response.data.user.role);
+        }
       } else {
         const errorMsg = response.data.message || "Login failed";
         toast.error(errorMsg);
@@ -102,8 +118,6 @@ const Login = () => {
         "Login failed. Please check your credentials.";
       toast.error(errorMsg);
       setError(errorMsg);
-
-      // Clear password on error for security
       setFormData((prev) => ({
         ...prev,
         password: "",

@@ -28,11 +28,14 @@ export const getDashboardStats = async (req, res) => {
     ]);
 
     // Get recent orders
-    const recentOrders = await Order.find()
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .populate("user", "name")
-      .populate("seller", ["names", "shopName"]);
+    const activeSellers = await User.aggregate([
+      { $match: { role: 'shopowner', status: 'active' } },
+      { $lookup: { from: 'products', localField: '_id', foreignField: 'seller', as: 'products' } },
+      { $addFields: { totalProducts: { $size: '$products' } } },
+      { $project: { names: 1, shopName: 1, email: 1, lastLogin: 1, totalProducts: 1 } }
+    ]);
+
+    const allUsers = await User.find({}).select('names email role lastLogin createdAt status');
 
     // Calculate total revenue
     const revenue = await Order.aggregate([
@@ -53,15 +56,15 @@ export const getDashboardStats = async (req, res) => {
         totalOrders,
         revenue: revenue[0]?.total || 0,
         userStats: weeklyUserStats,
-        recentOrders: recentOrders.map((order) => ({
-          _id: order._id,
-          customerName: order.user?.name || "Unknown Customer",
-          shopName:
-            order.seller?.names || order.seller?.shopName || "Unknown Shop",
-          amount: order.totalAmount,
-          status: order.status,
-          date: order.createdAt,
+        activeSellers: activeSellers.map((seller) => ({
+          _id: seller._id,
+          shopName: seller.shopName || seller.names,
+          email: seller.email,
+          lastLogin: seller.lastLogin,
+          totalProducts: seller.totalProducts || 0,
         })),
+        allUsers,
+
       },
     });
   } catch (error) {
@@ -178,6 +181,55 @@ export const getAllUsers = async (req, res) => {
 };
 
 // Delete user
+export const getSellerDetails = async (req, res) => {
+  try {
+    const seller = await User.findById(req.params.id)
+      .populate("subscription")
+      .select("-password");
+
+    if (!seller || seller.role !== "shopowner") {
+      return res.status(404).json({
+        success: false,
+        message: "Seller not found",
+      });
+    }
+
+    // Placeholder for fetching deals, products, orders, etc. related to this seller
+    // For now, we'll just return the seller's basic info and subscription
+
+    res.json({
+      success: true,
+      data: {
+        _id: seller._id,
+        names: seller.names,
+        shopName: seller.shopName,
+        email: seller.email,
+        lastLogin: seller.lastLogin,
+        status: seller.status,
+        createdAt: seller.createdAt,
+        subscription: seller.subscription
+          ? {
+              _id: seller.subscription._id,
+              planName: seller.subscription.planName,
+              price: seller.subscription.price,
+              duration: seller.subscription.duration,
+              features: seller.subscription.features,
+            }
+          : null,
+        subscriptionStartDate: seller.subscriptionStartDate,
+        subscriptionFeatures: seller.subscriptionFeatures,
+        // Add more seller-specific data here later (e.g., total products, total sales, top products)
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Error fetching seller details",
+      error: error.message,
+    });
+  }
+};
+
 export const deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
