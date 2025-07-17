@@ -92,6 +92,15 @@ const Login = () => {
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        console.log(
+          "user data",
+          localStorage.getItem("user", JSON.stringify(response.data.user))
+        );
+        console.log(
+          "user token",
+          localStorage.getItem("token", JSON.stringify(response.data.token))
+        );
+
         document.cookie = `token=${response.data.token}; path=/; max-age=86400; secure; samesite=strict`;
         toast.success("Welcome back! 👋");
         if (customerOnly) {

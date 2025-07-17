@@ -114,7 +114,39 @@ export const isAdmin = async (req, res, next) => {
 
 export function customerOnly(req, res, next) {
   if (!req.user || req.user.role !== "customer") {
-    return res.status(403).json({ success: false, message: "Customer login required" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Customer login required" });
   }
   next();
 }
+
+export const authorizeSeller = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role.toLowerCase() !== "shopowner") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Seller only.",
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Seller Authorization Error:", error);
+    return res.status(500).json({
+      success: false,
+      error,
+      message: "Seller authorization failed",
+    });
+  }
+};
