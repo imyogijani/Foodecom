@@ -338,6 +338,52 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+export const getRelatedProducts = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
+
+    // Step 1: Get the current product to find its category
+    const currentProduct = await Product.findById(productId);
+    if (!currentProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Step 2: Count total related products in same category (excluding current)
+    const totalRelated = await Product.countDocuments({
+      category: currentProduct.category,
+      _id: { $ne: productId },
+    });
+
+    // Step 3: Fetch related products with pagination
+    const relatedProducts = await Product.find({
+      category: currentProduct.category,
+      _id: { $ne: productId },
+    })
+      .skip(skip)
+      .limit(limit)
+      .populate("category subcategory")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      products: relatedProducts,
+      totalProducts: totalRelated,
+      totalPages: Math.ceil(totalRelated / limit),
+      currentPage: page,
+    });
+  } catch (error) {
+    console.error("Error fetching related products:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching related products",
+      error: error.message,
+    });
+  }
+};
+
 export const getSingleProductById = async (req, res) => {
   try {
     const { id } = req.params;

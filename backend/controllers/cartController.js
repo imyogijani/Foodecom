@@ -5,13 +5,26 @@ export const addToCart = async (req, res) => {
     const { userId, product } = req.body;
     const { productId, quantity, price, title, image, discount } = product;
 
+    const discountAmount = (price * discount) / 100;
+    const finalPrice = price - discountAmount;
+    const finalPriceToStore = finalPrice;
+
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
       // Cart doesn't exist for this user - create new
       cart = new Cart({
         userId,
-        items: [{ productId, quantity, price, title, image, discount }],
+        items: [
+          {
+            productId,
+            quantity,
+            price: finalPriceToStore,
+            title,
+            image,
+            discount,
+          },
+        ],
       });
     } else {
       // Cart exists, check if product already exists
@@ -24,7 +37,14 @@ export const addToCart = async (req, res) => {
         existingItem.quantity += quantity;
       } else {
         // Add new product to cart
-        cart.items.push({ productId, quantity, price, title, image, discount });
+        cart.items.push({
+          productId,
+          quantity,
+          price: finalPriceToStore,
+          title,
+          image,
+          discount,
+        });
       }
     }
 

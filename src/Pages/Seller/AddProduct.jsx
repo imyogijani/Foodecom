@@ -19,6 +19,7 @@ const AddProduct = () => {
     image: [],
     status: "In Stock",
     variants: [],
+    technicalDetailsId: "6878d66d910126f21713e286",
   });
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState([]);
@@ -205,6 +206,7 @@ const AddProduct = () => {
           image: [],
           status: "In Stock",
           variants: [],
+          technicalDetailsId: "",
         });
         setImagePreview([]);
         if (imageInputRef.current) {

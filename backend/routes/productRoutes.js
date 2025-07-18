@@ -9,6 +9,7 @@ import {
   getAllProducts,
   deleteAllProducts,
   getSingleProductById,
+  getRelatedProducts,
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -24,6 +25,8 @@ router.put("/:productId", authenticateToken, updateProduct);
 
 // Get all products
 router.get("/", getAllProducts);
+
+router.get("/related/:productId", getRelatedProducts);
 
 //singleProduct
 router.get("/:id", getSingleProductById);

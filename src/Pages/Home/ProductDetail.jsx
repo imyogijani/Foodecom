@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { toast } from "react-toastify";
 import {
@@ -31,213 +31,217 @@ import {
   getReviewSummary,
 } from "../../api/reviewApi";
 import { getTechnicalDetailsById } from "../../api/technicalDetailsApi";
+import { addToCartAPI } from "../../api/cartApi/cartApi";
+
 // Import product categories data
-const mallItemsByCategory = {
-  Electronics: [
-    {
-      id: "el-1",
-      title: "iPhone 15 Pro Max",
-      desc: "Latest flagship with A17 Pro chip",
-      image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg",
-      price: "₹159999",
-      originalPrice: "₹169999",
-      rating: 4.8,
-      reviews: 2341,
-      category: "Electronics",
-    },
-    {
-      id: "el-2",
-      title: "Sony WH-1000XM5",
-      desc: "Premium noise-cancelling headphones",
-      image: "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg",
-      price: "₹29999",
-      originalPrice: "₹34999",
-      rating: 4.6,
-      reviews: 1567,
-      category: "Electronics",
-    },
-    {
-      id: "el-3",
-      title: "MacBook Pro M3",
-      desc: "Professional laptop for creators",
-      image: "https://images.pexels.com/photos/18105/pexels-photo.jpg",
-      price: "₹199999",
-      rating: 4.9,
-      reviews: 876,
-      category: "Electronics",
-    },
-    {
-      id: "el-4",
-      title: "Apple Watch Series 9",
-      desc: "Advanced health and fitness tracking",
-      image: "https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg",
-      price: "₹41999",
-      originalPrice: "₹45999",
-      rating: 4.7,
-      reviews: 1234,
-      category: "Electronics",
-    },
-    {
-      id: "el-5",
-      title: "Samsung Galaxy Tab S9",
-      desc: "Premium tablet for work and entertainment",
-      image:
-        "https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg",
-      price: "₹54999",
-      rating: 4.5,
-      reviews: 892,
-      category: "Electronics",
-    },
-    {
-      id: "el-6",
-      title: "Wireless Earbuds Pro",
-      desc: "Crystal clear sound with noise cancellation",
-      image:
-        "https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg",
-      price: "₹12999",
-      originalPrice: "₹16999",
-      rating: 4.4,
-      reviews: 567,
-      category: "Electronics",
-    },
-  ],
-  Fashion: [
-    {
-      id: "fa-1",
-      title: "Premium Cotton T-Shirt",
-      desc: "Comfortable everyday wear",
-      image:
-        "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg",
-      price: "₹799",
-      originalPrice: "₹1299",
-      rating: 4.3,
-      reviews: 567,
-      category: "Fashion",
-    },
-    {
-      id: "fa-2",
-      title: "Designer Evening Dress",
-      desc: "Elegant party wear collection",
-      image:
-        "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg",
-      price: "₹4999",
-      originalPrice: "��7999",
-      rating: 4.6,
-      reviews: 234,
-      category: "Fashion",
-    },
-    {
-      id: "fa-3",
-      title: "Nike Air Max Sneakers",
-      desc: "Premium athletic footwear",
-      image:
-        "https://images.pexels.com/photos/2526878/pexels-photo-2526878.jpeg",
-      price: "₹8999",
-      originalPrice: "₹12999",
-      rating: 4.7,
-      reviews: 1456,
-      category: "Fashion",
-    },
-    {
-      id: "fa-4",
-      title: "Denim Jacket Classic",
-      desc: "Classic denim for all seasons",
-      image:
-        "https://images.pexels.com/photos/1081685/pexels-photo-1081685.jpeg",
-      price: "₹3999",
-      originalPrice: "₹5999",
-      rating: 4.4,
-      reviews: 678,
-      category: "Fashion",
-    },
-    {
-      id: "fa-5",
-      title: "Winter Puffer Jacket",
-      desc: "Warm and stylish winter protection",
-      image: "https://images.pexels.com/photos/994523/pexels-photo-994523.jpeg",
-      price: "₹6999",
-      originalPrice: "₹9999",
-      rating: 4.5,
-      reviews: 345,
-      category: "Fashion",
-    },
-    {
-      id: "fa-6",
-      title: "Business Formal Suit",
-      desc: "Professional attire for success",
-      image:
-        "https://images.pexels.com/photos/3251530/pexels-photo-3251530.jpeg",
-      price: "₹14999",
-      originalPrice: "₹19999",
-      rating: 4.8,
-      reviews: 123,
-      category: "Fashion",
-    },
-  ],
-  "Home & Kitchen": [
-    {
-      id: "hk-1",
-      title: "Vitamix Professional Blender",
-      desc: "High-performance kitchen blender",
-      image:
-        "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg",
-      price: "₹24999",
-      originalPrice: "₹29999",
-      rating: 4.7,
-      reviews: 456,
-      category: "Home & Kitchen",
-    },
-    {
-      id: "hk-2",
-      title: "Nespresso Coffee Machine",
-      desc: "Premium coffee brewing system",
-      image: "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg",
-      price: "₹18999",
-      originalPrice: "₹22999",
-      rating: 4.6,
-      reviews: 789,
-      category: "Home & Kitchen",
-    },
-    {
-      id: "hk-3",
-      title: "Smart Air Fryer",
-      desc: "Healthy cooking with smart controls",
-      image:
-        "https://images.pexels.com/photos/4109489/pexels-photo-4109489.jpeg",
-      price: "₹8999",
-      originalPrice: "₹12999",
-      rating: 4.5,
-      reviews: 234,
-      category: "Home & Kitchen",
-    },
-    {
-      id: "hk-4",
-      title: "Robot Vacuum Cleaner",
-      desc: "Smart cleaning for modern homes",
-      image:
-        "https://images.pexels.com/photos/3251531/pexels-photo-3251531.jpeg",
-      price: "₹25999",
-      originalPrice: "₹32999",
-      rating: 4.4,
-      reviews: 167,
-      category: "Home & Kitchen",
-    },
-  ],
-};
+// const mallItemsByCategory = {
+//   Electronics: [
+//     {
+//       id: "el-1",
+//       title: "iPhone 15 Pro Max",
+//       desc: "Latest flagship with A17 Pro chip",
+//       image: "https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg",
+//       price: "₹159999",
+//       originalPrice: "₹169999",
+//       rating: 4.8,
+//       reviews: 2341,
+//       category: "Electronics",
+//     },
+//     {
+//       id: "el-2",
+//       title: "Sony WH-1000XM5",
+//       desc: "Premium noise-cancelling headphones",
+//       image: "https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg",
+//       price: "₹29999",
+//       originalPrice: "₹34999",
+//       rating: 4.6,
+//       reviews: 1567,
+//       category: "Electronics",
+//     },
+//     {
+//       id: "el-3",
+//       title: "MacBook Pro M3",
+//       desc: "Professional laptop for creators",
+//       image: "https://images.pexels.com/photos/18105/pexels-photo.jpg",
+//       price: "₹199999",
+//       rating: 4.9,
+//       reviews: 876,
+//       category: "Electronics",
+//     },
+//     {
+//       id: "el-4",
+//       title: "Apple Watch Series 9",
+//       desc: "Advanced health and fitness tracking",
+//       image: "https://images.pexels.com/photos/437037/pexels-photo-437037.jpeg",
+//       price: "₹41999",
+//       originalPrice: "₹45999",
+//       rating: 4.7,
+//       reviews: 1234,
+//       category: "Electronics",
+//     },
+//     {
+//       id: "el-5",
+//       title: "Samsung Galaxy Tab S9",
+//       desc: "Premium tablet for work and entertainment",
+//       image:
+//         "https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg",
+//       price: "₹54999",
+//       rating: 4.5,
+//       reviews: 892,
+//       category: "Electronics",
+//     },
+//     {
+//       id: "el-6",
+//       title: "Wireless Earbuds Pro",
+//       desc: "Crystal clear sound with noise cancellation",
+//       image:
+//         "https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg",
+//       price: "₹12999",
+//       originalPrice: "₹16999",
+//       rating: 4.4,
+//       reviews: 567,
+//       category: "Electronics",
+//     },
+//   ],
+//   Fashion: [
+//     {
+//       id: "fa-1",
+//       title: "Premium Cotton T-Shirt",
+//       desc: "Comfortable everyday wear",
+//       image:
+//         "https://images.pexels.com/photos/2983464/pexels-photo-2983464.jpeg",
+//       price: "₹799",
+//       originalPrice: "₹1299",
+//       rating: 4.3,
+//       reviews: 567,
+//       category: "Fashion",
+//     },
+//     {
+//       id: "fa-2",
+//       title: "Designer Evening Dress",
+//       desc: "Elegant party wear collection",
+//       image:
+//         "https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg",
+//       price: "₹4999",
+//       originalPrice: "��7999",
+//       rating: 4.6,
+//       reviews: 234,
+//       category: "Fashion",
+//     },
+//     {
+//       id: "fa-3",
+//       title: "Nike Air Max Sneakers",
+//       desc: "Premium athletic footwear",
+//       image:
+//         "https://images.pexels.com/photos/2526878/pexels-photo-2526878.jpeg",
+//       price: "₹8999",
+//       originalPrice: "₹12999",
+//       rating: 4.7,
+//       reviews: 1456,
+//       category: "Fashion",
+//     },
+//     {
+//       id: "fa-4",
+//       title: "Denim Jacket Classic",
+//       desc: "Classic denim for all seasons",
+//       image:
+//         "https://images.pexels.com/photos/1081685/pexels-photo-1081685.jpeg",
+//       price: "₹3999",
+//       originalPrice: "₹5999",
+//       rating: 4.4,
+//       reviews: 678,
+//       category: "Fashion",
+//     },
+//     {
+//       id: "fa-5",
+//       title: "Winter Puffer Jacket",
+//       desc: "Warm and stylish winter protection",
+//       image: "https://images.pexels.com/photos/994523/pexels-photo-994523.jpeg",
+//       price: "₹6999",
+//       originalPrice: "₹9999",
+//       rating: 4.5,
+//       reviews: 345,
+//       category: "Fashion",
+//     },
+//     {
+//       id: "fa-6",
+//       title: "Business Formal Suit",
+//       desc: "Professional attire for success",
+//       image:
+//         "https://images.pexels.com/photos/3251530/pexels-photo-3251530.jpeg",
+//       price: "₹14999",
+//       originalPrice: "₹19999",
+//       rating: 4.8,
+//       reviews: 123,
+//       category: "Fashion",
+//     },
+//   ],
+//   "Home & Kitchen": [
+//     {
+//       id: "hk-1",
+//       title: "Vitamix Professional Blender",
+//       desc: "High-performance kitchen blender",
+//       image:
+//         "https://images.pexels.com/photos/3768169/pexels-photo-3768169.jpeg",
+//       price: "₹24999",
+//       originalPrice: "₹29999",
+//       rating: 4.7,
+//       reviews: 456,
+//       category: "Home & Kitchen",
+//     },
+//     {
+//       id: "hk-2",
+//       title: "Nespresso Coffee Machine",
+//       desc: "Premium coffee brewing system",
+//       image: "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg",
+//       price: "₹18999",
+//       originalPrice: "₹22999",
+//       rating: 4.6,
+//       reviews: 789,
+//       category: "Home & Kitchen",
+//     },
+//     {
+//       id: "hk-3",
+//       title: "Smart Air Fryer",
+//       desc: "Healthy cooking with smart controls",
+//       image:
+//         "https://images.pexels.com/photos/4109489/pexels-photo-4109489.jpeg",
+//       price: "₹8999",
+//       originalPrice: "₹12999",
+//       rating: 4.5,
+//       reviews: 234,
+//       category: "Home & Kitchen",
+//     },
+//     {
+//       id: "hk-4",
+//       title: "Robot Vacuum Cleaner",
+//       desc: "Smart cleaning for modern homes",
+//       image:
+//         "https://images.pexels.com/photos/3251531/pexels-photo-3251531.jpeg",
+//       price: "₹25999",
+//       originalPrice: "₹32999",
+//       rating: 4.4,
+//       reviews: 167,
+//       category: "Home & Kitchen",
+//     },
+//   ],
+// };
 
 export default function ProductDetail() {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
   const { id } = useParams();
   const { addToCart } = useCart();
-  const item = location.state?.item;
-  const [itemData, setItemData] = useState(item);
+  // const item = location.state?.item;
+  // const [itemData, setItemData] = useState(item);
+  const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(!item);
   const [productReviews, setProductReviews] = useState([]);
   const [reviewSummary, setReviewSummary] = useState({});
   const [selectedImage, setSelectedImage] = useState(0);
   const [showZoom, setShowZoom] = useState(false);
   const [technicalDetails, setTechnicalDetails] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
 
   // const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -247,123 +251,98 @@ export default function ProductDetail() {
   // const [showZoom, setShowZoom] = useState(false);
 
   // Mock additional images for gallery
-  const productImages = item?.image
-    ? [
-        item.image,
-        item.image, // Repeat for demo - in real app would have multiple angles
-        item.image,
-        item.image,
-      ]
-    : [];
+  // const productImages = item?.image
+  //   ? [
+  //       item.image,
+  //       item.image, // Repeat for demo - in real app would have multiple angles
+  //       item.image,
+  //       item.image,
+  //     ]
+  //   : [];
 
-  // Mock product variants
-  const productVariants = [
-    {
-      id: 1,
-      name: "Default",
-      price: item?.price,
-      inStock: true,
-    },
-    {
-      id: 2,
-      name: "Premium",
-      price: item?.price ? `₹${parseInt(item.price) + 500}` : "₹1500",
-      inStock: true,
-    },
-    {
-      id: 3,
-      name: "Deluxe",
-      price: item?.price ? `₹${parseInt(item.price) + 1000}` : "₹2000",
-      inStock: false,
-    },
-  ];
+  // // Mock product variants
+  // const productVariants = [
+  //   {
+  //     id: 1,
+  //     name: "Default",
+  //     price: item?.price,
+  //     inStock: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Premium",
+  //     price: item?.price ? `₹${parseInt(item.price) + 500}` : "₹1500",
+  //     inStock: true,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Deluxe",
+  //     price: item?.price ? `₹${parseInt(item.price) + 1000}` : "₹2000",
+  //     inStock: false,
+  //   },
+  // ];
 
   // Mock reviews data
-  const reviews = [
-    {
-      id: 1,
-      name: "Rajesh Kumar",
-      rating: 5,
-      date: "12 Dec 2024",
-      title: "Excellent quality!",
-      review:
-        "Amazing product with great quality. Delivery was fast and packaging was perfect. Highly recommended!",
-      helpful: 15,
-      verified: true,
-    },
-    {
-      id: 2,
-      name: "Priya Sharma",
-      rating: 4,
-      date: "8 Dec 2024",
-      title: "Good value for money",
-      review:
-        "Good product overall. Some minor issues but customer service was very helpful.",
-      helpful: 8,
-      verified: true,
-    },
-    {
-      id: 3,
-      name: "Amit Singh",
-      rating: 5,
-      date: "5 Dec 2024",
-      title: "Perfect!",
-      review:
-        "Exactly what I was looking for. Great build quality and works as described.",
-      helpful: 12,
-      verified: true,
-    },
-  ];
+  // const reviews = [
+  //   {
+  //     id: 1,
+  //     name: "Rajesh Kumar",
+  //     rating: 5,
+  //     date: "12 Dec 2024",
+  //     title: "Excellent quality!",
+  //     review:
+  //       "Amazing product with great quality. Delivery was fast and packaging was perfect. Highly recommended!",
+  //     helpful: 15,
+  //     verified: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Priya Sharma",
+  //     rating: 4,
+  //     date: "8 Dec 2024",
+  //     title: "Good value for money",
+  //     review:
+  //       "Good product overall. Some minor issues but customer service was very helpful.",
+  //     helpful: 8,
+  //     verified: true,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Amit Singh",
+  //     rating: 5,
+  //     date: "5 Dec 2024",
+  //     title: "Perfect!",
+  //     review:
+  //       "Exactly what I was looking for. Great build quality and works as described.",
+  //     helpful: 12,
+  //     verified: true,
+  //   },
+  // ];
 
   // Get related products from the same category
-  const getRelatedProducts = () => {
-    // Determine the category of current item (default to Electronics if not specified)
-    const currentCategory = item?.category || "Electronics";
+  // const getRelatedProducts = () => {
+  //   // Determine the category of current item (default to Electronics if not specified)
+  //   const currentCategory = item?.category.name || "Food";
+  //   console.log("Categories related ", currentCategory);
 
-    // Get products from the same category
-    const categoryProducts =
-      mallItemsByCategory[currentCategory] ||
-      mallItemsByCategory["Electronics"];
+  //   // Get products from the same category
+  //   const categoryProducts =
+  //     mallItemsByCategory[currentCategory] ||
+  //     mallItemsByCategory["Electronics"];
 
-    // Filter out the current product and return up to 6 related products
-    return categoryProducts
-      .filter((product) => product.id !== item?.id)
-      .slice(0, 6);
-  };
+  //   // Filter out the current product and return up to 6 related products
+  //   return categoryProducts
+  //     .filter((product) => product.id !== item?.id)
+  //     .slice(0, 6);
+  // };
 
-  const relatedProducts = getRelatedProducts();
-
-  useEffect(() => {
-    setSelectedVariant(productVariants[0]);
-  }, []);
-
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     try {
-  //       setLoading(true);
-  //       const response = await axios.get(`/api/products/${id}`);
-  //       setItemData(response.data.product);
-  //       console.log("Product details", response.data.product);
-  //     } catch (error) {
-  //       console.error("Product not found:", error);
-  //       setItemData(null);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   if (!item) {
-  //     fetchProduct();
-  //   } else {
-  //     setItemData(item); // Use passed state
-  //   }
-  // }, [id, item]);
+  // const relatedProducts = getRelatedProducts();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`/api/products/${id}`);
-        setItemData(response.data.product);
+        setItem(response.data.product);
         console.log("Product details", response.data.product);
         if (response.data.product.technicalDetails) {
           const techDetails = await getTechnicalDetailsById(
@@ -376,6 +355,7 @@ export default function ProductDetail() {
         }
       } catch (err) {
         console.error("Product not found", err);
+        setItem(null);
       } finally {
         setLoading(false);
       }
@@ -412,6 +392,20 @@ export default function ProductDetail() {
     };
 
     fetchSummary();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      try {
+        const res = await axios.get(`/api/products/related/${id}?limit=10`);
+        setRelatedProducts(res.data.products);
+        console.log("Realted product", res.data.products);
+      } catch (err) {
+        console.error("Error fetching related products:", err);
+      }
+    };
+
+    fetchRelatedProducts();
   }, [id]);
 
   const currentUserId = JSON.parse(localStorage.getItem("user"))?._id;
@@ -465,16 +459,16 @@ export default function ProductDetail() {
     );
   }
 
-  const handleAddToCart = () => {
-    const productToAdd = {
-      ...item,
-      quantity: quantity,
-      variant: selectedVariant,
-      addedAt: new Date().toISOString(),
-    };
-    addToCart(productToAdd);
-    toast.success(`${item.title} added to cart! 🛒`);
-  };
+  // const handleAddToCart = () => {
+  //   const productToAdd = {
+  //     ...item,
+  //     quantity: quantity,
+  //     variant: selectedVariant,
+  //     addedAt: new Date().toISOString(),
+  //   };
+  //   addToCart(productToAdd);
+  //   toast.success(`${item.title} added to cart! 🛒`);
+  // };
 
   const handleBuyNow = () => {
     handleAddToCart();
@@ -506,17 +500,17 @@ export default function ProductDetail() {
     return stars;
   };
 
-  const calculateDiscountedPrice = () => {
-    if (!item.originalPrice) return item.price;
-    return item.price;
-  };
+  // const calculateDiscountedPrice = () => {
+  //   if (!item.originalPrice) return item.price;
+  //   return item.price;
+  // };
 
-  const calculateSavings = () => {
-    if (!item.originalPrice) return null;
-    const original = parseInt(item.originalPrice);
-    const current = parseInt(item.price);
-    return original - current;
-  };
+  // const calculateSavings = () => {
+  //   if (!item.originalPrice) return null;
+  //   const original = parseInt(item.originalPrice);
+  //   const current = parseInt(item.price);
+  //   return original - current;
+  // };
   // const processImageUrl = (image) => {
   //   if (image && image.startsWith("/uploads")) {
   //     return `http://localhost:8080${image}`;
@@ -545,6 +539,49 @@ export default function ProductDetail() {
   const calculateSavingsFinal = (price, discount) => {
     if (!price || !discount || discount <= 0) return 0;
     return Math.round((price * discount) / 100);
+  };
+  // const token = JSON.parse(localStorage.getItem("token"));
+  // console.log(token);
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user?._id;
+
+      if (!userId) {
+        toast.error("User not logged in");
+        return;
+      }
+
+      const cartData = {
+        productId: id, // Or selectedVariant._id if using variants
+        quantity: quantity,
+        // productId: deal.product._id,
+        // quantity: 1,
+        price: item.price,
+        title: item.name,
+        discount: item.discount,
+        // selectedVariantId: selectedVariant?._id, // Optional if variants used
+      };
+
+      // const response = await axios.post("/api/cart/add", {
+      //   userId,
+      //   product: cartData,
+      // });
+
+      const response = await addToCartAPI(userId, cartData);
+      toast.success("Added to cart!");
+
+      // if (response.data.success) {
+      //   toast.success("Item added to cart");
+      // } else {
+      //   toast.error("Failed to add to cart");
+      // }
+    } catch (err) {
+      console.error("Error adding to cart:", JSON.stringify(err));
+      toast.error("Something went wrong");
+    }
   };
 
   return (
@@ -630,7 +667,7 @@ export default function ProductDetail() {
 
               {item.price && (
                 <span className="original-price">
-                  M.R.P: <span className="strike">{item.price}</span>
+                  M.R.P: <span className="strike">₹{item.price}</span>
                 </span>
               )}
             </div>
@@ -693,7 +730,7 @@ export default function ProductDetail() {
 
                 {item.price && (
                   <span className="original-price">
-                    M.R.P: <span className="strike">{item.price}</span>
+                    M.R.P: <span className="strike">₹{item.price}</span>
                   </span>
                 )}
               </div>
@@ -808,11 +845,11 @@ export default function ProductDetail() {
           <div className="mobile-purchase-integration">
             <div className="mobile-price-summary">
               <span className="card-price">
-                {selectedVariant?.price || item.price}
+                ₹{selectedVariant?.price || item.price}
               </span>
               {item.originalPrice && (
                 <span className="card-original-price">
-                  M.R.P: <span className="strike">{item.originalPrice}</span>
+                  M.R.P: <span className="strike">₹{item.price}</span>
                 </span>
               )}
             </div>
@@ -853,20 +890,19 @@ export default function ProductDetail() {
           <div className="purchase-card">
             <div className="price-summary">
               <span className="card-price">
-                {selectedVariant?.price || item.price}
+                ₹{selectedVariant?.price || item.price}
               </span>
-              {item.originalPrice && (
+              {item.price && (
                 <span className="card-original-price">
-                  M.R.P: <span className="strike">{item.originalPrice}</span>
+                  M.R.P: <span className="strike">₹{item.price}</span>
                 </span>
               )}
             </div>
-
             <div className="delivery-info-card">
               <div className="delivery-row">
                 <Truck size={16} />
                 <span>
-                  FREE delivery <strong>Tomorrow</strong>
+                  FREE delivery <strong>{"Tomorrow"}</strong>
                 </span>
               </div>
               <div className="delivery-row">
@@ -876,7 +912,8 @@ export default function ProductDetail() {
             </div>
 
             <div className="stock-info">
-              <span className="in-stock">✓ In Stock</span>
+              {/* <span className="in-stock">✓ In Stock</span> */}
+              <span className="in-stock">{item.status}</span>
             </div>
 
             <div className="quantity-selector">
@@ -1103,32 +1140,45 @@ export default function ProductDetail() {
             <div
               key={product.id}
               className="related-product-card"
-              onClick={() =>
-                navigate(`/product/${product.id}`, { state: { item: product } })
-              }
+              onClick={() => navigate(`/product/${product._id}`)}
             >
-              <img src={product.image} alt={product.title} />
-              <h4>{product.title}</h4>
+              <img src={processImageUrl(product.image)} alt={product.name} />
+              <h4>{product.name}</h4>
               <div className="related-rating">
-                {renderStars(product.rating)}
-                <span>({product.rating})</span>
+                {renderStars(product.averageRating)}
+                <span>({product.averageRating})</span>
               </div>
               <div className="related-price">
-                <span className="current">{product.price}</span>
-                {product.originalPrice && (
-                  <span className="original">{product.originalPrice}</span>
+                <span className="current">
+                  ₹
+                  {calculateDiscountedPriceFinal(
+                    product.price,
+                    product.discount
+                  )}
+                </span>
+                {product.price && (
+                  <span className="original">₹{product.price}</span>
                 )}
               </div>
               <button
                 className="related-add-to-cart"
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  addToCart({
-                    ...product,
+                  // addToCart({
+                  //   ...product,
+                  //   quantity: 1,
+                  //   addedAt: new Date().toISOString(),
+                  // });
+                  const response = await addToCartAPI(currentUserId, {
+                    productId: product._id, // Or selectedVariant._id if using variants
                     quantity: 1,
-                    addedAt: new Date().toISOString(),
+                    // productId: deal.product._id,
+                    // quantity: 1,
+                    price: product.price,
+                    title: product.name,
+                    discount: product.discount,
                   });
-                  toast.success(`${product.title} added to cart! 🛒`);
+                  toast.success(`${product.name} added to cart! 🛒`);
                 }}
               >
                 <ShoppingCart size={14} />
@@ -1146,10 +1196,10 @@ export default function ProductDetail() {
             <button className="close-zoom" onClick={() => setShowZoom(false)}>
               ×
             </button>
-            <img
+            {/* <img
               src={productImages[selectedImage] || item.image}
               alt={item.title}
-            />
+            /> */}
           </div>
         </div>
       )}

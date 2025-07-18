@@ -29,13 +29,30 @@ export const getDashboardStats = async (req, res) => {
 
     // Get recent orders
     const activeSellers = await User.aggregate([
-      { $match: { role: 'shopowner', status: 'active' } },
-      { $lookup: { from: 'products', localField: '_id', foreignField: 'seller', as: 'products' } },
-      { $addFields: { totalProducts: { $size: '$products' } } },
-      { $project: { names: 1, shopName: 1, email: 1, lastLogin: 1, totalProducts: 1 } }
+      { $match: { role: "shopowner", status: "active" } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "seller",
+          as: "products",
+        },
+      },
+      { $addFields: { totalProducts: { $size: "$products" } } },
+      {
+        $project: {
+          names: 1,
+          shopName: 1,
+          email: 1,
+          lastLogin: 1,
+          totalProducts: 1,
+        },
+      },
     ]);
 
-    const allUsers = await User.find({}).select('names email role lastLogin createdAt status');
+    const allUsers = await User.find({}).select(
+      "names email role lastLogin createdAt status"
+    );
 
     // Calculate total revenue
     const revenue = await Order.aggregate([
@@ -64,7 +81,6 @@ export const getDashboardStats = async (req, res) => {
           totalProducts: seller.totalProducts || 0,
         })),
         allUsers,
-
       },
     });
   } catch (error) {
@@ -79,8 +95,19 @@ export const getDashboardStats = async (req, res) => {
 // Get all products with shop details
 export const getAllProducts = async (req, res) => {
   try {
-    const { populateCategory, populateSubcategory } = req.query;
-    let query = Product.find().populate("seller", ["names", "shopName"]);
+    const {
+      populateCategory,
+      populateSubcategory,
+      page = 1,
+      limit = 10,
+    } = req.query;
+
+    const skip = (page - 1) * limit;
+
+    let query = Product.find()
+      .populate("seller", ["names", "shopName"])
+      .skip(skip)
+      .limit(parseInt(limit));
 
     if (populateCategory === "true") {
       query = query.populate("category");
@@ -90,10 +117,16 @@ export const getAllProducts = async (req, res) => {
       query = query.populate("subcategory");
     }
 
+    // Total number of products (without skip & limit)
+    const totalCount = await Product.countDocuments();
+
     const products = await query;
 
     res.json({
       success: true,
+      totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+      currentPage: parseInt(page),
       products: products.map((product) => ({
         _id: product._id,
         name: product.name,
