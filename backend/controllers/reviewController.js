@@ -73,13 +73,32 @@ export const getProductReviews = async (req, res) => {
     const { productId } = req.params;
 
     const reviews = await Review.find({ product: productId })
-      .populate("user", "name")
+      .populate("user", "role names shopownerName") // Populate required fields
       .sort({ createdAt: -1 });
+
+    const updatedReviews = reviews.map((review) => {
+      const user = review.user;
+      let username = "";
+
+      if (user.role === "client" || user.role === "admin") {
+        username = user.names;
+      } else if (user.role === "shopowner") {
+        username = user.shopownerName;
+      }
+
+      return {
+        ...review._doc,
+        user: {
+          _id: user._id,
+          name: username,
+        },
+      };
+    });
 
     res.status(200).json({
       success: true,
-      count: reviews.length,
-      reviews,
+      count: updatedReviews.length,
+      reviews: updatedReviews,
     });
   } catch (err) {
     res.status(500).json({ message: "Error fetching reviews", err });
@@ -148,9 +167,7 @@ export const toggleHelpful = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: isAlreadyHelpful
-        ? "Removed from helpful"
-        : "Marked as helpful",
+      message: isAlreadyHelpful ? "Removed from helpful" : "Marked as helpful",
       helpfulCount: review.helpfulBy.length,
       isHelpful: !isAlreadyHelpful,
     });
@@ -162,8 +179,6 @@ export const toggleHelpful = async (req, res) => {
     });
   }
 };
-
-
 
 export const getReviewSummary = async (req, res) => {
   const { productId } = req.params;
@@ -192,6 +207,8 @@ export const getReviewSummary = async (req, res) => {
       ratings: ratingSummary,
     });
   } catch (err) {
-    res.status(500).json({ message: "Error in rating summary", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error in rating summary", error: err.message });
   }
 };

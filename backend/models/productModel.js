@@ -37,7 +37,7 @@ const productSchema = new mongoose.Schema(
       validate: [(arr) => arr.length <= 10, "Max 10 images allowed"],
       required: true,
     },
-  // VARIANTS ARRAY
+    // VARIANTS ARRAY
     variants: [
       {
         name: { type: String, required: true }, // "Default", "Premium", etc.
@@ -74,6 +74,11 @@ const productSchema = new mongoose.Schema(
     totalReviews: {
       type: Number,
       default: 0,
+    },
+    technicalDetails: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "TechnicalDetails",
+      required: true,
     },
   },
   {

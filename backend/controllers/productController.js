@@ -1,6 +1,7 @@
 import path from "path";
 import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
+import TechnicalDetails from "../models/technicalDetails.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,6 +20,7 @@ export const addProduct = async (req, res) => {
       status,
       brand,
       variants,
+      technicalDetailsId,
     } = req.body;
 
     // Validate subcategory if provided
@@ -39,17 +41,6 @@ export const addProduct = async (req, res) => {
         message: "Category not found",
       });
     }
-    // let image = "";
-
-    // // Handle file upload (multer)
-    // if (req.file) {
-    //   image = `/uploads/products/${req.file.filename}`;
-    // } else {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Product image is required",
-    //   });
-    // }
 
     let image = [];
     if (req.files && req.files.length > 0) {
@@ -74,6 +65,28 @@ export const addProduct = async (req, res) => {
           .status(400)
           .json({ success: false, message: "Invalid JSON in variants", e });
       }
+    }
+
+    // 4. Optional: Check technicalDetails exists
+    let techDetailsRef = null;
+
+    if (technicalDetailsId) {
+      const details = await TechnicalDetails.findById(technicalDetailsId);
+      if (!details) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid technicalDetailsId" });
+      }
+      techDetailsRef = details._id;
+    } else if (req.body.technicalDetails) {
+      const { findOrCreateTechnicalDetails } = await import(
+        "../helpers/compareTechnicalDetails.js"
+      );
+
+      const { reused, doc } = await findOrCreateTechnicalDetails(
+        req.body.technicalDetails
+      );
+      techDetailsRef = doc._id;
     }
 
     // --- Dynamic Subscription Feature Enforcement ---
@@ -146,6 +159,7 @@ export const addProduct = async (req, res) => {
       variants: parsedVariants,
       brand: brand || undefined,
       seller: req.userId,
+      technicalDetails: techDetailsRef || undefined,
     });
 
     await product.save();
@@ -329,8 +343,8 @@ export const getSingleProductById = async (req, res) => {
     const { id } = req.params;
 
     const product = await Product.findById(id)
-      .populate("category")
-      .populate("subcategory");
+      .populate("category", "name")
+      .populate("subcategory", "name");
 
     if (!product) {
       return res.status(404).json({

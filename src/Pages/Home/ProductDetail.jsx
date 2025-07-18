@@ -25,7 +25,12 @@ import {
 } from "lucide-react";
 import "./ProductDetail.css";
 import axios from "../../utils/axios";
-
+import {
+  getProductReviews,
+  toggleHelpful,
+  getReviewSummary,
+} from "../../api/reviewApi";
+import { getTechnicalDetailsById } from "../../api/technicalDetailsApi";
 // Import product categories data
 const mallItemsByCategory = {
   Electronics: [
@@ -228,13 +233,18 @@ export default function ProductDetail() {
   const item = location.state?.item;
   const [itemData, setItemData] = useState(item);
   const [loading, setLoading] = useState(!item);
-
+  const [productReviews, setProductReviews] = useState([]);
+  const [reviewSummary, setReviewSummary] = useState({});
   const [selectedImage, setSelectedImage] = useState(0);
+  const [showZoom, setShowZoom] = useState(false);
+  const [technicalDetails, setTechnicalDetails] = useState(null);
+
+  // const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [activeTab, setActiveTab] = useState("description");
   const [selectedVariant, setSelectedVariant] = useState(null);
-  const [showZoom, setShowZoom] = useState(false);
+  // const [showZoom, setShowZoom] = useState(false);
 
   // Mock additional images for gallery
   const productImages = item?.image
@@ -355,6 +365,15 @@ export default function ProductDetail() {
         const response = await axios.get(`/api/products/${id}`);
         setItemData(response.data.product);
         console.log("Product details", response.data.product);
+        if (response.data.product.technicalDetails) {
+          const techDetails = await getTechnicalDetailsById(
+            response.data.product.technicalDetails
+          );
+          setTechnicalDetails(techDetails);
+          console.log("technicalDetails", techDetails);
+        } else {
+          setTechnicalDetails(null);
+        }
       } catch (err) {
         console.error("Product not found", err);
       } finally {
@@ -365,6 +384,72 @@ export default function ProductDetail() {
     fetchProduct(); // Always fetch from server
   }, [id]);
   // console.log("Data of details product", itemData);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const data = await getProductReviews(id); // calling your function
+        setProductReviews(data.reviews); // make sure your API returns reviews key
+        console.log("Fetched reviews:", data.reviews);
+      } catch (error) {
+        console.error("Error fetching reviews:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const data = await getReviewSummary(id);
+        setReviewSummary(data.ratings || {});
+      } catch (error) {
+        console.error("Error fetching summary:", error.message);
+      }
+    };
+
+    fetchSummary();
+  }, [id]);
+
+  const currentUserId = JSON.parse(localStorage.getItem("user"))?._id;
+  const handleHelpfulClick = async (reviewId) => {
+    try {
+      const res = await toggleHelpful(reviewId); // API response
+
+      const updatedReviews = productReviews.map((review) => {
+        if (review._id === reviewId) {
+          let updatedHelpfulBy = [...(review.helpfulBy || [])];
+
+          if (res.isHelpful) {
+            // User added helpful
+            if (!updatedHelpfulBy.includes(currentUserId)) {
+              updatedHelpfulBy.push(currentUserId);
+            }
+          } else {
+            // User removed helpful
+            updatedHelpfulBy = updatedHelpfulBy.filter(
+              (userId) => userId !== currentUserId
+            );
+          }
+
+          return {
+            ...review,
+            helpfulBy: updatedHelpfulBy, // live update helpfulBy array
+          };
+        }
+        return review;
+      });
+
+      setProductReviews(updatedReviews);
+      toast.success(res.message);
+    } catch (error) {
+      toast.error(error.message || "Could not update helpful status");
+    }
+  };
+
   if (!item) {
     return (
       <div className="product-not-found">
@@ -461,6 +546,7 @@ export default function ProductDetail() {
     if (!price || !discount || discount <= 0) return 0;
     return Math.round((price * discount) / 100);
   };
+
   return (
     <div className="amazon-product-detail">
       {/* Breadcrumb */}
@@ -480,7 +566,7 @@ export default function ProductDetail() {
         {/* Image Gallery Section */}
         <div className="image-gallery-section">
           <div className="thumbnail-column">
-            {productImages.map((img, index) => (
+            {item.image.map((img, index) => (
               <div
                 key={index}
                 className={`thumbnail ${
@@ -488,7 +574,10 @@ export default function ProductDetail() {
                 }`}
                 onClick={() => setSelectedImage(index)}
               >
-                <img src={img} alt={`Product view ${index + 1}`} />
+                <img
+                  src={processImageUrl(img)}
+                  alt={`Product view ${index + 1}`}
+                />
               </div>
             ))}
           </div>
@@ -496,10 +585,7 @@ export default function ProductDetail() {
           <div className="main-image-container">
             <img
               // src={productImages[selectedImage] || processImageUrl(item.image)}
-              src={
-                processImageUrl(productImages[selectedImage]) ||
-                processImageUrl(item.image)
-              }
+              src={processImageUrl(item.image[selectedImage])}
               alt={item.name}
               className="main-product-image"
               onClick={() => setShowZoom(true)}
@@ -510,6 +596,21 @@ export default function ProductDetail() {
             </button>
             {item.discount && (
               <div className="discount-badge">-{item.discount}% OFF</div>
+            )}
+
+            {showZoom && (
+              <div className="zoom-modal" onClick={() => setShowZoom(false)}>
+                <div
+                  className="zoom-content"
+                  onClick={(e) => e.stopPropagation()} // prevent close when clicking on image
+                >
+                  <img
+                    src={processImageUrl(item.image[selectedImage])}
+                    alt="Zoomed view"
+                    className="zoomed-image"
+                  />
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -840,7 +941,7 @@ export default function ProductDetail() {
             className={`tab-button ${activeTab === "reviews" ? "active" : ""}`}
             onClick={() => setActiveTab("reviews")}
           >
-            Reviews ({reviews.length})
+            Reviews ({item.totalReviews})
           </button>
           <button
             className={`tab-button ${activeTab === "qa" ? "active" : ""}`}
@@ -861,23 +962,27 @@ export default function ProductDetail() {
                 <tbody>
                   <tr>
                     <td>Brand</td>
-                    <td>Premium Brand</td>
+                    <td>{technicalDetails?.brand || "N/A"}</td>
                   </tr>
                   <tr>
                     <td>Category</td>
-                    <td>Electronics</td>
+                    <td>{item?.category?.name || "N/A"}</td>
                   </tr>
                   <tr>
                     <td>Weight</td>
-                    <td>500 grams</td>
+                    <td>{technicalDetails?.weight || "N/A"}</td>
                   </tr>
                   <tr>
                     <td>Dimensions</td>
-                    <td>20 x 15 x 5 cm</td>
+                    <td>{technicalDetails?.dimensions || "N/A"}</td>
                   </tr>
                   <tr>
                     <td>Warranty</td>
-                    <td>1 Year Manufacturer Warranty</td>
+                    <td>
+                      {technicalDetails?.warranty
+                        ? `${technicalDetails.warranty} Manufacturer Warranty`
+                        : "N/A"}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -901,67 +1006,60 @@ export default function ProductDetail() {
                     </span>
                   </div>
                   <div className="rating-breakdown">
-                    {[5, 4, 3, 2, 1].map((star) => (
-                      <div key={star} className="rating-bar-row">
-                        <span>{star} star</span>
-                        <div className="rating-bar">
-                          <div
-                            className="rating-fill"
-                            style={{
-                              width: `${
-                                star === 5
-                                  ? 70
-                                  : star === 4
-                                  ? 20
-                                  : star === 3
-                                  ? 5
-                                  : star === 2
-                                  ? 3
-                                  : 2
-                              }%`,
-                            }}
-                          ></div>
-                        </div>
-                        <span>
-                          {star === 5
-                            ? "70%"
-                            : star === 4
-                            ? "20%"
-                            : star === 3
-                            ? "5%"
-                            : star === 2
-                            ? "3%"
-                            : "2%"}
-                        </span>
-                      </div>
-                    ))}
+                    <div>
+                      {[5, 4, 3, 2, 1].map((star) => {
+                        const count = reviewSummary[star] || 0;
+                        const percentage =
+                          item.totalReviews === 0
+                            ? 0
+                            : Math.round((count / item.totalReviews) * 100);
+
+                        return (
+                          <div key={star} className="rating-bar-row">
+                            <span>{star} star</span>
+                            <div className="rating-bar">
+                              <div
+                                className="rating-fill"
+                                style={{ width: `${percentage}%` }}
+                              ></div>
+                            </div>
+                            <span>{percentage}%</span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
 
               <div className="reviews-list">
-                {reviews.map((review) => (
+                {productReviews.map((review) => (
                   <div key={review.id} className="review-item">
                     <div className="review-header">
                       <div className="reviewer-info">
-                        <span className="reviewer-name">{review.name}</span>
+                        <span className="reviewer-name">
+                          {review.user.name}
+                        </span>
                         {review.verified && (
                           <span className="verified-badge">
                             Verified Purchase
                           </span>
                         )}
                       </div>
-                      <span className="review-date">{review.date}</span>
+                      <span className="review-date">{review.createdAt}</span>
                     </div>
                     <div className="review-rating">
                       {renderStars(review.rating)}
                       <span className="review-title">{review.title}</span>
                     </div>
-                    <p className="review-text">{review.review}</p>
+                    <p className="review-text">{review.comment}</p>
                     <div className="review-actions">
-                      <button className="helpful-btn">
+                      <button
+                        className="helpful-btn"
+                        onClick={() => handleHelpfulClick(review._id)}
+                      >
                         <ThumbsUp size={14} />
-                        Helpful ({review.helpful})
+                        Helpful ({review.helpfulBy?.length || 0})
                       </button>
                       <button className="report-btn">
                         <Info size={14} />
