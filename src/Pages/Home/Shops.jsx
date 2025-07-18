@@ -21,6 +21,7 @@ import {
   Clock,
 } from "lucide-react";
 import axios from "../../utils/axios";
+import { fetchStores } from "../../api/storeApi";
 
 const mallInfo = {
   name: "E-Mall World",
@@ -143,11 +144,15 @@ export default function Shops() {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [stores, setStores] = useState([]);
+  const [error, setError] = useState(null);
+
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProductsAndCategories();
+    loadStores();
   }, []);
 
   const fetchProductsAndCategories = async () => {
@@ -161,10 +166,37 @@ export default function Shops() {
       ]);
       setCategories(catRes.data.categories || []);
       setProducts(prodRes.data.products || []);
+      // console.log("Shop Page --", prodRes.data.products);
+      // console.log("Shop Page 111 --", catRes.data.categories);
     } catch (err) {
       console.error("Error fetching data:", err);
       setCategories([]);
       setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStores = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetchStores({
+        page: 1,
+        limit: 10,
+        sort: "createdAt",
+        order: "desc",
+        search: "",
+        status: "", // optional: 'active' or 'inactive'
+      });
+
+      setStores(response?.stores || []);
+      console.log("Store List Fetched:", response.stores);
+    } catch (err) {
+      console.error("Error loading stores:", err);
+      setError(err.message || "Something went wrong");
+      setStores([]);
     } finally {
       setLoading(false);
     }
@@ -241,7 +273,7 @@ export default function Shops() {
   const StoreCard = ({ store }) => (
     <div className="store-card" onClick={() => handleVisitStore(store)}>
       <div className="store-image-container">
-        <img src={store.image} alt={store.name} loading="lazy" />
+        <img src={store.shopImage} alt={store.shopName} loading="lazy" />
 
         {store.verified && (
           <div className="store-verified-badge">
@@ -253,45 +285,52 @@ export default function Shops() {
 
       <div className="store-content">
         <div className="store-header">
-          <h3 className="store-name">{store.name}</h3>
+          <h3 className="store-name">{store.shopName}</h3>
           <p className="store-description">{store.description}</p>
         </div>
 
         <div className="store-rating-section">
-          <div className="store-stars">{renderStars(store.rating)}</div>
-          <span className="store-rating-text">{store.rating}</span>
-          <span className="store-reviews">
+          {/* <div className="store-stars">{renderStars(store.rating)}</div> */}
+          <div className="store-stars">{renderStars(4)}</div>
+          {/* <span className="store-rating-text">{store.rating}</span> */}
+          <span className="store-rating-text">{4}</span>
+          {/* <span className="store-reviews">
             ({store.reviews.toLocaleString()} reviews)
-          </span>
-        </div>
+          </span> */}
 
+          <span className="store-reviews">(1234 reviews)</span>
+        </div>
+        {/* 
         <div className="store-badges">
           {store.badges.map((badge, index) => (
             <span key={index} className="store-badge">
               {badge}
             </span>
           ))}
-        </div>
+        </div> */}
 
         <div className="store-stats">
           <div className="store-stat">
             <Package size={14} />
-            <span>{store.products.toLocaleString()} products</span>
+            {/* <span>{store.products.toLocaleString()} products</span> */}
+            <span>{234} products</span>
           </div>
           <div className="store-stat">
             <MapPin size={14} />
-            <span>{store.location}</span>
+            <span>{store.location || "Mumbai"}</span>
           </div>
           <div className="store-stat">
             <Clock size={14} />
-            <span>Since {store.established}</span>
+            {/* <span>Since {store.established}</span> */}
+            <span>Since {store.createdAt}</span>
+            createdAt
           </div>
         </div>
 
         <div className="store-specialties">
           <strong>Specialties:</strong>
           <div className="specialty-tags">
-            {store.specialties.map((specialty, index) => (
+            {store.specialist.map((specialty, index) => (
               <span key={index} className="specialty-tag">
                 {specialty}
               </span>
@@ -423,7 +462,7 @@ export default function Shops() {
       {/* Featured Stores */}
       <div className="stores-main-content">
         <div className="stores-header">
-          <h2>🏪 Featured Stores ({filteredStores.length} stores)</h2>
+          <h2>🏪 Featured Stores ({stores.length} stores)</h2>
           <p>Handpicked stores with the best products and service</p>
         </div>
 
@@ -433,15 +472,13 @@ export default function Shops() {
               <div className="loading-spinner"></div>
               <p>Loading stores...</p>
             </div>
-          ) : filteredStores.length === 0 ? (
+          ) : stores.length === 0 ? (
             <div className="no-stores-found">
               <h3>No stores found</h3>
               <p>Try adjusting your search or category filter</p>
             </div>
           ) : (
-            filteredStores.map((store) => (
-              <StoreCard key={store.id} store={store} />
-            ))
+            stores.map((store) => <StoreCard key={store._id} store={store} />)
           )}
         </div>
       </div>

@@ -21,24 +21,24 @@ const userSchema = new mongoose.Schema(
         return false;
       },
     },
-    shopownerName: {
-      type: String,
-      required: function () {
-        if (this.role === "shopowner") {
-          return true;
-        }
-        return false;
-      },
-    },
-    shopName: {
-      type: String,
-      required: function () {
-        if (this.role === "shopowner") {
-          return true;
-        }
-        return false;
-      },
-    },
+    // shopownerName: {
+    //   type: String,
+    //   required: function () {
+    //     if (this.role === "shopowner") {
+    //       return true;
+    //     }
+    //     return false;
+    //   },
+    // },
+    // shopName: {
+    //   type: String,
+    //   required: function () {
+    //     if (this.role === "shopowner") {
+    //       return true;
+    //     }
+    //     return false;
+    //   },
+    // },
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -81,16 +81,21 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['active', 'inactive', 'banned'],
-      default: 'active',
+      enum: ["active", "inactive", "banned"],
+      default: "active",
     },
-    shopImage: {
-      type: String,
-      default: null,
-    },
+    // shopImage: {
+    //   type: String,
+    //   default: null,
+    // },
     lastLogin: {
       type: Date,
       default: Date.now,
+    },
+    sellerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller",
+      default: null,
     },
   },
   { timestamps: true }
