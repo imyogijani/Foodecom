@@ -12,7 +12,7 @@ import {
   getShopownerDetails,
   getSellerDetails
 } from '../controllers/adminController.js';
-import { updateProduct } from '../controllers/productController.js';
+import { updateProduct, deleteAllProducts } from '../controllers/productController.js';
 import { getAllOrdersAdmin } from '../controllers/orderController.js';
 import { 
   createMenuItem, 
@@ -34,6 +34,7 @@ router.get('/dashboard-stats', getDashboardStats);
 
 // Products management
 router.get('/all-products', getAllProducts);
+router.delete('/products/all', deleteAllProducts);
 router.delete('/products/:id', deleteProduct);
 router.put('/products/:id', updateProduct);
 

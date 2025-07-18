@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FaSearch,
   FaStore,
@@ -27,22 +27,34 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  // Removed edit state variables as admin will only view and delete
-  // const [editStatus, setEditStatus] = useState("");
-  // const [editStock, setEditStock] = useState("");
-  // const [editPrice, setEditPrice] = useState("");
-  // const [editLoading, setEditLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchProducts();
-    fetchShops();
-    fetchCategories();
-  }, []);
+  const fetchProducts = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Authentication required");
+        navigate("/login");
+        return;
+      }
 
-  useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory, selectedSubcategory, selectedBrand]);
+      let url =
+        "/api/admin/all-products?populateCategory=true&populateSubcategory=true";
+      if (selectedCategory) url += `&categoryId=${selectedCategory}`;
+      if (selectedSubcategory) url += `&subcategoryId=${selectedSubcategory}`;
+      if (selectedBrand) url += `&brand=${selectedBrand}`;
+
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProducts(response.data.products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      toast.error(error.response?.data?.message || "Error fetching products");
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCategory, selectedSubcategory, selectedBrand, navigate]);
 
   const fetchCategories = async () => {
     try {
@@ -52,51 +64,8 @@ const Products = () => {
       });
       setCategories(response.data.categories);
     } catch (error) {
-      toast.error("Error fetching categories");
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      let url =
-        "/api/admin/all-products?populateCategory=true&populateSubcategory=true";
-      if (selectedCategory) {
-        url += `&categoryId=${selectedCategory}`;
-      }
-      if (selectedSubcategory) {
-        url += `&subcategoryId=${selectedSubcategory}`;
-      }
-      if (selectedBrand) {
-        url += `&brand=${selectedBrand}`;
-      }
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProducts(response.data.products);
-    } catch (error) {
-      toast.error("Error fetching products");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteAllProducts = async () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete ALL products? This action cannot be undone."
-      )
-    ) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete("/api/admin/products/all", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success("All products deleted successfully");
-        fetchProducts();
-      } catch (error) {
-        toast.error("Error deleting all products");
-      }
+      console.error("Error fetching categories:", error);
+      toast.error(error.response?.data?.message || "Error fetching categories");
     }
   };
 
@@ -108,22 +77,55 @@ const Products = () => {
       });
       setShops(response.data.shops);
     } catch (error) {
-      toast.error("Error fetching shops");
+      console.error("Error fetching shops:", error);
+      toast.error(error.response?.data?.message || "Error fetching shops");
     }
   };
 
+  useEffect(() => {
+    const initializeData = async () => {
+      await Promise.all([fetchProducts(), fetchShops(), fetchCategories()]);
+    };
+    initializeData();
+  }, [fetchProducts]);
+
   const handleDeleteProduct = async (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`/api/admin/products/${productId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success("Product deleted successfully");
-        fetchProducts();
-      } catch (error) {
-        toast.error("Error deleting product");
-      }
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/api/admin/products/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("Product deleted successfully");
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast.error(error.response?.data?.message || "Error deleting product");
+    }
+  };
+
+  const handleDeleteAllProducts = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete ALL products? This action cannot be undone."
+      )
+    )
+      return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete("/api/admin/products/all", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      toast.success("All products deleted successfully");
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting all products:", error);
+      toast.error(
+        error.response?.data?.message || "Error deleting all products"
+      );
     }
   };
 
@@ -139,64 +141,25 @@ const Products = () => {
 
   const handleModalDelete = async () => {
     if (!selectedProduct) return;
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const token = localStorage.getItem("token");
-        await axios.delete(`/api/admin/products/${selectedProduct._id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        toast.success("Product deleted successfully");
-        fetchProducts();
-        closeProductModal();
-      } catch (error) {
-        toast.error("Error deleting product");
-      }
-    }
+    await handleDeleteProduct(selectedProduct._id);
+    closeProductModal();
   };
-
-  // Removed handleModalUpdate as admin will only view and delete
-  // const handleModalUpdate = async (e) => {
-  //   e.preventDefault();
-  //   if (!selectedProduct) return;
-  //   setEditLoading(true);
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     await axios.put(
-  //       `/api/admin/products/${selectedProduct._id}`,
-  //       {
-  //         status: editStatus,
-  //         stock: Number(editStock) || 0,
-  //         price: Number(editPrice) || 0,
-  //       },
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       }
-  //     );
-  //     toast.success("Product updated successfully");
-  //     fetchProducts();
-  //     closeProductModal();
-  //   } catch (error) {
-  //     toast.error(error.response?.data?.message || "Error updating product");
-  //   } finally {
-  //     setEditLoading(false);
-  //   }
-  // };
 
   const filteredProducts = products.filter((product) => {
     const matchesShop =
       selectedShop === "all" ||
-      (product.seller && product.seller._id === selectedShop); // Assuming product.seller is populated with shop details
+      (product.seller && product.seller._id === selectedShop);
     const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory =
-      selectedCategory === "" ||
+      !selectedCategory ||
       (product.category && product.category._id === selectedCategory);
     const matchesSubcategory =
-      selectedSubcategory === "" ||
+      !selectedSubcategory ||
       (product.subcategory && product.subcategory._id === selectedSubcategory);
     const matchesBrand =
-      selectedBrand === "" ||
+      !selectedBrand ||
       (product.brand &&
         product.brand.toLowerCase() === selectedBrand.toLowerCase());
 
@@ -209,14 +172,13 @@ const Products = () => {
     );
   });
 
-  const getProductStats = () => {
-    return {
-      totalProducts: products.length,
-      activeShops: shops.length,
-      categories: new Set(products.map((p) => p.category)).size,
-      totalStock: products.reduce((sum, p) => sum + p.stock, 0),
-    };
-  };
+  const getProductStats = () => ({
+    totalProducts: products.length,
+    activeShops: shops.length,
+    categories: new Set(products.map((p) => p.category?.name).filter(Boolean))
+      .size,
+    totalStock: products.reduce((sum, p) => sum + (p.stock || 0), 0),
+  });
 
   const stats = getProductStats();
 
@@ -254,8 +216,8 @@ const Products = () => {
             value={selectedCategory}
             onChange={(e) => {
               setSelectedCategory(e.target.value);
-              setSelectedSubcategory(""); // Reset subcategory when category changes
-              setSelectedBrand(""); // Reset brand when category changes
+              setSelectedSubcategory("");
+              setSelectedBrand("");
             }}
           >
             <option value="">All Categories</option>
@@ -275,13 +237,13 @@ const Products = () => {
               value={selectedSubcategory}
               onChange={(e) => {
                 setSelectedSubcategory(e.target.value);
-                setSelectedBrand(""); // Reset brand when subcategory changes
+                setSelectedBrand("");
               }}
             >
               <option value="">All Subcategories</option>
               {categories
                 .find((cat) => cat._id === selectedCategory)
-                ?.children.map((subcat) => (
+                ?.children?.map((subcat) => (
                   <option key={subcat._id} value={subcat._id}>
                     {subcat.name}
                   </option>
@@ -302,7 +264,7 @@ const Products = () => {
               {selectedCategory &&
                 categories
                   .find((cat) => cat._id === selectedCategory)
-                  ?.brands.map((brand, index) => (
+                  ?.brands?.map((brand, index) => (
                     <option key={index} value={brand}>
                       {brand}
                     </option>
@@ -310,10 +272,10 @@ const Products = () => {
               {selectedSubcategory &&
                 categories
                   .find((cat) => cat._id === selectedCategory)
-                  ?.children.find(
+                  ?.children?.find(
                     (subcat) => subcat._id === selectedSubcategory
                   )
-                  ?.brands.map((brand, index) => (
+                  ?.brands?.map((brand, index) => (
                     <option key={index} value={brand}>
                       {brand}
                     </option>
@@ -388,10 +350,8 @@ const Products = () => {
         <div className="product-cards-container">
           {filteredProducts.map((product) => {
             let imageUrl = "";
-            if (product.image) {
-              if (product.image.startsWith("/uploads/products/")) {
-                imageUrl = `http://localhost:8080${product.image}`;
-              } else if (product.image.startsWith("/uploads/")) {
+            if (typeof product.image === "string" && product.image) {
+              if (product.image.startsWith("/uploads/")) {
                 imageUrl = `http://localhost:8080${product.image}`;
               } else {
                 imageUrl = `http://localhost:8080/uploads/products/${product.image}`;
@@ -400,7 +360,7 @@ const Products = () => {
             return (
               <div key={product._id} className="product-card">
                 <div className="product-card-header">
-                  {imageUrl ? (
+                  {imageUrl && (
                     <img
                       src={imageUrl}
                       alt={product.name}
@@ -410,7 +370,7 @@ const Products = () => {
                         e.target.src = "/vite.svg";
                       }}
                     />
-                  ) : null}
+                  )}
                   <h3 className="product-card-name">{product.name}</h3>
                 </div>
                 <div className="product-card-body">
@@ -420,24 +380,24 @@ const Products = () => {
                       ` (${product.subcategory.name})`}
                   </p>
                   <p className="product-card-detail">
-                    <strong>Price:</strong> ₹{product.price.toFixed(2)}
+                    <strong>Price:</strong> ₹{product.price?.toFixed(2)}
                   </p>
                   <p className="product-card-detail">
                     <strong>Stock:</strong> {product.stock}
                   </p>
                   <p className="product-card-detail">
                     <strong>Status:</strong>
-                    <span className={`status ${product.status.toLowerCase()}`}>
+                    <span className={`status ${product.status?.toLowerCase()}`}>
                       {product.status}
                     </span>
                   </p>
-                  <p className="product-card-detail">
+                  <div className="product-card-detail">
                     <strong>Shop:</strong>
                     <div className="shop-info">
                       <FaStore className="shop-icon" />
                       <span>{product.shopName}</span>
                     </div>
-                  </p>
+                  </div>
                 </div>
                 <div className="product-card-actions">
                   <button
@@ -464,56 +424,54 @@ const Products = () => {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Product Details</h2>
-            {selectedProduct && (
-              <div className="product-details-view">
-                <div className="detail-group">
-                  <strong>Product Name:</strong>
-                  <span>{selectedProduct.name}</span>
-                </div>
-                <div className="detail-group">
-                  <strong>Description:</strong>
-                  <span>{selectedProduct.description}</span>
-                </div>
-                <div className="detail-group">
-                  <strong>Category:</strong>
-                  <span>{selectedProduct.category?.name || "N/A"}</span>
-                </div>
-                <div className="detail-group">
-                  <strong>Price:</strong>
-                  <span>₹{selectedProduct.price.toFixed(2)}</span>
-                </div>
-                <div className="detail-group">
-                  <strong>Stock:</strong>
-                  <span>{selectedProduct.stock}</span>
-                </div>
-                <div className="detail-group">
-                  <strong>Status:</strong>
-                  <span
-                    className={`status ${selectedProduct.status
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  >
-                    {selectedProduct.status}
-                  </span>
-                </div>
-                <div className="detail-group">
-                  <strong>Shop:</strong>
-                  <span>{selectedProduct.seller?.shopName || "N/A"}</span>
-                </div>
-                <div className="modal-actions">
-                  <button
-                    type="button"
-                    onClick={handleModalDelete}
-                    className="delete-btn"
-                  >
-                    <FaTrash /> Delete Product
-                  </button>
-                  <button type="button" onClick={closeProductModal}>
-                    Close
-                  </button>
-                </div>
+            <div className="product-details-view">
+              <div className="detail-group">
+                <strong>Product Name:</strong>
+                <span>{selectedProduct.name}</span>
               </div>
-            )}
+              <div className="detail-group">
+                <strong>Description:</strong>
+                <span>{selectedProduct.description}</span>
+              </div>
+              <div className="detail-group">
+                <strong>Category:</strong>
+                <span>{selectedProduct.category?.name || "N/A"}</span>
+              </div>
+              <div className="detail-group">
+                <strong>Price:</strong>
+                <span>₹{selectedProduct.price?.toFixed(2)}</span>
+              </div>
+              <div className="detail-group">
+                <strong>Stock:</strong>
+                <span>{selectedProduct.stock}</span>
+              </div>
+              <div className="detail-group">
+                <strong>Status:</strong>
+                <span
+                  className={`status ${selectedProduct.status
+                    ?.toLowerCase()
+                    .replace(" ", "-")}`}
+                >
+                  {selectedProduct.status}
+                </span>
+              </div>
+              <div className="detail-group">
+                <strong>Shop:</strong>
+                <span>{selectedProduct.seller?.shopName || "N/A"}</span>
+              </div>
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  onClick={handleModalDelete}
+                  className="delete-btn"
+                >
+                  <FaTrash /> Delete Product
+                </button>
+                <button type="button" onClick={closeProductModal}>
+                  Close
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

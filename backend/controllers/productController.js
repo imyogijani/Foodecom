@@ -63,7 +63,7 @@ export const addProduct = async (req, res) => {
       } catch (e) {
         return res
           .status(400)
-          .json({ success: false, message: "Invalid JSON in variants" });
+          .json({ success: false, message: "Invalid JSON in variants", e });
       }
     }
 
@@ -83,7 +83,7 @@ export const addProduct = async (req, res) => {
         "../helpers/compareTechnicalDetails.js"
       );
 
-      const { reused, doc } = await findOrCreateTechnicalDetails(
+      const { doc } = await findOrCreateTechnicalDetails(
         req.body.technicalDetails
       );
       techDetailsRef = doc._id;
