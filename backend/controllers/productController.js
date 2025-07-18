@@ -83,7 +83,7 @@ export const addProduct = async (req, res) => {
         "../helpers/compareTechnicalDetails.js"
       );
 
-      const { reused, doc } = await findOrCreateTechnicalDetails(
+      const { doc } = await findOrCreateTechnicalDetails(
         req.body.technicalDetails
       );
       techDetailsRef = doc._id;
