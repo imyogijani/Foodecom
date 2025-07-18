@@ -72,7 +72,7 @@ export const addProduct = async (req, res) => {
       } catch (e) {
         return res
           .status(400)
-          .json({ success: false, message: "Invalid JSON in variants" });
+          .json({ success: false, message: "Invalid JSON in variants", e });
       }
     }
 
