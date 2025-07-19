@@ -58,7 +58,7 @@ const productSchema = new mongoose.Schema(
     },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "Seller",
       required: true,
     },
     status: {
@@ -80,6 +80,7 @@ const productSchema = new mongoose.Schema(
       ref: "TechnicalDetails",
       required: true,
     },
+    finalPrice: { type: Number },
   },
   {
     timestamps: true,
@@ -87,5 +88,35 @@ const productSchema = new mongoose.Schema(
 );
 
 const Product = mongoose.model("products", productSchema);
+productSchema.index({ seller: 1 }); // Seller wise product find fast
+productSchema.index({ createdAt: -1 });
+productSchema.pre("save", function (next) {
+  this.finalPrice = this.price - (this.price * this.discount) / 100;
+  next();
+});
+productSchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate();
+
+  const price = update.price;
+  const discount = update.discount;
+
+  if (price !== undefined || discount !== undefined) {
+    // Use $set to ensure proper MongoDB behavior
+    const currentPrice =
+      price !== undefined ? price : this.getUpdate().$set?.price;
+    const currentDiscount =
+      discount !== undefined ? discount : this.getUpdate().$set?.discount || 0;
+
+    const final = currentPrice - (currentPrice * currentDiscount) / 100;
+
+    if (!update.$set) {
+      update.$set = {};
+    }
+
+    update.$set.finalPrice = final;
+  }
+
+  next();
+});
 
 export default Product;

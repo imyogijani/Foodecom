@@ -1,6 +1,7 @@
 import Review from "../models/reviewModel.js";
 import mongoose from "mongoose";
 import Product from "../models/productModel.js";
+import Seller from "../models/sellerModel.js";
 
 export const addReview = async (req, res) => {
   try {
@@ -48,10 +49,45 @@ export const addReview = async (req, res) => {
       reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews;
 
     // 6 Update product's review stats
+
+    console.log("Hello --1514165146514164151----+++++++++ kem che ");
+
     await Product.findByIdAndUpdate(product, {
       averageRating: averageRating.toFixed(1),
       totalReviews,
     });
+    const currentProduct = await Product.findById(product);
+    const sellerId = currentProduct?.seller;
+
+    if (sellerId) {
+      // console.log("📦 Seller ID:", sellerId);
+
+      // Get all products of this seller
+      const sellerProducts = await Product.find({ seller: sellerId }).select(
+        "_id"
+      );
+      const productIds = sellerProducts.map((p) => p._id);
+
+      // Get all reviews of this seller's products
+      const sellerReviews = await Review.find({ product: { $in: productIds } });
+
+      const sellerTotal = sellerReviews.length;
+      const sellerAvg =
+        sellerTotal === 0
+          ? 0
+          : sellerReviews.reduce((sum, r) => sum + r.rating, 0) / sellerTotal;
+
+      // console.log("⭐ Seller Avg Rating:", sellerAvg.toFixed(1));
+      // console.log("📝 Seller Total Reviews:", sellerTotal);
+
+      // Update seller model
+      await Seller.findByIdAndUpdate(sellerId, {
+        averageRating: sellerAvg.toFixed(1),
+        totalReviews: sellerTotal,
+      });
+    } else {
+      console.log("❌ Seller not found for this product.");
+    }
 
     // 7 Respond
     res.status(201).json({

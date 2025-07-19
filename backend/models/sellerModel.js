@@ -51,8 +51,21 @@ const sellerSchema = new mongoose.Schema(
       enum: ["active", "inactive", "banned"],
       default: "active",
     },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
+sellerSchema.index({ shopName: 1 });
+sellerSchema.index({ shopownerName: 1 });
+sellerSchema.index({ status: 1 });
+sellerSchema.index({ createdAt: -1 });
+
 const Seller = mongoose.model("Seller", sellerSchema);
 export default Seller;

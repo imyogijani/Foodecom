@@ -1,4 +1,7 @@
-// import User from "../models/userModel.js";
+import Seller from "../models/sellerModel.js";
+// import Store from "../models/sellerModel.js";
+import Product from "../models/productModel.js";
+import mongoose from "mongoose";
 
 // export const getAllStores = async (req, res) => {
 //   try {
@@ -11,32 +14,113 @@
 //       status,
 //     } = req.query;
 
-//     const query = { role: "shopowner" };
+//     const matchStage = {};
 
-//     //Search by shopName or shopownerName
 //     if (search) {
-//       query.$or = [
+//       matchStage.$or = [
 //         { shopName: { $regex: search, $options: "i" } },
-//         { shopownerName: { $regex: search, $options: "i" } },
+//         { ownerName: { $regex: search, $options: "i" } },
 //       ];
 //     }
 
-//     // Filter by status (active/inactive)
 //     if (status) {
-//       query.status = status;
+//       matchStage.status = status;
 //     }
 
-//     //  Total Count
-//     const totalStores = await User.countDocuments(query);
+//     const skip = (page - 1) * limit;
+//     const sortOrder = order === "asc" ? 1 : -1;
 
-//     //Fetch with pagination & sorting
-//     const stores = await User.find(query)
-//       .select(
-//         "shopName shopownerName email phone address shopImage status lastLogin createdAt"
-//       )
-//       .sort({ [sort]: order === "asc" ? 1 : -1 })
-//       .skip((page - 1) * limit)
-//       .limit(Number(limit));
+//     const stores = await Seller.aggregate([
+//       { $match: matchStage },
+
+//       // Join user
+//       {
+//         $lookup: {
+//           from: "users",
+//           localField: "user",
+//           foreignField: "_id",
+//           as: "user",
+//         },
+//       },
+//       { $unwind: "$user" },
+
+//       // Join products of this seller (based on user._id)
+//       {
+//         $lookup: {
+//           from: "products",
+//           localField: "user._id",
+//           foreignField: "seller",
+//           as: "products",
+//         },
+//       },
+
+//       // Flatten all product IDs for next stage
+//       {
+//         $addFields: {
+//           productIds: {
+//             $map: {
+//               input: "$products",
+//               as: "prod",
+//               in: "$$prod._id",
+//             },
+//           },
+//         },
+//       },
+
+//       // Join reviews of all products
+//       {
+//         $lookup: {
+//           from: "reviews",
+//           let: { pIds: "$productIds" },
+//           pipeline: [
+//             {
+//               $match: {
+//                 $expr: {
+//                   $in: ["$product", "$$pIds"],
+//                 },
+//               },
+//             },
+//           ],
+//           as: "reviews",
+//         },
+//       },
+
+//       // Add final counts and ratings
+//       {
+//         $addFields: {
+//           totalProducts: { $size: "$products" },
+//           totalReviews: { $size: "$reviews" },
+//           averageRating: {
+//             $cond: [
+//               { $gt: [{ $size: "$reviews" }, 0] },
+//               {
+//                 $avg: "$reviews.rating",
+//               },
+//               0,
+//             ],
+//           },
+//         },
+//       },
+
+//       // Cleanup
+//       {
+//         $project: {
+//           products: 0,
+//           productIds: 0,
+//           reviews: 0,
+//           "user.password": 0,
+//           "user.__v": 0,
+//         },
+//       },
+
+//       // Sort and Paginate
+//       { $sort: { [sort]: sortOrder } },
+//       { $skip: skip },
+//       { $limit: Number(limit) },
+//     ]);
+
+//     // Total sellers count (for pagination)
+//     const totalStores = await Seller.countDocuments(matchStage);
 
 //     res.status(200).json({
 //       success: true,
@@ -46,7 +130,7 @@
 //       stores,
 //     });
 //   } catch (error) {
-//     console.error("Error fetching stores:", error);
+//     console.error("Error in getAllStores:", error);
 //     res.status(500).json({
 //       success: false,
 //       message: "Failed to fetch stores",
@@ -54,10 +138,6 @@
 //     });
 //   }
 // };
-
-import Seller from "../models/sellerModel.js";
-import User from "../models/userModel.js";
-
 export const getAllStores = async (req, res) => {
   try {
     const {
@@ -69,34 +149,68 @@ export const getAllStores = async (req, res) => {
       status,
     } = req.query;
 
-    const query = {};
+    const matchStage = {};
 
-    // Search by shopName or shopownerName
     if (search) {
-      query.$or = [
+      matchStage.$or = [
         { shopName: { $regex: search, $options: "i" } },
-        { shopownerName: { $regex: search, $options: "i" } },
+        { ownerName: { $regex: search, $options: "i" } },
       ];
     }
 
-    // Filter by status (active/inactive)
     if (status) {
-      query.status = status;
+      matchStage.status = status;
     }
 
-    // Count total sellers
-    const totalStores = await Seller.countDocuments(query);
+    const skip = (page - 1) * limit;
+    const sortOrder = order === "asc" ? 1 : -1;
 
-    // Fetch sellers with user info using pagination and sorting
-    const stores = await Seller.find(query)
-      .populate({
-        path: "user",
-        select: "names email phone address avatar role ",
-        model: User,
-      })
-      .sort({ [sort]: order === "asc" ? 1 : -1 })
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
+    const stores = await Seller.aggregate([
+      { $match: matchStage },
+
+      // Join user details
+      {
+        $lookup: {
+          from: "users",
+          localField: "user",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+
+      // Join products for product count only
+      {
+        $lookup: {
+          from: "products",
+          localField: "user._id",
+          foreignField: "seller",
+          as: "products",
+        },
+      },
+
+      // Count products
+      {
+        $addFields: {
+          totalProducts: { $size: "$products" },
+        },
+      },
+
+      {
+        $project: {
+          products: 0,
+          "user.password": 0,
+          "user.__v": 0,
+        },
+      },
+
+      { $sort: { [sort]: sortOrder } },
+      { $skip: skip },
+      { $limit: Number(limit) },
+    ]);
+
+    // Total seller count
+    const totalStores = await Seller.countDocuments(matchStage);
 
     res.status(200).json({
       success: true,
@@ -106,11 +220,87 @@ export const getAllStores = async (req, res) => {
       stores,
     });
   } catch (error) {
-    console.error("Error fetching stores:", error);
+    console.error("Error in getAllStores:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch stores",
       error: error.message,
+    });
+  }
+};
+
+export const getSingleStore = async (req, res) => {
+  try {
+    const { id } = req.params; // seller._id
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // 1. Get Seller Info with its Owner (User)
+    const seller = await Seller.findById(id)
+      .populate({
+        path: "user",
+        select: "names email phone", // just show needed user fields
+      })
+      .lean();
+
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: "Store not found",
+      });
+    }
+
+    // 2. Count and Fetch All Products for this Seller
+    const totalProducts = await Product.countDocuments({ seller: seller._id });
+
+    const products = await Product.find({ seller: seller._id })
+      .select(
+        "name price discount image averageRating totalReviews stock status createdAt"
+      )
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // 3. Send Final Response
+    return res.json({
+      success: true,
+      store: {
+        _id: seller._id,
+        shopName: seller.shopName,
+        shopImage: seller.shopImage,
+        shopImages: seller.shopImages || [],
+        address: seller.address,
+        location: seller.location,
+        categories: seller.categories,
+        description: seller.description,
+        ownerName: seller.ownerName,
+        specialist: seller.specialist,
+        status: seller.status,
+        createdAt: seller.createdAt,
+        averageRating: parseFloat((seller.averageRating || 0).toFixed(1)),
+        totalReviews: seller.totalReviews || 0,
+        owner: {
+          name: seller.user?.names || "",
+          email: seller.user?.email || "",
+          phone: seller.user?.phone || "",
+        },
+        totalProducts,
+      },
+      products: {
+        items: products,
+        currentPage: page,
+        totalPages,
+      },
+    });
+  } catch (error) {
+    console.error("Get single store error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while fetching store.",
     });
   }
 };

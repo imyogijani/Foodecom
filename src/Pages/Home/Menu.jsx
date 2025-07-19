@@ -32,9 +32,6 @@ const mallInfo = {
   address: "Serving Worldwide",
 };
 
-const getItemsByCategory = (category) => [];
-const getAllMallItems = () => [];
-
 export default function Menu() {
   const [activeTab, setActiveTab] = useState("Electronics");
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,9 +39,13 @@ export default function Menu() {
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("relevance");
   const [filterOpen, setFilterOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState([0, 200000]);
+  const [priceRange, setPriceRange] = useState([0, 9000000000]);
   const [allProducts, setAllProducts] = useState([]); // holds original unfiltered list
   const [products, setProducts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [order, setOrder] = useState("asc");
+  const [totalPages, setTotalPages] = useState(1);
+
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -54,87 +55,32 @@ export default function Menu() {
     return () => clearTimeout(timer);
   }, [activeTab]);
 
-  const getAllProducts = async () => {
-    try {
-      const response = await axios.get("/api/products");
-      console.log("Fetched products:", response.data.products);
-      return response.data.products || [];
-    } catch (error) {
-      console.error("Error fetching all products:", error);
-      return [];
-    }
-  };
-  const handleGetAllProducts = async () => {
-    setIsLoading(true);
-    const fetched = await getAllProducts();
-    setAllProducts(fetched); // Store full list
-    setIsLoading(false);
-  };
-
   useEffect(() => {
-    handleGetAllProducts();
-  }, []);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetchFilteredProducts({
+          page: currentPage,
+          limit: 5,
+          categoryId: activeTab,
+          search: searchQuery,
+          sortBy,
+          order: sortBy.includes("low") ? "asc" : "desc",
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+        });
 
-  const filterAndSortItems = (items) => {
-    if (!items) return [];
+        setProducts(response.products);
+        setTotalPages(response.totalPages || 1);
+      } catch (err) {
+        console.error("Error fetching paginated products:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    let filtered = items;
-
-    if (searchQuery) {
-      filtered = filtered.filter(
-        (item) =>
-          item.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.desc?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    filtered = filtered.filter((item) => {
-      const price = Number(item.price); // 👈 Just this
-      return price >= priceRange[0] && price <= priceRange[1];
-    });
-
-    switch (sortBy) {
-      case "price-low":
-        // filtered.sort(
-        //   (a, b) =>
-        //     parseInt(a.price.replace(/[₹,]/g, "")) -
-        //     parseInt(b.price.replace(/[₹,]/g, ""))
-        // );
-
-        filtered.sort((a, b) => Number(a.price) - Number(b.price));
-        break;
-      case "price-high":
-        // filtered.sort(
-        //   (a, b) =>
-        //     parseInt(b.price.replace(/[₹,]/g, "")) -
-        //     parseInt(a.price.replace(/[₹,]/g, ""))
-        // );
-
-        filtered.sort((a, b) => Number(b.price) - Number(a.price));
-        break;
-      case "rating":
-        filtered.sort((a, b) => (b.rating || 4.0) - (a.rating || 4.0));
-        break;
-      case "reviews":
-        filtered.sort((a, b) => (b.reviews || 0) - (a.reviews || 0));
-        break;
-      default:
-        break;
-    }
-    // console.log("Search Query:", searchQuery);
-    // console.log("Items:", items);
-    return filtered;
-  };
-
-  // const handleAddToCart = (e, item) => {
-  //   e.stopPropagation();
-  //   addToCart({
-  //     ...item,
-  //     quantity: 1,
-  //     addedAt: new Date().toISOString(),
-  //   });
-  //   toast.success(`${item.title} added to cart! 🛒`);
-  // };
+    fetchData();
+  }, [currentPage, activeTab, searchQuery, sortBy, priceRange]);
 
   const handleAddToCart = async (e, product) => {
     e.stopPropagation();
@@ -192,12 +138,29 @@ export default function Menu() {
 
     return stars;
   };
-  // const processImageUrl = (image) => {
-  //   if (image && image.startsWith("/uploads")) {
-  //     return `http://localhost:8080${image}`;
-  //   }
-  //   return image || "/images/offer1.png";
-  // };
+
+  const handleSortChange = (e) => {
+    const value = e.target.value;
+
+    if (value === "price-low") {
+      setSortBy("price");
+      setOrder("asc");
+    } else if (value === "price-high") {
+      setSortBy("price");
+      setOrder("desc");
+    } else if (value === "rating") {
+      setSortBy("rating");
+      setOrder("desc");
+    } else if (value === "reviews") {
+      setSortBy("reviews"); // Handle separately in backend
+      setOrder("desc");
+    } else {
+      // Default: Sort by createdAt (newest first)
+      setSortBy("createdAt");
+      setOrder("desc");
+    }
+  };
+
   const processImageUrl = (image) => {
     const getFullUrl = (img) =>
       img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
@@ -286,33 +249,18 @@ export default function Menu() {
       );
     }
 
-    const items = getItemsByCategory(activeTab);
-
-    const isFilterApplied = () =>
-      searchQuery.trim() !== "" ||
-      sortBy !== "relevance" ||
-      priceRange[0] !== 0 ||
-      priceRange[1] !== 200000;
-
-    const filteredItems = isFilterApplied()
-      ? filterAndSortItems(allProducts)
-      : allProducts;
-    {
-      /* const filteredItems = filterAndSortItems(allProducts); */
-    }
-
-    if (filteredItems.length === 0) {
+    if (products.length === 0) {
       return (
         <div className="under-development">
-          <h3>🚧 Products Coming Soon! 🚧</h3>
-          <p>We're working hard to bring you amazing products</p>
+          <h3>🚧 No Products Found</h3>
+          <p>Try adjusting your filters or search</p>
         </div>
       );
     }
 
     return (
       <div className={`products-container ${viewMode}`}>
-        {filteredItems.map((item) => (
+        {products.map((item) => (
           <ProductCard
             key={item._id}
             item={item}
@@ -321,6 +269,60 @@ export default function Menu() {
         ))}
       </div>
     );
+  };
+
+  const fetchFilteredProducts = async ({
+    page = 1,
+    limit = 12,
+    search = "",
+    sortBy = "price",
+    order = "asc",
+    minPrice = 0,
+    maxPrice = 200000,
+  }) => {
+    try {
+      const queryParams = new URLSearchParams();
+
+      queryParams.set("page", page);
+      queryParams.set("limit", limit);
+      if (search && search.trim() !== "") queryParams.set("search", search);
+      if (sortBy) queryParams.set("sortBy", sortBy);
+      if (order) queryParams.set("order", order);
+      if (minPrice !== undefined) queryParams.set("minPrice", minPrice);
+      if (maxPrice !== undefined) queryParams.set("maxPrice", maxPrice);
+
+      // Optional: backend ke liye extra populate flags
+      queryParams.set("populateCategory", "true");
+      queryParams.set("populateSubcategory", "true");
+
+      const response = await axios.get(
+        `/api/products?${queryParams.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+      throw error;
+    }
+  };
+
+  const handleFilterSubmit = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetchFilteredProducts({
+        page: currentPage,
+        search: searchQuery,
+        sortBy,
+        minPrice: priceRange[0],
+        maxPrice: priceRange[1],
+      });
+
+      setProducts(response.products);
+      setTotalPages(response.totalPages);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -369,12 +371,7 @@ export default function Menu() {
             Filters
             <ChevronDown size={16} className={filterOpen ? "rotated" : ""} />
           </button>
-
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-dropdown"
-          >
+          <select onChange={handleSortChange} className="sort-dropdown">
             <option value="relevance">Sort by Relevance</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
@@ -441,6 +438,39 @@ export default function Menu() {
       </div>
 
       <div className="products-section">{renderContent()}</div>
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          <button
+            className="pagination-btn"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          >
+            ⬅ Prev
+          </button>
+
+          {Array.from({ length: totalPages }).map((_, index) => (
+            <button
+              key={index}
+              className={`pagination-btn ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
+              onClick={() => setCurrentPage(index + 1)}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            className="pagination-btn"
+            disabled={currentPage === totalPages}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+          >
+            Next ➡
+          </button>
+        </div>
+      )}
 
       <div className="info-cards-section">
         <div className="info-cards-grid">

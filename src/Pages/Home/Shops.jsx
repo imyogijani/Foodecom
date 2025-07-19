@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import axios from "../../utils/axios";
 import { fetchStores } from "../../api/storeApi";
+import { addToCartAPI } from "../../api/cartApi/cartApi";
 
 const mallInfo = {
   name: "E-Mall World",
@@ -166,7 +167,7 @@ export default function Shops() {
       ]);
       setCategories(catRes.data.categories || []);
       setProducts(prodRes.data.products || []);
-      // console.log("Shop Page --", prodRes.data.products);
+      console.log("Shop Page --", prodRes.data.products);
       // console.log("Shop Page 111 --", catRes.data.categories);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -232,17 +233,49 @@ export default function Shops() {
   };
 
   const handleVisitStore = (store) => {
-    navigate(`/store/${store.id}`, { state: { store } });
+    navigate(`/store/${store._id}`, { state: { store } });
   };
 
-  const handleAddToCart = (e, product) => {
+  // const handleAddToCart = (e, product) => {
+  //   e.stopPropagation();
+  //   addToCart({
+  //     ...product,
+  //     quantity: 1,
+  //     addedAt: new Date().toISOString(),
+  //   });
+  //   toast.success(`${product.name} added to cart! 🛒`);
+  // };
+
+  const handleAddToCart = async (e, product) => {
     e.stopPropagation();
-    addToCart({
-      ...product,
-      quantity: 1,
-      addedAt: new Date().toISOString(),
-    });
-    toast.success(`${product.name} added to cart! 🛒`);
+
+    // const user = JSON.parse(localStorage.getItem("user"));
+    // console.log("User 1211431243", user);
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const userId = user?._id;
+
+      if (!userId) {
+        toast.error("User not logged in");
+        return;
+      }
+
+      const productData = {
+        productId: product._id,
+        quantity: 1,
+        price: product.price,
+        title: product.name,
+        // image: product.image,
+        discount: product.discount,
+      };
+
+      const response = await addToCartAPI(userId, productData);
+
+      toast.success(`${product.name} added to cart!`);
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      toast.error("Failed to add to cart.");
+    }
   };
 
   const renderStars = (rating) => {
@@ -273,7 +306,12 @@ export default function Shops() {
   const StoreCard = ({ store }) => (
     <div className="store-card" onClick={() => handleVisitStore(store)}>
       <div className="store-image-container">
-        <img src={store.shopImage} alt={store.shopName} loading="lazy" />
+        {/* <img src={store.shopImage} alt={store.shopName} loading="lazy" /> */}
+        <img
+          src={processImageUrl(store.shopImage)}
+          alt={store.shopName}
+          loading="lazy"
+        />
 
         {store.verified && (
           <div className="store-verified-badge">
@@ -290,15 +328,15 @@ export default function Shops() {
         </div>
 
         <div className="store-rating-section">
-          {/* <div className="store-stars">{renderStars(store.rating)}</div> */}
-          <div className="store-stars">{renderStars(4)}</div>
-          {/* <span className="store-rating-text">{store.rating}</span> */}
-          <span className="store-rating-text">{4}</span>
-          {/* <span className="store-reviews">
-            ({store.reviews.toLocaleString()} reviews)
-          </span> */}
+          <div className="store-stars">{renderStars(store.averageRating)}</div>
+          {/* <div className="store-stars">{renderStars(4)}</div> */}
+          <span className="store-rating-text">{store.averageRating}</span>
+          {/* <span className="store-rating-text">{4}</span> */}
+          <span className="store-reviews">
+            ({store.totalReviews.toLocaleString()} reviews)
+          </span>
 
-          <span className="store-reviews">(1234 reviews)</span>
+          {/* <span className="store-reviews">(1234 reviews)</span> */}
         </div>
         {/* 
         <div className="store-badges">
@@ -312,8 +350,8 @@ export default function Shops() {
         <div className="store-stats">
           <div className="store-stat">
             <Package size={14} />
-            {/* <span>{store.products.toLocaleString()} products</span> */}
-            <span>{234} products</span>
+            <span>{store.totalProducts.toLocaleString()} products</span>
+            {/* <span>{234} products</span> */}
           </div>
           <div className="store-stat">
             <MapPin size={14} />
@@ -353,18 +391,17 @@ export default function Shops() {
     >
       <div className="product-image-wrapper">
         <img
-          src={
-            product.image
-              ? `http://localhost:8080${product.image}`
-              : "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
-          }
+          src={processImageUrl(product.image)}
           alt={product.name}
           loading="lazy"
         />
       </div>
       <div className="product-details-compact">
         <h4>{product.name}</h4>
-        <p className="product-price">₹{product.price}</p>
+        {/* <p className="product-price">₹{product.price}</p> */}
+        <p className="product-price">
+          ₹{calculateDiscountedPriceFinal(product.price, product.discount)}
+        </p>
         <button
           className="add-to-cart-compact"
           onClick={(e) => handleAddToCart(e, product)}
@@ -376,6 +413,24 @@ export default function Shops() {
   );
 
   const filteredStores = filterStores(featuredStores);
+
+  const processImageUrl = (image) => {
+    const getFullUrl = (img) =>
+      img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
+
+    if (Array.isArray(image) && image.length > 0) {
+      return getFullUrl(image[0]);
+    } else if (typeof image === "string" && image.length > 0) {
+      return getFullUrl(image);
+    }
+
+    return "/images/offer1.png";
+  };
+
+  const calculateDiscountedPriceFinal = (price, discount) => {
+    if (!discount || discount <= 0) return price;
+    return price - (price * discount) / 100;
+  };
 
   return (
     <div className="shops-page">

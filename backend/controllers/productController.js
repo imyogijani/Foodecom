@@ -301,35 +301,81 @@ export const updateProduct = async (req, res) => {
 
 export const getAllProducts = async (req, res) => {
   try {
-    const { populateCategory, populateSubcategory, categoryId, brand } =
-      req.query;
-    let query = Product.find({});
+    const {
+      populateCategory,
+      populateSubcategory,
+      categoryId,
+      brand,
+      search = "",
+      sortBy = "createdAt",
+      order = "desc",
+      minPrice = 0,
+      maxPrice = 9999999,
+      page = 1,
+      limit = 10,
+    } = req.query;
 
-    if (categoryId) {
-      query = query.where("category").equals(categoryId);
+    //  1. Dynamic Filters
+    const filter = {
+      price: { $gte: Number(minPrice), $lte: Number(maxPrice) },
+    };
+
+    if (categoryId && categoryId !== "undefined" && categoryId !== "") {
+      filter.category = categoryId;
     }
 
-    if (brand) {
-      query = query.where("brand").equals(brand);
+    if (brand && brand !== "undefined" && brand !== "") {
+      filter.brand = brand;
     }
 
+    //  2. Search Filter
+    if (search && search.trim() !== "") {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { desc: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    //  3. Sorting
+    const sortOptions = {
+      price: "finalPrice",
+      rating: "averageRating",
+      reviews: "totalReviews",
+      createdAt: "createdAt",
+    };
+
+    const sortField = sortOptions[sortBy] || "createdAt";
+    const sortOrder = order === "asc" ? 1 : -1;
+
+    //  4. Query + Sorting
+    let query = Product.find(filter).sort({ [sortField]: sortOrder });
+
+    //  5. Populate
     if (populateCategory === "true") {
       query = query.populate("category");
     }
-
     if (populateSubcategory === "true") {
       query = query.populate("subcategory");
     }
 
-    const products = await query.sort({
-      createdAt: -1,
-    });
+    //  6. Pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    query = query.skip(skip).limit(parseInt(limit));
+
+    //7. Execute Query
+    const products = await query;
+    const totalProducts = await Product.countDocuments(filter);
+
+    // 8. Response
     res.status(200).json({
       success: true,
       products,
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: parseInt(page),
     });
   } catch (error) {
-    console.error("Error fetching all products:", error);
+    console.error("Error fetching all products:", error.message);
     res.status(500).json({
       success: false,
       message: "Error fetching all products",
