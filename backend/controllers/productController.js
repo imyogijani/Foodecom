@@ -3,6 +3,7 @@ import Product from "../models/productModel.js";
 import Category from "../models/categoryModel.js";
 import TechnicalDetails from "../models/technicalDetails.js";
 import { fileURLToPath } from "url";
+import Seller from "../models/sellerModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -146,6 +147,13 @@ export const addProduct = async (req, res) => {
       // Add more feature checks here as needed
     }
 
+    const sellerDoc = await Seller.findOne({ user: req.userId });
+    if (!sellerDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Seller profile not found for this user",
+      });
+    }
     const product = new Product({
       name,
       description,
@@ -158,7 +166,7 @@ export const addProduct = async (req, res) => {
       image: image,
       variants: parsedVariants,
       brand: brand || undefined,
-      seller: req.userId,
+      seller: sellerDoc._id,
       technicalDetails: techDetailsRef || undefined,
     });
 

@@ -2,6 +2,8 @@ import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
 import Subscription from "../models/subscriptionModel.js";
+import Seller from "../models/sellerModel.js";
+import Category from "../models/categoryModel.js";
 
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
@@ -139,7 +141,9 @@ export const getAllProducts = async (req, res) => {
         status: product.status,
         shopId: product.seller?._id || null,
         shopName:
-          product.seller?.names || product.seller?.shopName || "Unknown Shop",
+          product.seller?.ownerName ||
+          product.seller?.shopName ||
+          "Unknown Shop",
       })),
     });
   } catch (error) {
@@ -151,6 +155,91 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+export const adminGetAllProducts = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 2,
+      category, // categoryId
+      seller, // sellerId
+      search = "", // product name search
+    } = req.query;
+
+    const skip = (page - 1) * limit;
+
+    //  Filtering
+    const filter = {};
+    if (category) filter.category = category;
+    if (seller) filter.seller = seller;
+    if (search) filter.name = { $regex: search, $options: "i" };
+
+    //  Query & Populate
+    const [products, totalCount] = await Promise.all([
+      Product.find(filter)
+        .populate("category", "name")
+        .populate("subcategory", "name")
+        .populate("seller", "shopName ownerName")
+        .skip(skip)
+        .limit(Number(limit)),
+      Product.countDocuments(filter),
+    ]);
+
+    //  Get Stats
+    const [totalUsers, totalCategories, totalSellers] = await Promise.all([
+      User.countDocuments(),
+      Category.countDocuments(),
+      Seller.countDocuments({ status: "active" }),
+    ]);
+
+    //  All categories and shops for filters
+    const [availableCategories, availableSellers] = await Promise.all([
+      Category.find({}, "name _id").sort("name"),
+      Seller.find({ status: "active" }, "shopName ownerName _id").sort(
+        "shopName"
+      ),
+    ]);
+
+    //  Return
+    res.status(200).json({
+      success: true,
+      totals: {
+        products: totalCount,
+        users: totalUsers,
+        categories: totalCategories,
+        activeSellers: totalSellers,
+      },
+      filters: {
+        availableCategories,
+        availableSellers,
+      },
+      pagination: {
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: Number(page),
+        limit: Number(limit),
+      },
+      products: products.map((p) => ({
+        _id: p._id,
+        name: p.name,
+        price: p.price,
+        image: p.image,
+        stock: p.stock,
+        status: p.status,
+        category: p.category?.name || "N/A",
+        subcategory: p.subcategory?.name || "N/A",
+        shopId: p.seller?._id,
+        shopName: p.seller?.shopName || "Unknown",
+        ownerName: p.seller?.ownerName || "Unknown",
+      })),
+    });
+  } catch (error) {
+    console.error("Admin Get Products Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
 // Get all shops
 export const getAllShops = async (req, res) => {
   try {

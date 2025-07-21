@@ -25,7 +25,7 @@ async function getShopSalesAggregation() {
   // Assumes each order has a seller/shop reference in items or order
   // If not, this needs to be adjusted based on your schema
   return User.aggregate([
-    { $match: { role: "shopowner" } },
+    { $match: { role: "shopowner" }},
     {
       $lookup: {
         from: "orders",

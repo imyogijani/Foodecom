@@ -18,7 +18,15 @@ const router = express.Router();
 
 // Routes
 // Register || POST
-router.post("/register", registerController);
+// router.post("/register", registerController);
+router.post(
+  "/register",
+  upload.fields([
+    { name: "shopImage", maxCount: 1 },
+    { name: "shopImages", maxCount: 5 },
+  ]),
+  registerController
+);
 
 // Login || POST
 router.post("/login", loginController);
@@ -30,10 +38,12 @@ router.get("/current-user", authenticateToken, currentUserController);
 router.put(
   "/update-profile",
   authenticateToken,
-  upload.single("shopImage"),
+  upload.fields([
+    { name: "shopImage", maxCount: 1 },
+    { name: "shopImages", maxCount: 5 },
+  ]),
   updateProfileController
 );
-
 // Verify token || GET
 router.get("/verify-token", authenticateToken, verifyToken);
 
@@ -49,7 +59,11 @@ router.post(
 router.patch("/clear-notification", authenticateToken, clearNotification);
 
 // Seller accepts updated plan
-router.patch("/accept-plan-update", authenticateToken, acceptPlanUpdateController);
+router.patch(
+  "/accept-plan-update",
+  authenticateToken,
+  acceptPlanUpdateController
+);
 
 // Serve avatar images
 router.get("/uploads/avatars/:filename", (req, res) => {

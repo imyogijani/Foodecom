@@ -1,6 +1,7 @@
 import Seller from "../models/sellerModel.js";
 // import Store from "../models/sellerModel.js";
 import Product from "../models/productModel.js";
+import userModel from "../models/userModel.js";
 import mongoose from "mongoose";
 
 // export const getAllStores = async (req, res) => {
@@ -301,6 +302,86 @@ export const getSingleStore = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Something went wrong while fetching store.",
+    });
+  }
+};
+
+export const getMyProductsController = async (req, res) => {
+  try {
+    const userId = req.userId; // from requireSignIn middleware
+
+    // 1. Validate user
+    const user = await userModel.findById(userId);
+    if (!user || user.role !== "shopowner") {
+      return res.status(403).json({
+        success: false,
+        message: "Only shopowners can access this route.",
+      });
+    }
+
+    // 2. Find associated seller
+    const seller = await Seller.findOne({ user: user._id });
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: "Seller profile not found.",
+      });
+    }
+
+    // 3. Get query params
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      status,
+      sort = "createdAt",
+      order = "desc",
+    } = req.query;
+
+    const skip = (page - 1) * limit;
+    const sortOrder = order === "asc" ? 1 : -1;
+
+    // 4. Build filter
+    const filter = {
+      seller: seller._id,
+    };
+
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    if (status) {
+      filter.status = status; // Must be one of: In Stock, Low Stock, Out of Stock
+    }
+
+    // 5. Count total
+    const totalProducts = await Product.countDocuments(filter);
+
+    // 6. Fetch products
+    const products = await Product.find(filter)
+      .sort({ [sort]: sortOrder })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .select(
+        "name price discount finalPrice stock image status averageRating totalReviews createdAt"
+      )
+      .lean();
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    return res.status(200).json({
+      success: true,
+      totalProducts,
+      currentPage: Number(page),
+      totalPages,
+      products,
+    });
+  } catch (error) {
+    console.error("Error in getMyProductsController:", error);
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong.",
+      error: error.message,
     });
   }
 };
