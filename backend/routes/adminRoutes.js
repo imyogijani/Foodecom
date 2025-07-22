@@ -14,7 +14,6 @@ import {
   updateShopownerSubscription,
   getShopownerDetails,
   getSellerDetails,
-  adminGetAllProducts,
 } from "../controllers/adminController.js";
 import {
   updateProduct,
@@ -41,7 +40,7 @@ router.get("/dashboard-stats", getDashboardStats);
 
 // Products management
 router.get("/all-products", getAllProducts);
-router.get("/productsAll", adminGetAllProducts);
+// router.get("/productsAll", adminGetAllProducts);
 router.delete("/products/all", deleteAllProducts);
 router.delete("/products/:id", deleteProduct);
 router.put("/products/:id", updateProduct);

@@ -14,6 +14,7 @@ const createUploadDirs = () => {
     path.join(__dirname, "../public/uploads/products"),
     path.join(__dirname, "../public/uploads/categories"),
     path.join(__dirname, "../public/uploads/shopowner"),
+    path.join(__dirname, "../public/uploads/brands"),
   ];
 
   dirs.forEach((dir) => {
@@ -40,6 +41,12 @@ const storage = multer.diskStorage({
       req.originalUrl.includes("shopowner")
     ) {
       const dest = path.join(__dirname, "../public/uploads/shopowner");
+      cb(null, dest);
+    } else if (
+      req.baseUrl.includes("brand") ||
+      req.originalUrl.includes("brand")
+    ) {
+      const dest = path.join(__dirname, "../public/uploads/brands");
       cb(null, dest);
     } else if (req.baseUrl.includes("avatar")) {
       const dest = path.join(__dirname, "../public/uploads/avatars");

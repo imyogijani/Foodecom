@@ -11,7 +11,7 @@ export const createCategoryController = async (req, res) => {
   try {
     console.log("[DEBUG] req.body:", req.body);
     console.log("[DEBUG] req.file:", req.file);
-    const { name, parent, brands } = req.body;
+    let { name, parent, brands } = req.body;
     let image = "";
     if (req.file) {
       console.log("Category image upload:", req.file);
@@ -22,6 +22,22 @@ export const createCategoryController = async (req, res) => {
     if (!name) {
       return res.status(400).send({ message: "Name is required" });
     }
+    if (typeof brands === "string") {
+      try {
+        brands = JSON.parse(brands);
+      } catch (err) {
+        console.log("[DEBUG] Invalid brands format:", brands);
+        return res.status(400).json({ message: "Invalid brands format" });
+      }
+    }
+
+    // Validate at least 1 brand if subcategory
+    if (parent && (!brands || brands.length < 1)) {
+      return res
+        .status(400)
+        .json({ message: "Subcategory requires at least 1 brand" });
+    }
+
     const existingCategory = await Category.findOne({ name });
     if (existingCategory) {
       return res.status(409).send({ message: "Category already exists" });
@@ -79,16 +95,41 @@ export const categoryController = async (req, res) => {
   }
 };
 
-// Get subcategories
+// // Get subcategories
+// export const getSubcategoriesController = async (req, res) => {
+//   try {
+//     const { parentId } = req.params;
+//     const subcategories = await Category.find({ parent: parentId }).populate(
+//       "children"
+//     );
+//     res.status(200).send({
+//       success: true,
+//       message: "Subcategories retrieved successfully",
+//       subcategories,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       success: false,
+//       error,
+//       message: "Error while getting subcategories",
+//     });
+//   }
+// };
+
+// Get subcategories with brand names
 export const getSubcategoriesController = async (req, res) => {
   try {
     const { parentId } = req.params;
-    const subcategories = await Category.find({ parent: parentId }).populate(
-      "children"
-    );
+
+    // Fetch subcategories and populate brands
+    const subcategories = await Category.find({ parent: parentId })
+      .populate("brands", "name _id") // Only name and _id from Brand
+      .populate("children"); // Optional: if you want nested children again
+
     res.status(200).send({
       success: true,
-      message: "Subcategories retrieved successfully",
+      message: "Subcategories with brands retrieved successfully",
       subcategories,
     });
   } catch (error) {

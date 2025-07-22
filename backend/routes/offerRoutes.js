@@ -1,15 +1,19 @@
 import express from "express";
-import { authenticateToken, isAdmin } from "../middlewares/authMiddleware.js";
-import { createOffer, getOffers, getShops, deleteOffer } from "../controllers/offerController.js";
-
+import {
+  createOffer,
+  getAllOffers,
+  updateOffer,
+  deleteOffer,
+} from "../controllers/offerController.js";
+import {
+  authenticateToken,
+  authorizeAdmin,
+} from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
-router.get("/admin/shops", authenticateToken, isAdmin, getShops);
-router.get("/admin/offers", authenticateToken, isAdmin, getOffers);
-router.post("/admin/offers", authenticateToken, isAdmin, createOffer);
-router.delete("/admin/offers/:id", authenticateToken, isAdmin, deleteOffer);
-
-// For home page (public)
-router.get("/offers/today", getOffers);
+router.post("/create", authenticateToken, authorizeAdmin, createOffer);
+router.get("/all", authenticateToken, authorizeAdmin, getAllOffers);
+router.put("/update/:id", authenticateToken, authorizeAdmin, updateOffer);
+router.delete("/delete/:id", authenticateToken, authorizeAdmin, deleteOffer);
 
 export default router;
