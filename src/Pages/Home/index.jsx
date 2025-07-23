@@ -387,7 +387,7 @@ const CategoryCard = ({ category, setActiveCategory }) => (
       />
     </div>
     <div className="card-content">
-      <h3 className="card-title">{category.name}</h3>
+      <h3 className="category-card-title">{category.name}</h3>
       <p className="card-subtitle">{category.shopCount || 0} stores</p>
     </div>
   </div>
