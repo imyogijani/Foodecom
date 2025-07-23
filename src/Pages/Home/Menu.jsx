@@ -27,8 +27,8 @@ const mallInfo = {
   reviews: 125000,
   minOrder: "₹0",
   deliveryTime: "Same Day Delivery",
-  phone: "+1-800-EMALL",
-  website: "https://e-mallworld.com",
+  phone: "+91-960-190-0290",
+  website: "https://emallworld.com",
   address: "Serving Worldwide",
 };
 
@@ -329,7 +329,7 @@ export default function Menu() {
     <div className="modern-menu-page">
       <div className="menu-header-section">
         <div className="mall-info">
-          <h1>{mallInfo?.name}</h1>
+          <h1>Browse Products</h1>
           <div className="mall-meta">
             <div className="rating-badge">
               <Star className="star-icon" size={16} fill="currentColor" />
@@ -379,19 +379,27 @@ export default function Menu() {
             <option value="reviews">Most Reviewed</option>
           </select>
 
-          <div className="view-toggle">
-            <button
-              className={`view-btn ${viewMode === "grid" ? "active" : ""}`}
-              onClick={() => setViewMode("grid")}
-            >
-              <Grid size={16} />
-            </button>
-            <button
-              className={`view-btn ${viewMode === "list" ? "active" : ""}`}
-              onClick={() => setViewMode("list")}
-            >
-              <List size={16} />
-            </button>
+          <div className="view-toggle-switch">
+            <div className="switch-toggle-group">
+              <button
+                className={`switch-btn ${viewMode === "grid" ? "active" : ""}`}
+                onClick={() => setViewMode("grid")}
+                style={{ marginRight: "10px" }}
+              >
+                <Grid size={26} />
+              </button>
+              <button
+                className={`switch-btn ${viewMode === "list" ? "active" : ""}`}
+                onClick={() => setViewMode("list")}
+              >
+                <List size={26} />
+              </button>
+              <span
+                className={`switch-slider ${
+                  viewMode === "list" ? "slide-right" : ""
+                }`}
+              ></span>
+            </div>
           </div>
         </div>
       </div>

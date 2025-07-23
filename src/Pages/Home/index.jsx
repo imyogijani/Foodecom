@@ -19,6 +19,7 @@ import {
   Award,
 } from "lucide-react";
 import { addToCartAPI } from "../../api/cartApi/cartApi";
+import HeroImg from "../../images/hero-img.svg";
 
 export default function Home() {
   // State management
@@ -36,12 +37,10 @@ export default function Home() {
   const filteredProducts = React.useMemo(() => {
     let filtered = products;
 
-    // Category filter
     if (activeCategory) {
       filtered = filtered.filter((p) => p.category?.name === activeCategory);
     }
 
-    // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
         (p) =>
@@ -50,7 +49,6 @@ export default function Home() {
       );
     }
 
-    // Sort products
     if (sortBy === "low") {
       filtered = [...filtered].sort((a, b) => a.price - b.price);
     } else if (sortBy === "high") {
@@ -76,6 +74,7 @@ export default function Home() {
         await Promise.all([fetchCategories(), fetchProducts(), fetchDeals()]);
       } catch (error) {
         console.error("Error fetching initial data:", error);
+        toast.error("Failed to load initial data");
       }
     };
 
@@ -114,10 +113,9 @@ export default function Home() {
         "/api/products?populateCategory=true&populateSubcategory=true"
       );
       setProducts(response.data.products);
-      console.log("Index fetch data : --", response.data.products);
     } catch (error) {
+      console.error("Product fetch error:", error);
       toast.error("Error fetching products");
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -125,11 +123,12 @@ export default function Home() {
 
   const fetchDeals = async () => {
     try {
-      const offersRes = await axios.get(
-        "http://localhost:8080/api/offers/today"
-      );
-      const offers = offersRes.data.offers || [];
+      const [offersRes, dealsRes] = await Promise.all([
+        axios.get("http://localhost:8080/api/offers/today"),
+        axios.get("/api/deals/active"),
+      ]);
 
+      const offers = offersRes.data.offers || [];
       const mappedOffers = offers.map((offer) => ({
         _id: offer._id,
         title: offer.title || offer.product?.name || "Today's Offer",
@@ -147,22 +146,15 @@ export default function Home() {
         reviewCount: offer.product?.reviewCount || 100,
       }));
 
-      const response = await axios.get("/api/deals/active");
-      const allDeals = [...mappedOffers, ...(response.data.deals || [])];
+      const allDeals = [...mappedOffers, ...(dealsRes.data.deals || [])];
       setDeals(allDeals);
     } catch (error) {
       console.error("Deals fetch error:", error);
+      toast.error("Error fetching deals");
       setDeals([]);
     }
   };
 
-  // Helper functions
-  // const processImageUrl = (image) => {
-  //   if (image && image.startsWith("/uploads")) {
-  //     return `http://localhost:8080${image}`;
-  //   }
-  //   return image || "/images/offer1.png";
-  // };
   const processImageUrl = (image) => {
     const getFullUrl = (img) =>
       img.startsWith("/uploads") ? `http://localhost:8080${img}` : img;
@@ -177,12 +169,9 @@ export default function Home() {
   };
 
   const calculateDealPrice = (offer) => {
-    return (
-      offer.price ||
-      (offer.product?.price
-        ? Math.round(offer.product.price * (1 - (offer.discount || 0) / 100))
-        : undefined)
-    );
+    if (offer.price) return offer.price;
+    if (!offer.product?.price || !offer.discount) return undefined;
+    return Math.round(offer.product.price * (1 - offer.discount / 100));
   };
 
   const getShopName = (offer) => {
@@ -191,14 +180,31 @@ export default function Home() {
     );
   };
 
-  // const handleAddToCart = (product) => {
-  //   addToCart({
-  //     ...product,
-  //     quantity: 1,
-  //     addedAt: new Date().toISOString(),
-  //   });
-  //   toast.success(`${product.name || product.title} added to cart! 🛒`);
-  // };
+  const handleAddToCart = async (e, product) => {
+    e.stopPropagation();
+
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user?._id) {
+        toast.error("Please login to add items to cart");
+        return;
+      }
+
+      const productData = {
+        productId: product._id,
+        quantity: 1,
+        price: product.price,
+        title: product.name,
+        discount: product.discount,
+      };
+
+      await addToCartAPI(user._id, productData);
+      toast.success("Added to cart!");
+    } catch (err) {
+      console.error("Add to cart error:", err);
+      toast.error("Failed to add to cart");
+    }
+  };
 
   const renderStars = (rating) => {
     const stars = [];
@@ -225,7 +231,7 @@ export default function Home() {
     return stars;
   };
 
-  // Component definitions
+  // Component definitions remain the same...
   const ProductCard = ({ product }) => {
     const image =
       processImageUrl(product.image) ||
@@ -247,7 +253,7 @@ export default function Home() {
           <ProductRating product={product} renderStars={renderStars} />
           <ProductPrice product={product} />
           <ProductBadges product={product} />
-          <div className="card-actions">
+          <div className="card-actions" style={{ justifyContent: "end" }}>
             <button
               className="card-button"
               onClick={(e) => handleAddToCart(e, product)}
@@ -260,38 +266,8 @@ export default function Home() {
       </div>
     );
   };
-  const handleAddToCart = async (e, product) => {
-    e.stopPropagation();
 
-    // const user = JSON.parse(localStorage.getItem("user"));
-    // console.log("User 1211431243", user);
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const userId = user?._id;
-
-      if (!userId) {
-        toast.error("User not logged in");
-        return;
-      }
-
-      const productData = {
-        productId: product._id,
-        quantity: 1,
-        price: product.price,
-        title: product.name,
-        // image: product.image,
-        discount: product.discount,
-      };
-
-      const response = await addToCartAPI(userId, productData);
-
-      toast.success("Added to cart!");
-    } catch (err) {
-      console.error("Add to cart error:", err);
-      toast.error("Failed to add to cart.");
-    }
-  };
-  // JSX/Template Part
+  // Rest of the components remain unchanged...
   return (
     <div className="amazon-home-container">
       <HeroSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
@@ -313,13 +289,11 @@ export default function Home() {
         ProductCard={ProductCard}
       />
       <DealsSection deals={deals} />
-      {/* <BusinessSection handleGetStarted={handleGetStarted} /> */}
-      {/* <FooterContent /> */}
     </div>
   );
 }
 
-// Subcomponents
+// Subcomponents remain unchanged...
 const HeroSection = ({ searchQuery, setSearchQuery }) => (
   <div className="hero-banner">
     <div className="hero-content">
@@ -342,10 +316,7 @@ const HeroSection = ({ searchQuery, setSearchQuery }) => (
         </div>
       </div>
       <div className="hero-image">
-        <img
-          src="https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
-          alt="Shopping Experience"
-        />
+        <img src={HeroImg} alt="Shopping Experience" />
       </div>
     </div>
   </div>
@@ -360,7 +331,7 @@ const TrustBadges = () => (
       { Icon: Award, text: "Quality Assured" },
     ].map(({ Icon, text }) => (
       <div key={text} className="trust-badge">
-        <Icon size={24} />
+        <Icon size={30} />
         <span>{text}</span>
       </div>
     ))}
@@ -369,7 +340,19 @@ const TrustBadges = () => (
 
 const CategoriesSection = ({ categories, setActiveCategory }) => (
   <div className="categories-section">
-    <h2>Shop by Category</h2>
+    <h2
+      style={{
+        fontWeight: "bold",
+        borderBottom: "2px solid #232f3e",
+        paddingBottom: "10px",
+        display: "block",
+        width: "fit-content",
+        textAlign: "center",
+        margin: "0 auto 30px",
+      }}
+    >
+      Shop by Category
+    </h2>
     <div className="cards-grid cards-grid-medium">
       {categories.map((cat) => (
         <CategoryCard
@@ -384,7 +367,7 @@ const CategoriesSection = ({ categories, setActiveCategory }) => (
 
 const CategoryCard = ({ category, setActiveCategory }) => (
   <div
-    className="card-base card-medium category-card"
+    className="card-base category-card"
     onClick={() => setActiveCategory(category.name)}
   >
     <div className="card-image-container">
@@ -404,7 +387,7 @@ const CategoryCard = ({ category, setActiveCategory }) => (
       />
     </div>
     <div className="card-content">
-      <h3 className="card-title">{category.name}</h3>
+      <h3 className="category-card-title">{category.name}</h3>
       <p className="card-subtitle">{category.shopCount || 0} stores</p>
     </div>
   </div>
@@ -560,51 +543,6 @@ const DealCard = ({ deal }) => (
           <span className="original-price">₹{deal.originalPrice}</span>
         )}
       </div>
-    </div>
-  </div>
-);
-
-// const BusinessSection = ({ handleGetStarted }) => (
-//   <div className="business-section">
-//     <div className="business-content">
-//       <BusinessCard
-//         title="Sell on E-Mall World"
-//         description="Reach millions of customers and grow your business"
-//         buttonText="Start Selling"
-//         image="https://images.pexels.com/photos/11077404/pexels-photo-11077404.jpeg"
-//         onClick={handleGetStarted}
-//       />
-//       <BusinessCard
-//         title="Become a Delivery Partner"
-//         description="Earn money by delivering packages in your area"
-//         buttonText="Join Now"
-//         image="https://images.pexels.com/photos/13968342/pexels-photo-13968342.jpeg"
-//         onClick={handleGetStarted}
-//       />
-//     </div>
-//   </div>
-// );
-
-// const BusinessCard = ({ title, description, buttonText, image, onClick }) => (
-//   <div className="business-card">
-//     <div className="business-text">
-//       <h3>{title}</h3>
-//       <p>{description}</p>
-//       <button className="business-btn" onClick={onClick}>
-//         {buttonText}
-//       </button>
-//     </div>
-//     <div className="business-image">
-//       <img src={image} alt={title} />
-//     </div>
-//   </div>
-// );
-
-const FooterContent = () => (
-  <div className="footer-content">
-    <div className="additional-sections">
-      <DealsList />
-      {/* <BottomCard /> */}
     </div>
   </div>
 );
