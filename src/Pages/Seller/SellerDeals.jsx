@@ -58,6 +58,7 @@ const SellerDeals = () => {
       });
       if (response.data.success) {
         setProducts(response.data.products);
+        console.log("Seller page to product get --00", response.data.products);
       }
     } catch (error) {
       toast.error("Error fetching products");
@@ -83,7 +84,15 @@ const SellerDeals = () => {
       });
       fetchDeals();
     } catch (error) {
-      toast.error("Error creating deal");
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Error creating deal"); // fallback
+      }
       console.log(error);
     }
   };

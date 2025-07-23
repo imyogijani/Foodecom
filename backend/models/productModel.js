@@ -52,9 +52,9 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
     brand: {
-      type: String,
-      required: false,
-      trim: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+      required: true,
     },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
@@ -79,6 +79,11 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "TechnicalDetails",
       required: true,
+    },
+    activeDeal: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "deals",
+      default: null,
     },
     finalPrice: { type: Number },
   },

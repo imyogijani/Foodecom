@@ -169,22 +169,21 @@ export const getAllStores = async (req, res) => {
     const stores = await Seller.aggregate([
       { $match: matchStage },
 
-      // Join user details
+      // Join user (owner) info with selected fields only
       {
         $lookup: {
           from: "users",
           localField: "user",
           foreignField: "_id",
-          as: "user",
+          as: "owner",
         },
       },
-      { $unwind: "$user" },
+      { $unwind: "$owner" },
 
-      // Join products for product count only
       {
         $lookup: {
           from: "products",
-          localField: "user._id",
+          localField: "_id", // Seller ID
           foreignField: "seller",
           as: "products",
         },
@@ -197,11 +196,27 @@ export const getAllStores = async (req, res) => {
         },
       },
 
+      // Clean up final output
       {
         $project: {
-          products: 0,
-          "user.password": 0,
-          "user.__v": 0,
+          shopName: 1,
+          shopImage: 1,
+          shopImages: 1,
+          address: 1,
+          location: 1,
+          categories: 1,
+          description: 1,
+          ownerName: 1,
+          specialist: 1,
+          status: 1,
+          createdAt: 1,
+          averageRating: 1,
+          totalReviews: 1,
+          totalProducts: 1,
+          "owner.name": "$owner.names",
+          "owner.email": "$owner.email",
+          "owner.phone": "$owner.phone",
+          "owner.address": "$owner.address",
         },
       },
 
@@ -210,7 +225,6 @@ export const getAllStores = async (req, res) => {
       { $limit: Number(limit) },
     ]);
 
-    // Total seller count
     const totalStores = await Seller.countDocuments(matchStage);
 
     res.status(200).json({

@@ -9,8 +9,17 @@ export const deactivateExpiredOffers = async () => {
       { isActive: false }
     );
 
-    console.log(" Expired offers deactivated");
+    console.log("Expired offers deactivated");
   } catch (error) {
-    console.error(" Error in deactivating offers:", error.message);
+    console.error("Error in deactivating offers:", error.message);
   }
 };
+
+// Use :
+
+// import cron from "node-cron";
+// import { deactivateExpiredOffers } from "./utils/deactivateExpiredOffers.js";
+
+// cron.schedule("0 0 * * *", () => {
+//   deactivateExpiredOffers();
+// });

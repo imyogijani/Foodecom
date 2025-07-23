@@ -4,6 +4,7 @@ import Category from "../models/categoryModel.js";
 import TechnicalDetails from "../models/technicalDetails.js";
 import { fileURLToPath } from "url";
 import Seller from "../models/sellerModel.js";
+// import { attachActiveDeals } from "../utils/attachActiveDeals.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -186,18 +187,54 @@ export const addProduct = async (req, res) => {
   }
 };
 
+// export const getSellerProducts = async (req, res) => {
+//   try {
+//     const { populateCategory } = req.query;
+//     let query = Product.find({ seller: req.userId });
+
+//     if (populateCategory === "true") {
+//       query = query.populate("category");
+//     }
+
+//     const products = await query.sort({
+//       createdAt: -1,
+//     });
+//     res.status(200).json({
+//       success: true,
+//       products,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching products:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching products",
+//       error: error.message,
+//     });
+//   }
+// };
 export const getSellerProducts = async (req, res) => {
   try {
     const { populateCategory } = req.query;
-    let query = Product.find({ seller: req.userId });
+
+    // Step 1: Find Seller based on logged-in user ID
+    const seller = await Seller.findOne({ user: req.userId });
+
+    if (!seller) {
+      return res.status(404).json({
+        success: false,
+        message: "Seller not found for this user",
+      });
+    }
+
+    // Step 2: Use seller._id to find products
+    let query = Product.find({ seller: seller._id });
 
     if (populateCategory === "true") {
       query = query.populate("category");
     }
 
-    const products = await query.sort({
-      createdAt: -1,
-    });
+    const products = await query.sort({ createdAt: -1 });
+
     res.status(200).json({
       success: true,
       products,
@@ -211,7 +248,6 @@ export const getSellerProducts = async (req, res) => {
     });
   }
 };
-
 export const updateProduct = async (req, res) => {
   try {
     const { id: productId } = req.params;
@@ -365,7 +401,10 @@ export const getAllProducts = async (req, res) => {
     if (populateSubcategory === "true") {
       query = query.populate("subcategory");
     }
-
+    query = query.populate({
+      path: "activeDeal",
+      match: { _id: { $ne: null } }, // OR use more filter like startDate
+    });
     //  6. Pagination
     const skip = (parseInt(page) - 1) * parseInt(limit);
     query = query.skip(skip).limit(parseInt(limit));
@@ -373,6 +412,8 @@ export const getAllProducts = async (req, res) => {
     //7. Execute Query
     const products = await query;
     const totalProducts = await Product.countDocuments(filter);
+
+    // const updatedProducts = await attachActiveDeals(products);
 
     // 8. Response
     res.status(200).json({

@@ -9,8 +9,8 @@ import mongoose from "mongoose";
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
-    const totalSellers = await User.countDocuments({ role: "shopowner" });
+    const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
+    const totalSellers = await Seller.countDocuments();
     const totalProducts = await Product.countDocuments();
     const totalOrders = await Order.countDocuments();
 
@@ -31,8 +31,10 @@ export const getDashboardStats = async (req, res) => {
     ]);
 
     // Get recent orders
-    const activeSellers = await User.aggregate([
-      { $match: { role: "shopowner", status: "active" } },
+    const activeSellers = await Seller.aggregate([
+      {
+        $match: { status: "active" },
+      },
       {
         $lookup: {
           from: "products",
@@ -41,14 +43,18 @@ export const getDashboardStats = async (req, res) => {
           as: "products",
         },
       },
-      { $addFields: { totalProducts: { $size: "$products" } } },
+      {
+        $addFields: {
+          totalProducts: { $size: "$products" },
+        },
+      },
       {
         $project: {
-          names: 1,
           shopName: 1,
-          email: 1,
-          lastLogin: 1,
+          ownerName: 1,
+          averageRating: 1,
           totalProducts: 1,
+          createdAt: 1,
         },
       },
     ]);

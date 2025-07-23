@@ -4,6 +4,8 @@ import Notification from "../models/notificationModel.js";
 import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
 import mongoose from "mongoose";
+import Seller from "../models/sellerModel.js";
+import Brand from "../models/brandModel.js";
 
 // Create a new deal
 export const createDeal = async (req, res) => {
@@ -21,6 +23,28 @@ export const createDeal = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
+    // 🟢 Find the seller using the user ID
+    const seller = await Seller.findOne({ user: req.user._id });
+    if (!seller) return res.status(404).json({ message: "Seller not found" });
+    const overlappingDeal = await Deal.findOne({
+      product: productId,
+      seller: seller._id, // only block same seller
+      $or: [
+        {
+          startDate: { $lte: new Date(endDate) },
+          endDate: { $gte: new Date(startDate) },
+        },
+      ],
+      status: { $in: ["pending", "approved", "active"] },
+    });
+
+    if (overlappingDeal) {
+      return res.status(400).json({
+        message:
+          "You already created a deal for this product in this time range.",
+      });
+    }
+
     let dealPrice = product.price;
     if (discountPercentage) {
       dealPrice = product.price - (product.price * discountPercentage) / 100;
@@ -30,7 +54,7 @@ export const createDeal = async (req, res) => {
       title,
       description,
       product: productId,
-      seller: req.user._id,
+      seller: seller._id,
       originalPrice: product.price,
       discountPercentage,
       dealPrice, // ensure dealPrice is set
@@ -81,9 +105,30 @@ export const approveDeal = async (req, res) => {
     deal.approvedAt = new Date();
     await deal.save();
 
-    const product = await Product.findById(deal.product);
-    if (product) product.discount = deal.discountPercentage;
-    await product.save();
+    // const product = await Product.findById(deal.product);
+    // if (product) product.discount = deal.discountPercentage;
+    // if (!product.brand) {
+    //   let defaultBrand = await Brand.findOne({ name: "Generic" });
+
+    //   // If "Generic" brand doesn't exist, create it
+    //   if (!defaultBrand) {
+    //     const newBrand = new Brand({ name: "Generic" });
+    //     await newBrand.save();
+    //     defaultBrand = newBrand; // use the new one
+    //   }
+
+    //   // Assign default brand to product
+    //   product.brand = defaultBrand._id;
+    // }
+    // await product.save();
+
+    const now = new Date();
+    if (deal.startDate <= now && deal.endDate >= now) {
+      // Set this deal as activeDeal in product
+      await Product.findByIdAndUpdate(deal.product, {
+        activeDeal: deal._id,
+      });
+    }
 
     const notification = new Notification({
       title: "Deal Approved",
@@ -186,7 +231,7 @@ export const getAllDeals = async (req, res) => {
 
     const deals = await Deal.find(filter)
       .populate("product", "name image")
-      .populate("seller", "names email shopName shopownerName")
+      .populate("seller", "ownerName shopName ")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);

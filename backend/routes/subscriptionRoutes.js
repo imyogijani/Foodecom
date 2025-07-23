@@ -17,3 +17,4 @@ router.delete("/subscriptions/:id", deleteSubscription);
 router.get("/plan-by-name/:planName", getSubscriptionByName);
 
 export default router;
+

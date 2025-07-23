@@ -25,6 +25,7 @@ function AdminDeals() {
       });
       if (response.data.success) {
         setDeals(response.data.deals);
+        console.log("deal admin", response.data.deals); 
       }
     } catch (error) {
       // Optionally show error

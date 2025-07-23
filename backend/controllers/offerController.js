@@ -18,6 +18,9 @@ export const getAllOffers = async (req, res) => {
     // Build filter condition
     const searchRegex = new RegExp(search, "i"); // i = case-insensitive
     const filter = {
+      isActive: true,
+      startDate: { $lte: new Date() },
+      endDate: { $gte: new Date() },
       $or: [{ code: searchRegex }, { description: searchRegex }],
     };
 
@@ -59,6 +62,21 @@ export const deleteOffer = async (req, res) => {
   try {
     await Offer.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: "Offer deleted" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+
+export const toggleOfferActive = async (req, res) => {
+  try {
+    const offer = await Offer.findById(req.params.id);
+    if (!offer) return res.status(404).json({ success: false, message: "Offer not found" });
+
+    offer.isActive = !offer.isActive;
+    await offer.save();
+
+    res.json({ success: true, isActive: offer.isActive });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
