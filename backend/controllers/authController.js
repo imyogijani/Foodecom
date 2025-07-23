@@ -7,6 +7,7 @@ import { fileURLToPath } from "url";
 import userModel from "../models/userModel.js";
 import Subscription from "../models/subscriptionModel.js"; // Changed to default import
 import Seller from "../models/sellerModel.js";
+import Category from "../models/categoryModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,8 +77,8 @@ const registerController = async (req, res) => {
       shopName,
       shopownerName,
       avatar,
-      shopImage,
-      shopImages,
+      // shopImage,
+      // shopImages,
       description,
       categories,
       location,
@@ -85,6 +86,10 @@ const registerController = async (req, res) => {
       names,
       phone,
     } = req.body;
+
+    const files = req.files;
+    const shopImage = files?.shopImage?.[0]?.filename || null;
+    const shopImages = files?.shopImages?.map((file) => file.filename) || [];
 
     // 1. Check existing user
     const existingUser = await userModel.findOne({ email });
@@ -127,6 +132,25 @@ const registerController = async (req, res) => {
         });
       }
 
+      if (
+        !categories ||
+        !Array.isArray(categories) ||
+        categories.length === 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "At least one category is required for shopowner",
+        });
+      }
+
+      const validCategories = await Category.find({ _id: { $in: categories } });
+      if (validCategories.length !== categories.length) {
+        return res.status(400).json({
+          success: false,
+          message: "Some categories are invalid",
+        });
+      }
+
       userData.subscription = subscriptionId;
       userData.subscriptionStartDate = new Date();
       userData.subscriptionFeatures = subscription.includedFeatures;
@@ -143,8 +167,8 @@ const registerController = async (req, res) => {
       const seller = new Seller({
         user: user._id,
         shopName,
-        shopImage: shopImage || null,
-        shopImages: shopImages || [],
+        shopImage,
+        shopImages,
         ownerName: user.names || "", // Or from formData.shopownerName
         description: description || "",
         categories: categories || [],
@@ -302,64 +326,108 @@ export const updateProfileController = async (req, res) => {
       });
     }
 
-    let updateUserData = {};
-    let updateSellerData = {};
+    const files = req.files || {};
+    const updateUserData = {};
+    const updateSellerData = {};
 
-    // If multipart/form-data, handle file
-    if (req.file) {
-      const imagePath = `/public/uploads/avatars/${req.file.filename}`;
-      if (user.role === "shopowner") {
-        updateSellerData.shopImage = imagePath;
-      } else {
-        updateUserData.avatar = imagePath;
-      }
-    }
-
-    const { names, shopownerName, shopName, phone, address } = req.body;
-
-    // Common for all users
+    // === USER FIELDS (Common) ===
+    const { names, phone, address } = req.body;
     if (names !== undefined) updateUserData.names = names;
     if (phone !== undefined) updateUserData.phone = phone;
+    if (address !== undefined) updateUserData.address = address;
 
-    // Shopowner-specific: update seller table
+    // === SELLER FIELDS (Shopowner only) ===
     if (user.role === "shopowner") {
+      const { shopName, shopownerName, categories } = req.body;
+
       if (shopName !== undefined) updateSellerData.shopName = shopName;
       if (shopownerName !== undefined)
         updateSellerData.ownerName = shopownerName;
       if (address !== undefined) updateSellerData.address = address;
 
-      // Find seller and update
-      const seller = await Seller.findOneAndUpdate(
-        { user: user._id },
-        updateSellerData,
+      // Handle main image
+      if (files.shopImage && files.shopImage[0]) {
+        updateSellerData.shopImage = files.shopImage[0].filename;
+      }
+
+      // Handle multiple images (append only or full replacement — here append)
+      if (files.shopImages && files.shopImages.length > 0) {
+        const newImages = files.shopImages.map((file) => file.filename);
+        const seller = await Seller.findOne({ user: user._id });
+        const existingImages = seller?.shopImages || [];
+        updateSellerData.shopImages = [...existingImages, ...newImages];
+      }
+
+      // Handle categories (replace entirely)
+      // Handle categories (replace entirely)
+      if (categories) {
+        let parsedCategories;
+        try {
+          parsedCategories = JSON.parse(categories); // From form-data stringified array
+
+          if (!Array.isArray(parsedCategories)) {
+            throw new Error("Categories must be an array");
+          }
+
+          // Validate ObjectId format
+          if (!parsedCategories.every((id) => id.length === 24)) {
+            return res.status(400).json({
+              success: false,
+              message: "One or more category IDs are not valid ObjectId format",
+            });
+          }
+
+          const validCategories = await Category.find({
+            _id: { $in: parsedCategories },
+          });
+
+          if (validCategories.length !== parsedCategories.length) {
+            return res.status(400).json({
+              success: false,
+              message: "One or more category IDs are invalid",
+            });
+          }
+
+          updateSellerData.categories = parsedCategories;
+        } catch (err) {
+          console.error("Categories parsing failed:", err.message);
+          return res.status(400).json({
+            success: false,
+            message: "Invalid categories format. Must be JSON array of IDs.",
+          });
+        }
+      }
+
+      // === Update Seller ===
+      const updatedSeller = await Seller.findOneAndUpdate(
+        { user: userId },
+        { $set: updateSellerData },
         { new: true }
       );
 
-      // Update user basic fields too
+      // === Update User ===
       const updatedUser = await userModel
         .findByIdAndUpdate(userId, updateUserData, { new: true })
         .populate("subscription");
 
       return res.status(200).json({
         success: true,
-        message: "Profile updated successfully",
+        message: "Shopowner profile updated successfully",
         user: updatedUser,
-        seller,
-      });
-    } else {
-      // For non-seller users (client, admin)
-      if (address !== undefined) updateUserData.address = address;
-
-      const updatedUser = await userModel
-        .findByIdAndUpdate(userId, updateUserData, { new: true })
-        .populate("subscription");
-
-      return res.status(200).json({
-        success: true,
-        message: "Profile updated successfully",
-        user: updatedUser,
+        seller: updatedSeller,
       });
     }
+
+    // === Update user (non-shopowner) ===
+    const updatedUser = await userModel
+      .findByIdAndUpdate(userId, updateUserData, { new: true })
+      .populate("subscription");
+
+    return res.status(200).json({
+      success: true,
+      message: "User profile updated successfully",
+      user: updatedUser,
+    });
   } catch (err) {
     console.error("Update profile error:", err);
     res.status(500).json({
@@ -369,6 +437,7 @@ export const updateProfileController = async (req, res) => {
     });
   }
 };
+
 // Upload avatar controller
 const uploadAvatarController = async (req, res) => {
   try {

@@ -27,10 +27,16 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showProductModal, setShowProductModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10); // You can make this dynamic if needed
+  const [totalPages, setTotalPages] = useState(1);
+  const [totals, setTotals] = useState();
+
   const navigate = useNavigate();
 
   const fetchProducts = useCallback(async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
         toast.error("Authentication required");
@@ -38,23 +44,36 @@ const Products = () => {
         return;
       }
 
-      let url =
-        "/api/admin/all-products?populateCategory=true&populateSubcategory=true";
-      if (selectedCategory) url += `&categoryId=${selectedCategory}`;
-      if (selectedSubcategory) url += `&subcategoryId=${selectedSubcategory}`;
+      let url = `/api/admin/all-products?page=${page}&limit=${limit}`;
+      if (selectedCategory) url += `&category=${selectedCategory}`;
+      if (selectedSubcategory) url += `&subcategory=${selectedSubcategory}`;
       if (selectedBrand) url += `&brand=${selectedBrand}`;
+      if (selectedShop !== "all") url += `&seller=${selectedShop}`;
+      if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
 
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setProducts(response.data.products);
+      setTotalPages(response.data.pagination.totalPages);
+      setTotals(response.data.totals);
     } catch (error) {
       console.error("Error fetching products:", error);
       toast.error(error.response?.data?.message || "Error fetching products");
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory, selectedSubcategory, selectedBrand, navigate]);
+  }, [
+    selectedCategory,
+    selectedSubcategory,
+    selectedBrand,
+    selectedShop,
+    searchTerm,
+    page,
+    limit,
+    navigate,
+  ]);
 
   const fetchCategories = async () => {
     try {
@@ -63,6 +82,7 @@ const Products = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCategories(response.data.categories);
+      // console.log("Set Categories all", response.data.categories.length);
     } catch (error) {
       console.error("Error fetching categories:", error);
       toast.error(error.response?.data?.message || "Error fetching categories");
@@ -173,11 +193,10 @@ const Products = () => {
   });
 
   const getProductStats = () => ({
-    totalProducts: products.length,
+    // totalProducts: products.length,
     activeShops: shops.length,
-    categories: new Set(products.map((p) => p.category?.name).filter(Boolean))
-      .size,
-    totalStock: products.reduce((sum, p) => sum + (p.stock || 0), 0),
+    categories: categories.length,
+    // totalStock: products.reduce((sum, p) => sum + (p.stock || 0), 0),
   });
 
   const stats = getProductStats();
@@ -314,7 +333,7 @@ const Products = () => {
           </div>
           <div className="stat-details">
             <h3>Total Products</h3>
-            <p>{stats.totalProducts}</p>
+            <p>{totals.products}</p>
           </div>
         </div>
         <div className="stat-card">
@@ -341,14 +360,14 @@ const Products = () => {
           </div>
           <div className="stat-details">
             <h3>Total Stock</h3>
-            <p>{stats.totalStock}</p>
+            <p>{totals.totalAvailableStock}</p>
           </div>
         </div>
       </div>
 
       <div className="products-grid-container">
         <div className="product-cards-container">
-          {filteredProducts.map((product) => {
+          {products.map((product) => {
             let imageUrl = "";
             if (typeof product.image === "string" && product.image) {
               if (product.image.startsWith("/uploads/")) {

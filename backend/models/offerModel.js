@@ -2,26 +2,84 @@ import mongoose from "mongoose";
 
 const offerSchema = new mongoose.Schema(
   {
-    shop: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+    },
+    code: {
+      type: String,
+      unique: true,
+      required: true,
+      uppercase: true,
+      trim: true,
+    },
+    type: {
+      type: String,
+      enum: ["CART", "CATEGORY", "BRAND", "PRODUCT"],
       required: true,
     },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "products",
+    discountType: {
+      type: String,
+      enum: ["PERCENTAGE", "FLAT"],
       required: true,
     },
-    title: { type: String, required: true },
-    description: { type: String },
-    discount: { type: Number, required: true },
-    price: { type: Number },
-    startDate: { type: Date, default: Date.now },
-    endDate: { type: Date }, // can be set to end of today
-    active: { type: Boolean, default: true },
+    discountValue: {
+      type: Number,
+      required: true,
+    },
+    maxDiscountAmount: {
+      type: Number,
+      default: 0,
+    },
+    minCartValue: {
+      type: Number,
+      default: 0,
+    },
+
+    //CATEGORY & SUBCATEGORY will be from same "Category" model
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+
+    brands: [{ type: mongoose.Schema.Types.ObjectId, ref: "Brand" }],
+    products: [{ type: mongoose.Schema.Types.ObjectId, ref: "products" }],
+
+    usageLimit: {
+      type: Number,
+      default: 0,
+    },
+    perUserLimit: {
+      type: Number,
+      default: 1,
+    },
+    usedCount: {
+      type: Number,
+      default: 0,
+    },
+    userUsage: [
+      {
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+        count: { type: Number, default: 0 },
+      },
+    ],
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true }
 );
 
-const Offer = mongoose.model("offers", offerSchema);
+const Offer = mongoose.model("Offer", offerSchema);
 export default Offer;

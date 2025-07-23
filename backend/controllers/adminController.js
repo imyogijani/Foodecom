@@ -2,6 +2,9 @@ import User from "../models/userModel.js";
 import Product from "../models/productModel.js";
 import Order from "../models/orderModel.js";
 import Subscription from "../models/subscriptionModel.js";
+import Seller from "../models/sellerModel.js";
+import Category from "../models/categoryModel.js";
+import mongoose from "mongoose";
 
 // Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
@@ -93,59 +96,160 @@ export const getDashboardStats = async (req, res) => {
 };
 
 // Get all products with shop details
+// export const getAllProducts = async (req, res) => {
+//   try {
+//     const {
+//       populateCategory,
+//       populateSubcategory,
+//       page = 1,
+//       limit = 10,
+//     } = req.query;
+
+//     const skip = (page - 1) * limit;
+
+//     let query = Product.find()
+//       .populate("seller", ["names", "shopName"])
+//       .skip(skip)
+//       .limit(parseInt(limit));
+
+//     if (populateCategory === "true") {
+//       query = query.populate("category");
+//     }
+
+//     if (populateSubcategory === "true") {
+//       query = query.populate("subcategory");
+//     }
+
+//     // Total number of products (without skip & limit)
+//     const totalCount = await Product.countDocuments();
+
+//     const products = await query;
+
+//     res.json({
+//       success: true,
+//       totalCount,
+//       totalPages: Math.ceil(totalCount / limit),
+//       currentPage: parseInt(page),
+//       products: products.map((product) => ({
+//         _id: product._id,
+//         name: product.name,
+//         description: product.description,
+//         price: product.price,
+//         category: product.category,
+//         subcategory: product.subcategory,
+//         image: product.image,
+//         stock: product.stock,
+//         status: product.status,
+//         shopId: product.seller?._id || null,
+//         shopName:
+//           product.seller?.ownerName ||
+//           product.seller?.shopName ||
+//           "Unknown Shop",
+//       })),
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching products",
+//       error: error.message,
+//     });
+//   }
+// };
+
 export const getAllProducts = async (req, res) => {
   try {
     const {
-      populateCategory,
-      populateSubcategory,
       page = 1,
       limit = 10,
+      category,
+      subcategory,
+      seller,
+      search = "",
     } = req.query;
 
     const skip = (page - 1) * limit;
 
-    let query = Product.find()
-      .populate("seller", ["names", "shopName"])
-      .skip(skip)
-      .limit(parseInt(limit));
+    // Build Filter
+    const filter = {};
+    if (category && mongoose.Types.ObjectId.isValid(category))
+      filter.category = new mongoose.Types.ObjectId(category);
+    if (subcategory && mongoose.Types.ObjectId.isValid(subcategory))
+      filter.subcategory = new mongoose.Types.ObjectId(subcategory);
+    if (seller && mongoose.Types.ObjectId.isValid(seller))
+      filter.seller = new mongoose.Types.ObjectId(seller);
+    if (search) filter.name = { $regex: search, $options: "i" };
 
-    if (populateCategory === "true") {
-      query = query.populate("category");
-    }
+    // Products + Count
+    const [products, totalCount] = await Promise.all([
+      Product.find(filter)
+        .populate("category", "name")
+        .populate("subcategory", "name")
+        .populate({
+          path: "seller",
+          select: "shopName user",
+          populate: {
+            path: "user",
+            select: "names",
+          },
+        })
+        .skip(skip)
+        .limit(Number(limit)),
+      Product.countDocuments(filter),
+    ]);
 
-    if (populateSubcategory === "true") {
-      query = query.populate("subcategory");
-    }
+    // Stock Aggregation (respecting the same filters)
+    const totalAvailableStock = await Product.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: null,
+          totalStock: { $sum: "$stock" },
+        },
+      },
+    ]);
 
-    // Total number of products (without skip & limit)
-    const totalCount = await Product.countDocuments();
+    const totalStockValue = totalAvailableStock[0]?.totalStock || 0;
 
-    const products = await query;
+    // Stats
+    const [totalUsers, totalCategories, totalSellers] = await Promise.all([
+      User.countDocuments(),
+      Category.countDocuments(),
+      Seller.countDocuments({ status: "active" }),
+    ]);
 
-    res.json({
+    res.status(200).json({
       success: true,
-      totalCount,
-      totalPages: Math.ceil(totalCount / limit),
-      currentPage: parseInt(page),
-      products: products.map((product) => ({
-        _id: product._id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        subcategory: product.subcategory,
-        image: product.image,
-        stock: product.stock,
-        status: product.status,
-        shopId: product.seller?._id || null,
-        shopName:
-          product.seller?.names || product.seller?.shopName || "Unknown Shop",
+      totals: {
+        products: totalCount,
+        users: totalUsers,
+        categories: totalCategories,
+        activeSellers: totalSellers,
+        totalAvailableStock: totalStockValue,
+      },
+      pagination: {
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: Number(page),
+        limit: Number(limit),
+      },
+      products: products.map((p) => ({
+        _id: p._id,
+        name: p.name,
+        price: p.price,
+        image: p.image,
+        stock: p.stock,
+        status: p.status,
+        category: p.category?.name || "N/A",
+        subcategory: p.subcategory?.name || "N/A",
+        shopId: p.seller?._id,
+        shopName: p.seller?.shopName || "Unknown",
+        ownerName: p.seller?.user?.names || "Unknown",
       })),
     });
   } catch (error) {
+    console.error("Admin Get Products Error:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching products",
+      message: "Internal server error",
       error: error.message,
     });
   }
@@ -154,17 +258,25 @@ export const getAllProducts = async (req, res) => {
 // Get all shops
 export const getAllShops = async (req, res) => {
   try {
-    const shops = await User.find({ role: "shopowner" }).select(
-      "_id names shopName email status createdAt"
-    );
+    // Fetch sellers with their user info populated
+    const shops = await Seller.find()
+      .select("shopName shopImage ownerName status createdAt user")
+      .populate({
+        path: "user",
+        select: "email names", // Only get email and name from User
+      })
+      .sort({ createdAt: -1 }); // Optional: latest shops first
 
     res.json({
       success: true,
+      total: shops.length,
       shops: shops.map((shop) => ({
         _id: shop._id,
-        names: shop.names,
         shopName: shop.shopName,
-        email: shop.email,
+        shopImage: shop.shopImage,
+        // ownerName: shop.ownerName,
+        email: shop.user?.email || "",
+        owner: shop.user?.names || "",
         status: shop.status,
         createdAt: shop.createdAt,
       })),

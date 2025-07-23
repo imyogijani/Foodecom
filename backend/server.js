@@ -90,6 +90,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import technicalDetailsRoutes from "./routes/technicalDetailsRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
+import brandRoutes from "./routes/brandRoutes.js";
 
 app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -102,11 +103,12 @@ app.use("/api/deals", dealRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/analytics", gaProxyRoutes);
-app.use("/api", offerRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/technical-details", technicalDetailsRoutes);
 app.use("/api/stores", storeRoutes);
+app.use("/api/brands", brandRoutes);
+app.use("/api/offers", offerRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 

@@ -31,8 +31,8 @@ const categorySchema = new mongoose.Schema(
     },
     brands: [
       {
-        type: String,
-        trim: true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Brand",
       },
     ],
   },

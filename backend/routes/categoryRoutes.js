@@ -31,6 +31,7 @@ router.post(
   "/subcategory",
   authenticateToken,
   authorizeAdmin,
+  upload.single("image"),
   createCategoryController
 );
 
@@ -39,7 +40,6 @@ router.put(
   "/update-category/:id",
   authenticateToken,
   authorizeAdmin,
-  upload.single("image"),
   updateCategoryController
 );
 

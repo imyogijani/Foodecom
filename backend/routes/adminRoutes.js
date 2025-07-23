@@ -1,5 +1,8 @@
-import express from 'express';
-import { authenticateToken, authorizeAdmin } from '../middlewares/authMiddleware.js';
+import express from "express";
+import {
+  authenticateToken,
+  authorizeAdmin,
+} from "../middlewares/authMiddleware.js";
 import {
   getDashboardStats,
   getAllProducts,
@@ -10,18 +13,21 @@ import {
   updateUser,
   updateShopownerSubscription,
   getShopownerDetails,
-  getSellerDetails
-} from '../controllers/adminController.js';
-import { updateProduct, deleteAllProducts } from '../controllers/productController.js';
-import { getAllOrdersAdmin } from '../controllers/orderController.js';
-import { 
-  createMenuItem, 
-  getAllMenuItems, 
+  getSellerDetails,
+} from "../controllers/adminController.js";
+import {
+  updateProduct,
+  deleteAllProducts,
+} from "../controllers/productController.js";
+import { getAllOrdersAdmin } from "../controllers/orderController.js";
+import {
+  createMenuItem,
+  getAllMenuItems,
   getMenuItemById,
-  updateMenuItem, 
+  updateMenuItem,
   deleteMenuItem,
-  getMenuStats
-} from '../controllers/menuController.js';
+  getMenuStats,
+} from "../controllers/menuController.js";
 
 const router = express.Router();
 
@@ -30,36 +36,37 @@ router.use(authenticateToken);
 router.use(authorizeAdmin);
 
 // Dashboard stats
-router.get('/dashboard-stats', getDashboardStats);
+router.get("/dashboard-stats", getDashboardStats);
 
 // Products management
-router.get('/all-products', getAllProducts);
-router.delete('/products/all', deleteAllProducts);
-router.delete('/products/:id', deleteProduct);
-router.put('/products/:id', updateProduct);
+router.get("/all-products", getAllProducts);
+// router.get("/productsAll", adminGetAllProducts);
+router.delete("/products/all", deleteAllProducts);
+router.delete("/products/:id", deleteProduct);
+router.put("/products/:id", updateProduct);
 
 // Shops management
-router.get('/shops', getAllShops);
+router.get("/shops", getAllShops);
 
 // Users management
-router.get('/users', getAllUsers);
-router.delete('/users/:id', authenticateToken, authorizeAdmin, deleteUser);
-router.get('/sellers/:id', authenticateToken, authorizeAdmin, getSellerDetails);
-router.patch('/users/:id', updateUser);
-router.patch('/users/:id/subscription', updateShopownerSubscription);
+router.get("/users", getAllUsers);
+router.delete("/users/:id", authenticateToken, authorizeAdmin, deleteUser);
+router.get("/sellers/:id", authenticateToken, authorizeAdmin, getSellerDetails);
+router.patch("/users/:id", updateUser);
+router.patch("/users/:id/subscription", updateShopownerSubscription);
 
 // Orders management
-router.get('/orders', getAllOrdersAdmin);
+router.get("/orders", getAllOrdersAdmin);
 
 // Menu management
-router.post('/menu-items', createMenuItem);
-router.get('/menu-items', getAllMenuItems);
-router.get('/menu-items/:id', getMenuItemById);
-router.put('/menu-items/:id', updateMenuItem);
-router.delete('/menu-items/:id', deleteMenuItem);
-router.get('/menu-stats', getMenuStats);
+router.post("/menu-items", createMenuItem);
+router.get("/menu-items", getAllMenuItems);
+router.get("/menu-items/:id", getMenuItemById);
+router.put("/menu-items/:id", updateMenuItem);
+router.delete("/menu-items/:id", deleteMenuItem);
+router.get("/menu-stats", getMenuStats);
 
 // Shopowner details (for admin)
-router.get('/shopowner/:id', getShopownerDetails);
+router.get("/shopowner/:id", getShopownerDetails);
 
 export default router;
