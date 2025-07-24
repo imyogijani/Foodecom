@@ -92,8 +92,10 @@ import technicalDetailsRoutes from "./routes/technicalDetailsRoutes.js";
 import storeRoutes from "./routes/storeRoutes.js";
 import brandRoutes from "./routes/brandRoutes.js";
 import menuRoutes from "./routes/menuItemRoutes.js";
+import sellerRoutes from "./routes/sellerRoutes.js";
 import "./cronJobs/offerExpiryJob.js";
 import "./cronJobs/dealCleanup.js";
+import "./cronJobs/disableExpiredPremiums.js";
 
 app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -113,6 +115,7 @@ app.use("/api/stores", storeRoutes);
 app.use("/api/brands", brandRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/menu-items", menuRoutes);
+app.use("/api/sellers", sellerRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 
@@ -125,6 +128,7 @@ cron.schedule("0 * * * *", async () => {
     console.error("[CRON] Error running deal expiration:", err);
   }
 });
+
 
 // to see sever is proper running
 // http://localhost:8080/

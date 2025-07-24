@@ -5,6 +5,7 @@ import TechnicalDetails from "../models/technicalDetails.js";
 import { fileURLToPath } from "url";
 import Seller from "../models/sellerModel.js";
 // import { attachActiveDeals } from "../utils/attachActiveDeals.js";
+import { getFeatureLimit } from "../helpers/checkSubscriptionFeature.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,6 +24,7 @@ export const addProduct = async (req, res) => {
       brand,
       variants,
       technicalDetailsId,
+      isPremium,
     } = req.body;
 
     // Validate subcategory if provided
@@ -42,15 +44,6 @@ export const addProduct = async (req, res) => {
         success: false,
         message: "Category not found",
       });
-    }
-
-    let image = [];
-    if (req.files && req.files.length > 0) {
-      image = req.files.map((file) => `/uploads/products/${file.filename}`);
-    } else {
-      return res
-        .status(400)
-        .json({ success: false, message: "At least one image is required" });
     }
 
     let parsedVariants = [];
@@ -86,7 +79,7 @@ export const addProduct = async (req, res) => {
       );
 
       const { doc } = await findOrCreateTechnicalDetails(
-        req.body.technicalDetails
+        JSON.parse(req.body.technicalDetails) //  ensure it's a JS object
       );
       techDetailsRef = doc._id;
     }
@@ -155,6 +148,69 @@ export const addProduct = async (req, res) => {
         message: "Seller profile not found for this user",
       });
     }
+
+    // Premium check
+
+    const isTryingPremium = isPremium === true || isPremium === "true";
+
+    // Step 1: Get seller info
+    const seller = await Seller.findOne({ user: req.userId });
+    if (!seller)
+      return res.status(400).json({ message: "Seller profile not found." });
+
+    // Step 2: Get user subscription details
+    // const  = await User.findById(userId);
+
+    // === PREMIUM VALIDATION START ===
+    const now = new Date();
+    if (
+      !user.subscription ||
+      !user.subscriptionStartDate ||
+      !user.subscriptionEndDate ||
+      now < user.subscriptionStartDate ||
+      now > user.subscriptionEndDate
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Subscription expired or not active." });
+    }
+
+    // STEP 2: Get features
+    const features = Array.isArray(user.subscriptionFeatures)
+      ? user.subscriptionFeatures
+      : [];
+
+    console.log(features);
+
+    if (isTryingPremium) {
+      if (!features.includes("featuredListing")) {
+        return res
+          .status(403)
+          .json({ message: "Your plan does not support premium listings." });
+      }
+      const premiumLimit = getFeatureLimit(features, "productLimit") || 1;
+      console.log("PremiumProduct count limit", premiumLimit);
+
+      const premiumCount = await Product.countDocuments({
+        seller: seller._id,
+        isPremium: true,
+      });
+
+      if (premiumCount >= premiumLimit) {
+        return res.status(403).json({
+          message: `You can only add ${premiumLimit} premium products. Upgrade your plan.`,
+        });
+      }
+    }
+
+    let image = [];
+    if (req.files && req.files.length > 0) {
+      image = req.files.map((file) => `/uploads/products/${file.filename}`);
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "At least one image is required" });
+    }
     const product = new Product({
       name,
       description,
@@ -169,6 +225,7 @@ export const addProduct = async (req, res) => {
       brand: brand || undefined,
       seller: sellerDoc._id,
       technicalDetails: techDetailsRef || undefined,
+      isPremium: isTryingPremium,
     });
 
     await product.save();
@@ -248,86 +305,274 @@ export const getSellerProducts = async (req, res) => {
     });
   }
 };
+
+// export const updateProduct = async (req, res) => {
+//   try {
+//     const { id: productId } = req.params;
+//     const {
+//       category,
+//       subcategory,
+//       discount,
+//       brand,
+//       status,
+//       stock,
+//       price,
+//       ...otherUpdateData
+//     } = req.body;
+
+//     let updateData = { ...otherUpdateData };
+
+//     if (category) {
+//       const categoryDoc = await Category.findById(category);
+//       if (!categoryDoc) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Category not found",
+//         });
+//       }
+//       updateData.category = category;
+//     }
+
+//     if (subcategory) {
+//       const subcategoryDoc = await Category.findById(subcategory);
+//       if (!subcategoryDoc) {
+//         return res.status(400).json({
+//           success: false,
+//           message: "Subcategory not found",
+//         });
+//       }
+//       updateData.subcategory = subcategory;
+//     } else if (subcategory === "") {
+//       updateData.subcategory = undefined;
+//     }
+
+//     if (discount !== undefined && discount !== null && discount !== "") {
+//       updateData.discount = Number(discount);
+//     } else if (discount === "") {
+//       updateData.discount = undefined;
+//     }
+
+//     if (brand !== undefined && brand !== null && brand !== "") {
+//       updateData.brand = brand;
+//     } else if (brand === "") {
+//       updateData.brand = undefined;
+//     }
+
+//     // Handle specific fields for admin updates
+//     if (status !== undefined) {
+//       updateData.status = status;
+//     }
+//     if (stock !== undefined) {
+//       updateData.stock = Number(stock);
+//     }
+//     if (price !== undefined) {
+//       updateData.price = Number(price);
+//     }
+
+//     let findQuery = { _id: productId };
+
+//     // If the request is not from an admin, ensure the seller owns the product
+//     if (req.user && req.user.role !== "admin") {
+//       findQuery.seller = req.userId;
+//     }
+
+//     const product = await Product.findOneAndUpdate(findQuery, updateData, {
+//       new: true,
+//       runValidators: true,
+//     });
+//     if (!product) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Product not found",
+//       });
+//     }
+//     res.status(200).json({
+//       success: true,
+//       message: "Product updated successfully",
+//       product,
+//     });
+//   } catch (error) {
+//     console.error("Error updating product:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error updating product",
+//       error: error.message,
+//     });
+//   }
+// };
+
 export const updateProduct = async (req, res) => {
   try {
-    const { id: productId } = req.params;
+    const { productId } = req.params;
     const {
+      name,
+      description,
+      price,
+      discount,
       category,
       subcategory,
-      discount,
-      brand,
-      status,
       stock,
-      price,
-      ...otherUpdateData
+      status,
+      brand,
+      variants,
+      technicalDetailsId,
+      isPremium,
     } = req.body;
 
-    let updateData = { ...otherUpdateData };
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
 
+    // Ownership check for non-admins
+    if (
+      req.user &&
+      req.user.role !== "admin" &&
+      product.seller.toString() !== req.userId
+    ) {
+      return res.status(403).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Validate category
     if (category) {
       const categoryDoc = await Category.findById(category);
       if (!categoryDoc) {
-        return res.status(400).json({
-          success: false,
-          message: "Category not found",
-        });
+        return res
+          .status(400)
+          .json({ success: false, message: "Category not found" });
       }
-      updateData.category = category;
+      product.category = category;
     }
 
+    // Validate subcategory
     if (subcategory) {
       const subcategoryDoc = await Category.findById(subcategory);
       if (!subcategoryDoc) {
-        return res.status(400).json({
-          success: false,
-          message: "Subcategory not found",
+        return res
+          .status(400)
+          .json({ success: false, message: "Subcategory not found" });
+      }
+      product.subcategory = subcategory;
+    } else if (subcategory === "") {
+      product.subcategory = undefined;
+    }
+
+    // Parse variants
+    if (variants) {
+      try {
+        const parsedVariants = JSON.parse(variants);
+        if (!Array.isArray(parsedVariants)) {
+          return res
+            .status(400)
+            .json({ success: false, message: "Variants must be an array" });
+        }
+        product.variants = parsedVariants;
+      } catch (e) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid JSON in variants", e });
+      }
+    }
+
+    // Handle optional fields
+    if (name !== undefined) product.name = name;
+    if (description !== undefined) product.description = description;
+    if (price !== undefined) product.price = Number(price);
+    if (discount !== undefined)
+      product.discount = discount === "" ? undefined : Number(discount);
+    if (stock !== undefined) product.stock = Number(stock);
+    if (status !== undefined) product.status = status;
+    if (brand !== undefined) product.brand = brand === "" ? undefined : brand;
+
+    // Get seller
+    const seller = await Seller.findOne({ user: req.userId });
+    if (!seller) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Seller profile not found" });
+    }
+
+    // Subscription & premium validation
+    const userModel = (await import("../models/userModel.js")).default;
+    const user = await userModel.findById(req.userId).populate("subscription");
+
+    if (
+      !user.subscription ||
+      !user.subscriptionStartDate ||
+      !user.subscriptionEndDate ||
+      new Date() < user.subscriptionStartDate ||
+      new Date() > user.subscriptionEndDate
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Subscription expired or not active." });
+    }
+
+    const features = Array.isArray(user.subscriptionFeatures)
+      ? user.subscriptionFeatures
+      : [];
+
+    const isTryingPremium = isPremium === true || isPremium === "true";
+    if (isTryingPremium) {
+      if (!features.includes("featuredListing")) {
+        return res.status(403).json({
+          message: "Your plan does not support premium listings.",
         });
       }
-      updateData.subcategory = subcategory;
-    } else if (subcategory === "") {
-      updateData.subcategory = undefined;
-    }
 
-    if (discount !== undefined && discount !== null && discount !== "") {
-      updateData.discount = Number(discount);
-    } else if (discount === "") {
-      updateData.discount = undefined;
-    }
+      const getFeatureLimit = (featuresArray, key) => {
+        const match = featuresArray.find((f) => f.startsWith(`${key}:`));
+        return match ? parseInt(match.split(":")[1], 10) : null;
+      };
 
-    if (brand !== undefined && brand !== null && brand !== "") {
-      updateData.brand = brand;
-    } else if (brand === "") {
-      updateData.brand = undefined;
-    }
-
-    // Handle specific fields for admin updates
-    if (status !== undefined) {
-      updateData.status = status;
-    }
-    if (stock !== undefined) {
-      updateData.stock = Number(stock);
-    }
-    if (price !== undefined) {
-      updateData.price = Number(price);
-    }
-
-    let findQuery = { _id: productId };
-
-    // If the request is not from an admin, ensure the seller owns the product
-    if (req.user && req.user.role !== "admin") {
-      findQuery.seller = req.userId;
-    }
-
-    const product = await Product.findOneAndUpdate(findQuery, updateData, {
-      new: true,
-      runValidators: true,
-    });
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
+      const premiumLimit = getFeatureLimit(features, "premiumLimit") || 1;
+      const premiumCount = await Product.countDocuments({
+        seller: seller._id,
+        isPremium: true,
+        _id: { $ne: product._id }, // exclude current product
       });
+
+      if (premiumCount >= premiumLimit && !product.isPremium) {
+        return res.status(403).json({
+          message: `You can only add ${premiumLimit} premium products. Upgrade your plan.`,
+        });
+      }
+
+      product.isPremium = true;
+    } else {
+      product.isPremium = false;
     }
+
+    // Handle technicalDetails
+    if (technicalDetailsId) {
+      const detail = await TechnicalDetails.findById(technicalDetailsId);
+      if (!detail) {
+        return res.status(400).json({ message: "Invalid technicalDetailsId" });
+      }
+      product.technicalDetails = detail._id;
+    } else if (req.body.technicalDetails) {
+      const { findOrCreateTechnicalDetails } = await import(
+        "../helpers/compareTechnicalDetails.js"
+      );
+      const { doc } = await findOrCreateTechnicalDetails(
+        JSON.parse(req.body.technicalDetails)
+      );
+      product.technicalDetails = doc._id;
+    }
+
+    // Handle image updates
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(
+        (file) => `/uploads/products/${file.filename}`
+      );
+      product.image = newImages;
+    }
+
+    // Save updated product
+    await product.save();
+
     res.status(200).json({
       success: true,
       message: "Product updated successfully",
@@ -390,6 +635,8 @@ export const getAllProducts = async (req, res) => {
 
     const sortField = sortOptions[sortBy] || "createdAt";
     const sortOrder = order === "asc" ? 1 : -1;
+
+    // console.log("Sorting by:", sortField, "Order:", sortOrder);
 
     //  4. Query + Sorting
     let query = Product.find(filter).sort({ [sortField]: sortOrder });

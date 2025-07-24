@@ -32,6 +32,7 @@ export default function Home() {
   const [deals, setDeals] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [dealsProduct, setDealsProduct] = useState([]);
 
   // Memoized filtered products
   const filteredProducts = React.useMemo(() => {
@@ -65,6 +66,18 @@ export default function Home() {
   // Navigation handler
   const handleGetStarted = () => {
     window.location.href = "/menu";
+  };
+
+  const fetchDealsProduct = async () => {
+    try {
+      const response = await axios.get("/api/deals/active");
+      console.log("Fetched deals:", response.data.deals);
+      setDealsProduct(response.data.deals || []);
+    } catch (error) {
+      console.error("Error fetching active deals:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Initial data fetch
@@ -113,6 +126,7 @@ export default function Home() {
         "/api/products?populateCategory=true&populateSubcategory=true"
       );
       setProducts(response.data.products);
+      console.log("Index all product", response.data.products);
     } catch (error) {
       console.error("Product fetch error:", error);
       toast.error("Error fetching products");

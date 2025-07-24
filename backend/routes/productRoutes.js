@@ -12,6 +12,8 @@ import {
   getRelatedProducts,
 } from "../controllers/productController.js";
 
+// import { checkIsPremium } from "../middlewares/checkPremium.js";
+
 const router = express.Router();
 
 // Add new product
@@ -21,7 +23,12 @@ router.post("/add", authenticateToken, upload.array("images", 10), addProduct);
 router.get("/seller-products", authenticateToken, getSellerProducts);
 
 // Update product
-router.put("/:productId", authenticateToken, updateProduct);
+router.patch(
+  "/:productId",
+  authenticateToken,
+  upload.array("images", 10),
+  updateProduct
+);
 
 // Get all products
 router.get("/", getAllProducts);

@@ -19,62 +19,41 @@ import {
 } from "react-icons/fa";
 import SellerNotification from "../../Components/SellerNotification";
 
+import axios from "../../utils/axios";
+
 const SellerDashboard = () => {
   const [salesData, setSalesData] = useState([]);
   const [recentOrders, setRecentOrders] = useState([]);
-  const [dashboardStats, setDashboardStats] = useState({
-    todaySales: 0,
-    totalProducts: 0,
-    pendingOrders: 0,
-    customerRating: 0,
-    salesGrowth: 0,
-    productsGrowth: 0,
-    ordersGrowth: 0,
-    ratingGrowth: 0,
-  });
+  const [dashboardStats, setDashboardStats] = useState({});
 
   useEffect(() => {
-    // Fetch sales data
-    const fetchSalesData = async () => {
+    const fetchAllData = async () => {
       try {
-        // Replace with your actual API endpoint
-        const response = await fetch("/api/sales-data");
-        const data = await response.json();
-        setSalesData(data);
+        const [salesRes, statsRes, ordersRes] = await Promise.all([
+          axios.get("/api/sellers/sale-data"),
+          axios.get("/api/sellers/dashboard-stats"),
+          axios.get("/api/sellers/recent-orders"),
+        ]);
+
+        setSalesData(salesRes.data); // Set sales data
+        setDashboardStats(statsRes.data); // Set dashboard stats
+        setRecentOrders(ordersRes.data.orders); // Orders is inside { orders: [...] }
+
+        // console.log("Seller DashBoard page", statsRes.data);
+        // console.log("Seller DashBoard page", JSON.stringify(salesRes.data));
+        // console.log("Seller DashBoard page", ordersRes.data);
+
+        console.log("All dashboard data loaded");
       } catch (error) {
-        console.error("Error fetching sales data:", error);
+        console.error(
+          "Dashboard Load Error:",
+          error?.response?.data || error.message
+        );
       }
     };
 
-    // Fetch dashboard statistics
-    const fetchDashboardStats = async () => {
-      try {
-        // Replace with your actual API endpoint
-        const response = await fetch("/api/dashboard-stats");
-        const data = await response.json();
-        setDashboardStats(data);
-      } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
-      }
-    };
-
-    // Fetch recent orders
-    const fetchRecentOrders = async () => {
-      try {
-        // Replace with your actual API endpoint
-        const response = await fetch("/api/recent-orders");
-        const data = await response.json();
-        setRecentOrders(data);
-      } catch (error) {
-        console.error("Error fetching recent orders:", error);
-      }
-    };
-
-    fetchSalesData();
-    fetchDashboardStats();
-    fetchRecentOrders();
+    fetchAllData();
   }, []);
-
   return (
     <div className="seller-dashboard">
       <SellerNotification />
@@ -126,7 +105,7 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +{dashboardStats.salesGrowth}% from yesterday
+                  <FaArrowUp /> +{dashboardStats.yesterdaySales}% from yesterday
                 </p>
               </div>
             </div>
@@ -173,7 +152,8 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +{dashboardStats.productsGrowth} new this week
+                  <FaArrowUp /> +{dashboardStats.newProductsThisWeek} new this
+                  week
                 </p>
               </div>
             </div>
@@ -208,7 +188,7 @@ const SellerDashboard = () => {
                     color: "#232f3e",
                   }}
                 >
-                  {dashboardStats.pendingOrders}
+                  {dashboardStats.allPendingOrders}
                 </p>
                 <p
                   className="card-description"
@@ -220,7 +200,8 @@ const SellerDashboard = () => {
                     gap: "4px",
                   }}
                 >
-                  <FaArrowUp /> +{dashboardStats.ordersGrowth} from yesterday
+                  <FaArrowUp /> +{dashboardStats.pendingOrdersYesterday} from
+                  yesterday
                 </p>
               </div>
             </div>
@@ -255,7 +236,7 @@ const SellerDashboard = () => {
                     color: "#232f3e",
                   }}
                 >
-                  {dashboardStats.customerRating}
+                  {dashboardStats.averageRating}
                 </p>
                 <p
                   className="card-description"
