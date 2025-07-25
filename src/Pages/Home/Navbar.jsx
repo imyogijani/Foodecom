@@ -207,7 +207,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 className="login-button"
-                style={{ textDecoration: "none" }}
+                style={{ textDecoration: "none", borderRadius: "20px" }}
               >
                 <FaSignInAlt />
                 <span>Sign In</span>

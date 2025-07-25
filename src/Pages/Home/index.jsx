@@ -296,13 +296,14 @@ export default function Home() {
           <ProductRating product={product} renderStars={renderStars} />
           <ProductPrice product={product} />
           <ProductBadges product={product} />
-          <div className="card-actions" style={{ justifyContent: "end" }}>
+          <div className="card-actions">
             <button
               className="card-button"
               onClick={(e) => handleAddToCart(e, product)}
               title="Add to Cart"
             >
-              <ShoppingCart size={16} />
+              <ShoppingCart size={16} style={{ marginRight: "8px" }} />
+              Add to Cart
             </button>
           </div>
         </div>
@@ -716,22 +717,27 @@ const ProductRating = ({ product, renderStars }) => (
 );
 
 const ProductPrice = ({ product }) => (
-  <div className="card-description" style={{ margin: "6px 0" }}>
+  <div className="price-container">
     <span className="current-price">₹{product.price}</span>
     {product.originalPrice && (
       <span className="original-price">₹{product.originalPrice}</span>
+    )}
+    {product.discount && (
+      <span className="discount-percentage">
+        ({product.discount}% off)
+      </span>
     )}
   </div>
 );
 
 const ProductBadges = ({ product }) => (
-  <>
+  <div className="product-badges">
     {product.discount && (
-      <div className="discount-badge">-{product.discount}% OFF</div>
+      <div className="discount-badge">SAVE {product.discount}%</div>
     )}
     <div className="delivery-badges">
       <span className="prime-badge">Prime</span>
       <span className="free-delivery">FREE Delivery</span>
     </div>
-  </>
+  </div>
 );
