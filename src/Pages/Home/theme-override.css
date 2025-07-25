@@ -2,29 +2,29 @@
 
 /* Ensure card system integration */
 .card-base.category-card {
-  background: white !important;
-  border: 1px solid #e6e6e6 !important;
-  cursor: pointer !important;
+  background: white;
+  border: 1px solid #e6e6e6;
+  cursor: pointer;
 }
 
 .card-base.product-card {
-  background: white !important;
-  border: 1px solid #ddd !important;
+  background: white;
+  border: 1px solid #ddd;
 }
 
 .card-base.deal-card {
-  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%) !important;
-  border: 1px solid #e6e6e6 !important;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border: 1px solid #e6e6e6;
 }
 
 .card-base.admin-card {
-  background: white !important;
-  border-left: 4px solid #ff9900 !important;
+  background: white;
+  border-left: 4px solid #ff9900;
 }
 
 .card-base.seller-card {
-  background: white !important;
-  border-left: 4px solid #28a745 !important;
+  background: white;
+  border-left: 4px solid #28a745;
 }
 
 /* Legacy card styles removed - now handled by unified card system */

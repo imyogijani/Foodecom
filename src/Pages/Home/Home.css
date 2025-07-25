@@ -312,7 +312,7 @@
 }
 
 .cards-grid-medium {
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .cards-grid-large {
@@ -694,65 +694,68 @@
   font-weight: 500;
 }
 
-/* Product Price */
+/* Price Container Styles */
+.price-container {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0;
+}
+
 .current-price {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--danger-color);
-  margin-right: 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #232f3e;
 }
 
 .original-price {
-  font-size: 1rem;
-  color: var(--dark-gray);
   text-decoration: line-through;
+  color: #666;
+  font-size: 0.95rem;
 }
 
-/* Deal Price */
-.deal-price {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--danger-color);
-  margin-right: 12px;
+.discount-percentage {
+  color: #00a650;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
-/* FIXED: Product Badges - Positioned After Description */
+/* Product Badges Styles */
+.product-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+}
+
 .discount-badge {
-  background: var(--danger-color);
-  color: var(--white);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin: 12px 0 8px 0;
   display: inline-block;
-  box-shadow: var(--shadow-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  background: #fef2e6;
+  color: #e57a00;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: fit-content;
 }
 
-/* FIXED: Delivery Badges - Improved Styling */
 .delivery-badges {
   display: flex;
   gap: 8px;
-  margin: 8px 0 12px 0;
   flex-wrap: wrap;
-  align-items: center;
 }
 
 .prime-badge,
 .free-delivery {
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid transparent;
-  transition: var(--transition);
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #f0f2f5;
+  color: #232f3e;
 }
 
+<<<<<<< HEAD
 .prime-badge {
   background: var(--accent-color);
   color: var(--white);
@@ -765,13 +768,15 @@
   border-color: rgba(6, 125, 98, 0.3);
 }
 
+=======
+>>>>>>> 8c9dbe8 (style: update card styles and layout for improved responsiveness and visual consistency)
 /* Card Actions */
 .card-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   margin-top: auto;
-  padding-top: 15px;
+  padding-top: 12px;
   border-top: 1px solid var(--light-gray);
 }
 
@@ -936,6 +941,7 @@
     gap: 6px;
   }
 
+<<<<<<< HEAD
   .products-slider-container {
     padding: 0 40px;
   }
@@ -948,6 +954,19 @@
   .slider-nav-btn svg {
     width: 20px;
     height: 20px;
+=======
+  .price-container {
+    gap: 6px;
+  }
+
+  .current-price {
+    font-size: 1.1rem;
+  }
+
+  .original-price,
+  .discount-percentage {
+    font-size: 0.85rem;
+>>>>>>> 8c9dbe8 (style: update card styles and layout for improved responsiveness and visual consistency)
   }
 }
 
