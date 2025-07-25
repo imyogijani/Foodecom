@@ -34,7 +34,6 @@ export default function Home() {
   const [deals, setDeals] = useState([]);
   const [sortBy, setSortBy] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dealsProduct, setDealsProduct] = useState([]);
 
   // Memoized filtered products
   const filteredProducts = React.useMemo(() => {
@@ -69,37 +68,12 @@ export default function Home() {
     try {
       // Fetch both offers and deals in parallel
       const [offersRes, dealsRes] = await Promise.all([
-        axios.get("/api/offers/today"), // Remove hardcoded localhost URL
+        axios.get("/api/offers/today"),
         axios.get("/api/deals/active"),
       ]);
 
-<<<<<<< HEAD
       // Extract offers data with fallback to empty array
       const offers = offersRes?.data?.offers || [];
-=======
-  const fetchDealsProduct = async () => {
-    try {
-      const response = await axios.get("/api/deals/active");
-      console.log("Fetched deals:", response.data.deals);
-      setDealsProduct(response.data.deals || []);
-    } catch (error) {
-      console.error("Error fetching active deals:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Initial data fetch
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        await Promise.all([fetchCategories(), fetchProducts(), fetchDeals()]);
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-        toast.error("Failed to load initial data");
-      }
-    };
->>>>>>> 259885ff773c07602e68204830b122782c6a2c5c
 
       // Map offers to consistent deal format
       const mappedOffers = offers.map((offer) => {
@@ -140,6 +114,7 @@ export default function Home() {
         "/api/products?populateCategory=true&populateSubcategory=true"
       );
       setProducts(response.data.products);
+      console.log("Index all product", response.data.products);
     } catch (error) {
       console.error("Product fetch error:", error);
       toast.error("Error fetching products");
@@ -173,25 +148,9 @@ export default function Home() {
     }
   };
 
-<<<<<<< HEAD
   // Navigation handler
   const handleGetStarted = () => {
     window.location.href = "/menu";
-=======
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(
-        "/api/products?populateCategory=true&populateSubcategory=true"
-      );
-      setProducts(response.data.products);
-      console.log("Index all product", response.data.products);
-    } catch (error) {
-      console.error("Product fetch error:", error);
-      toast.error("Error fetching products");
-    } finally {
-      setLoading(false);
-    }
->>>>>>> 259885ff773c07602e68204830b122782c6a2c5c
   };
 
   // Initial data fetch
