@@ -5,9 +5,9 @@ export const addToCart = async (req, res) => {
     const { userId, product } = req.body;
     const { productId, quantity, price, title, image, discount } = product;
 
-    const discountAmount = (price * discount) / 100;
-    const finalPrice = price - discountAmount;
-    const finalPriceToStore = finalPrice;
+    // const discountAmount = (price * discount) / 100;
+    // const finalPrice = price - discountAmount;
+    // const finalPriceToStore = finalPrice;
 
     let cart = await Cart.findOne({ userId });
 
@@ -19,7 +19,7 @@ export const addToCart = async (req, res) => {
           {
             productId,
             quantity,
-            price: finalPriceToStore,
+            price,
             title,
             image,
             discount,
@@ -40,7 +40,7 @@ export const addToCart = async (req, res) => {
         cart.items.push({
           productId,
           quantity,
-          price: finalPriceToStore,
+          price,
           title,
           image,
           discount,

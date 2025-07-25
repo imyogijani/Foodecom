@@ -6,9 +6,20 @@ const subscriptionSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  monthlyPrice: {
-    type: String,
-    required: true,
+  // monthlyPrice: {
+  //   type: String,
+  //   required: true,
+  // },
+  pricing: {
+    monthly: {
+      type: String,
+      required: false,
+    },
+    yearly: {
+      type: String,
+      required: false,
+    },
+    // optional: quarterly, weekly etc.
   },
   includedFeatures: {
     type: [String],

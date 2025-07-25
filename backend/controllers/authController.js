@@ -8,6 +8,8 @@ import userModel from "../models/userModel.js";
 import Subscription from "../models/subscriptionModel.js"; // Changed to default import
 import Seller from "../models/sellerModel.js";
 import Category from "../models/categoryModel.js";
+import crypto from "crypto";
+import { sendEmail } from "../utils/sendEmail.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -290,37 +292,6 @@ const currentUserController = async (req, res) => {
     });
   }
 };
-
-// Update profile controller
-// export const updateProfileController = async (req, res) => {
-//   try {
-//     const userId = req.userId;
-//     let updateData = {};
-//     // If multipart/form-data, handle file upload
-//     if (req.file) {
-//       // Save shop image path
-//       updateData.shopImage = `/public/uploads/avatars/${req.file.filename}`;
-//     }
-//     // Accept both JSON and multipart
-//     const { names, shopownerName, shopName, phone, address } = req.body;
-//     if (names !== undefined) updateData.names = names;
-//     if (shopownerName !== undefined) updateData.shopownerName = shopownerName;
-//     if (shopName !== undefined) updateData.shopName = shopName;
-//     if (phone !== undefined) updateData.phone = phone;
-//     if (address !== undefined) updateData.address = address;
-//     const updatedUser = await userModel
-//       .findByIdAndUpdate(userId, updateData, { new: true })
-//       .populate("subscription");
-//     res.status(200).json({ success: true, user: updatedUser });
-//   } catch (err) {
-//     console.error("Update profile error:", err);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to update profile",
-//       error: err.message,
-//     });
-//   }
-// };
 
 export const updateProfileController = async (req, res) => {
   try {
@@ -605,6 +576,80 @@ export const acceptPlanUpdateController = async (req, res) => {
       message: "Error updating plan",
       error: error.message,
     });
+  }
+};
+
+// POST /api/v1/auth/forgot-password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 60 * 60 * 1000; // 1 hour
+    await user.save();
+
+    const resetUrl = `${process.env.CLIENT_URL}/reset-password/${token}`;
+
+    // Send this URL via email (use nodemailer or any email service)
+    console.log("Send this reset link:", resetUrl);
+
+    await sendEmail({
+      to: email,
+      subject: "Reset Your Password",
+      html: `<p>Click <a href="${resetUrl}">here</a> to reset password.</p>`,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Reset password link sent to your email",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// POST /api/v1/auth/reset-password/:token
+export const resetPassword = async (req, res) => {
+  try {
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(req.params.token)
+      .digest("hex");
+
+    const user = await userModel.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired token" });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(req.body.password, 10);
+    user.password = hashedNewPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Password reset successful 🎉" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 

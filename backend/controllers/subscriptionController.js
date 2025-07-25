@@ -3,13 +3,30 @@ import Subscription from "../models/subscriptionModel.js";
 // Create a new subscription plan
 export const createSubscription = async (req, res) => {
   try {
-    const { planName, monthlyPrice, includedFeatures } = req.body;
+    const { planName, pricing, includedFeatures } = req.body;
+
+    const existingPlan = await Subscription.findOne({ planName });
+    if (existingPlan) {
+      return res.status(400).json({
+        message: `Plan with name "${planName}" already exists`,
+      });
+    }
+
+    //  validate pricing object
+    if (!pricing.monthly && !pricing.yearly) {
+      return res.status(400).json({
+        message: "At least one pricing option (monthly or yearly) is required",
+      });
+    }
+
     const newSubscription = new Subscription({
       planName,
-      monthlyPrice,
+      pricing,
       includedFeatures,
     });
+
     await newSubscription.save();
+
     res.status(201).json({
       message: "Subscription plan created successfully",
       subscription: newSubscription,
@@ -60,41 +77,70 @@ export const getSubscriptionByName = async (req, res) => {
     // Optionally, you can fetch old plan info if needed
     res.status(200).json({ plan });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching plan", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching plan", error: error.message });
   }
 };
 
 // Update a subscription plan
 export const updateSubscription = async (req, res) => {
   try {
-    const { planName, monthlyPrice, includedFeatures } = req.body;
+    const { planName, pricing, includedFeatures } = req.body;
+
+    // Basic Validation
+    if (
+      !planName ||
+      !includedFeatures ||
+      !Array.isArray(includedFeatures) ||
+      includedFeatures.length === 0
+    ) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    if (!pricing || (!pricing.monthly && !pricing.yearly)) {
+      return res
+        .status(400)
+        .json({
+          message: "At least one pricing type (monthly or yearly) is required",
+        });
+    }
+
+    // Update subscription
     const updatedSubscription = await Subscription.findByIdAndUpdate(
       req.params.id,
-      { planName, monthlyPrice, includedFeatures },
+      { planName, pricing, includedFeatures },
       { new: true, runValidators: true }
     );
+
     if (!updatedSubscription) {
       return res.status(404).json({ message: "Subscription plan not found" });
     }
-    // Notify all shopowners with this subscription
+
+    // Notify all shopowners using this subscription
     const User = (await import("../models/userModel.js")).default;
-    const { sendSubscriptionChangeNotification } = await import("./notificationController.js");
+    const { sendSubscriptionChangeNotification } = await import(
+      "./notificationController.js"
+    );
+
     const affectedUsers = await User.find({ subscription: req.params.id });
+
     for (const user of affectedUsers) {
       await sendSubscriptionChangeNotification({
         userId: user._id,
-        oldPlan: planName, // If you have old plan name, use it here
+        oldPlan: planName, // Ideally keep old planName from DB before update
         newPlan: planName,
         newFeatures: includedFeatures,
       });
     }
+
     res.status(200).json({
-      message: "Subscription plan updated successfully",
+      message: "Subscription updated successfully",
       subscription: updatedSubscription,
     });
   } catch (error) {
     res.status(500).json({
-      message: "Error updating subscription plan",
+      message: "Error updating subscription",
       error: error.message,
     });
   }

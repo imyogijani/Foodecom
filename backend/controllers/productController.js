@@ -4,6 +4,7 @@ import Category from "../models/categoryModel.js";
 import TechnicalDetails from "../models/technicalDetails.js";
 import { fileURLToPath } from "url";
 import Seller from "../models/sellerModel.js";
+import User from "../models/userModel.js";
 // import { attachActiveDeals } from "../utils/attachActiveDeals.js";
 import { getFeatureLimit } from "../helpers/checkSubscriptionFeature.js";
 
@@ -24,28 +25,26 @@ export const addProduct = async (req, res) => {
       brand,
       variants,
       technicalDetailsId,
-      isPremium,
+      // isPremium,
     } = req.body;
 
-    // Validate subcategory if provided
-    let subcategoryDoc = null;
-    if (subcategory) {
-      subcategoryDoc = await Category.findById(subcategory);
-      if (!subcategoryDoc) {
-        return res.status(400).json({
-          success: false,
-          message: "Subcategory not found",
-        });
-      }
-    }
+    // Validate category
     const categoryDoc = await Category.findById(category);
-    if (!categoryDoc) {
-      return res.status(400).json({
-        success: false,
-        message: "Category not found",
-      });
+    if (!categoryDoc)
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid category" });
+
+    // Validate subcategory
+    if (subcategory) {
+      const subDoc = await Category.findById(subcategory);
+      if (!subDoc)
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid subcategory" });
     }
 
+    // Parse variants
     let parsedVariants = [];
     if (variants) {
       try {
@@ -55,116 +54,28 @@ export const addProduct = async (req, res) => {
             .status(400)
             .json({ success: false, message: "Variants must be an array" });
         }
-      } catch (e) {
+      } catch (err) {
         return res
           .status(400)
-          .json({ success: false, message: "Invalid JSON in variants", e });
+          .json({ success: false, message: "Invalid variants JSON" });
       }
     }
 
-    // 4. Optional: Check technicalDetails exists
-    let techDetailsRef = null;
-
-    if (technicalDetailsId) {
-      const details = await TechnicalDetails.findById(technicalDetailsId);
-      if (!details) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid technicalDetailsId" });
-      }
-      techDetailsRef = details._id;
-    } else if (req.body.technicalDetails) {
-      const { findOrCreateTechnicalDetails } = await import(
-        "../helpers/compareTechnicalDetails.js"
-      );
-
-      const { doc } = await findOrCreateTechnicalDetails(
-        JSON.parse(req.body.technicalDetails) //  ensure it's a JS object
-      );
-      techDetailsRef = doc._id;
-    }
-
-    // --- Dynamic Subscription Feature Enforcement ---
-    const user = await (await import("../models/userModel.js")).default
-      .findById(req.userId)
-      .populate("subscription");
-    if (user && user.role === "shopowner" && user.subscription) {
-      // Parse features from user.subscriptionFeatures (array of strings)
-      const features = Array.isArray(user.subscriptionFeatures)
-        ? user.subscriptionFeatures
-        : [];
-      // Product limit enforcement (generalized for any plan, overall count)
-      const productLimitFeature = features.find((f) =>
-        f.startsWith("productLimit:")
-      );
-      if (!productLimitFeature) {
-        console.error(
-          `Shopowner ${user._id} has no productLimit feature in subscriptionFeatures!`
-        );
-        return res.status(403).json({
-          success: false,
-          message:
-            "Your subscription plan does not allow adding products. Please contact support.",
-        });
-      }
-      const limit = parseInt(productLimitFeature.split(":")[1], 10);
-      // Count ALL products for this seller, regardless of category
-      const productCount = await Product.countDocuments({ seller: user._id });
-      if (!isNaN(limit) && productCount >= limit) {
-        // Prevent duplicate notifications
-        const Notification = (await import("../models/notificationModel.js"))
-          .default;
-        const existing = await Notification.findOne({
-          recipient: user._id,
-          type: "system",
-          title: "Product Limit Reached",
-          isRead: false,
-        });
-        if (!existing) {
-          const { createNotification } = await import(
-            "../controllers/notificationController.js"
-          );
-          await createNotification({
-            title: "Product Limit Reached",
-            message: `You have reached your plan's product limit (${limit}). Upgrade your plan to add more products.`,
-            type: "system",
-            recipient: user._id,
-            relatedModel: "products",
-            priority: "high",
-          });
-        }
-        return res.status(403).json({
-          success: false,
-          message: `Your plan allows only ${limit} products. Upgrade your plan to add more.`,
-        });
-      }
-      // Add more feature checks here as needed
-    }
-
-    const sellerDoc = await Seller.findOne({ user: req.userId });
-    if (!sellerDoc) {
-      return res.status(404).json({
-        success: false,
-        message: "Seller profile not found for this user",
-      });
-    }
-
-    // Premium check
-
-    const isTryingPremium = isPremium === true || isPremium === "true";
-
-    // Step 1: Get seller info
+    // Get seller and user info
     const seller = await Seller.findOne({ user: req.userId });
-    if (!seller)
-      return res.status(400).json({ message: "Seller profile not found." });
+    if (!seller) return res.status(404).json({ message: "Seller not found" });
 
-    // Step 2: Get user subscription details
-    // const  = await User.findById(userId);
+    const user = await User.findById(req.userId).populate("subscription");
+    console.log("User for product add time", user);
 
-    // === PREMIUM VALIDATION START ===
+    if (!user || !user.subscription || user.status !== "active") {
+      return res
+        .status(403)
+        .json({ message: "Subscription not active or user inactive" });
+    }
+
     const now = new Date();
     if (
-      !user.subscription ||
       !user.subscriptionStartDate ||
       !user.subscriptionEndDate ||
       now < user.subscriptionStartDate ||
@@ -172,75 +83,97 @@ export const addProduct = async (req, res) => {
     ) {
       return res
         .status(403)
-        .json({ message: "Subscription expired or not active." });
+        .json({ message: "Subscription has expired or is not valid" });
     }
 
-    // STEP 2: Get features
-    const features = Array.isArray(user.subscriptionFeatures)
-      ? user.subscriptionFeatures
-      : [];
+    const features = user.subscriptionFeatures || [];
+    console.log("Feature for subscriptions:", features);
 
-    console.log(features);
+    // Product Limit Check
+    const productLimitFeature = features.find((f) =>
+      f.startsWith("productLimit:")
+    );
+    const limit = productLimitFeature
+      ? parseInt(productLimitFeature.split(":")[1])
+      : 0;
 
-    if (isTryingPremium) {
-      if (!features.includes("featuredListing")) {
-        return res
-          .status(403)
-          .json({ message: "Your plan does not support premium listings." });
-      }
-      const premiumLimit = getFeatureLimit(features, "productLimit") || 1;
-      console.log("PremiumProduct count limit", premiumLimit);
+    const currentProductCount = await Product.countDocuments({
+      seller: seller._id,
+    });
+    if (limit && currentProductCount >= limit) {
+      // Notify once
+      // await createNotification({
+      //   title: "Product Limit Reached",
+      //   message: `You've reached your product limit of ${limit}. Upgrade your plan to add more.`,
+      //   recipient: user._id,
+      //   type: "system",
+      //   relatedModel: "products",
+      //   priority: "high",
+      // });
 
-      const premiumCount = await Product.countDocuments({
-        seller: seller._id,
-        isPremium: true,
+      return res.status(403).json({
+        success: false,
+        message: `Product limit (${limit}) reached. Upgrade plan to add more.`,
       });
-
-      if (premiumCount >= premiumLimit) {
-        return res.status(403).json({
-          message: `You can only add ${premiumLimit} premium products. Upgrade your plan.`,
-        });
-      }
     }
 
-    let image = [];
+    // Featured (Premium) Product Check
+    // const wantsPremium = isPremium === true || isPremium === "true";
+    // if (wantsPremium && !features.includes("featuredListing")) {
+    //   return res
+    //     .status(403)
+    //     .json({ message: "Your plan does not allow premium listings." });
+    // }
+    const isPremium = features.includes("featuredListing");
+    // Optional technical details
+    let techRef = null;
+    if (technicalDetailsId) {
+      const tech = await TechnicalDetails.findById(technicalDetailsId);
+      if (!tech)
+        return res.status(400).json({ message: "Invalid technicalDetailsId" });
+      techRef = tech._id;
+    }
+
+    // Validate images
+    let images = [];
     if (req.files && req.files.length > 0) {
-      image = req.files.map((file) => `/uploads/products/${file.filename}`);
+      images = req.files.map((file) => `/uploads/products/${file.filename}`);
     } else {
       return res
         .status(400)
-        .json({ success: false, message: "At least one image is required" });
+        .json({ message: "At least one image is required" });
     }
+
+    // Create product
     const product = new Product({
       name,
       description,
-      price: Number(price),
+      price,
       discount: discount ? Number(discount) : undefined,
       category,
-      subcategory: subcategory || undefined, // Only add if provided
-      stock: Number(stock),
+      subcategory,
+      stock,
       status,
-      image: image,
+      brand,
+      seller: seller._id,
+      image: images,
       variants: parsedVariants,
-      brand: brand || undefined,
-      seller: sellerDoc._id,
-      technicalDetails: techDetailsRef || undefined,
-      isPremium: isTryingPremium,
+      technicalDetails: techRef,
+      isPremium,
     });
 
     await product.save();
-    res.status(201).json({
+
+    return res.status(201).json({
       success: true,
       message: "Product added successfully",
       product,
     });
   } catch (error) {
     console.error("Error adding product:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error adding product",
-      error: error.message,
-    });
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error", error: error.message });
   }
 };
 

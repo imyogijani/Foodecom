@@ -9,6 +9,8 @@ import {
   verifyToken,
   clearNotification,
   acceptPlanUpdateController,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/authController.js";
 import upload from "../middlewares/uploadMiddleware.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
@@ -70,5 +72,10 @@ router.get("/uploads/avatars/:filename", (req, res) => {
   const { filename } = req.params;
   res.sendFile(path.join(__dirname, "../public/uploads/avatars/", filename));
 });
+
+// Change password :
+
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password/:token", resetPassword);
 
 export default router;

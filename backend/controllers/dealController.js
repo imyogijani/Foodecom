@@ -23,7 +23,7 @@ export const createDeal = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    // 🟢 Find the seller using the user ID
+    //  Find the seller using the user ID
     const seller = await Seller.findOne({ user: req.user._id });
     if (!seller) return res.status(404).json({ message: "Seller not found" });
     const overlappingDeal = await Deal.findOne({
@@ -252,17 +252,60 @@ export const getAllDeals = async (req, res) => {
 };
 
 // Get seller's deals
+// export const getSellerDeals = async (req, res) => {
+//   try {
+//     const { status, page = 1, limit = 10 } = req.query;
+//     const filter = { seller: req.user._id };
+//     if (status) filter.status = status;
+
+//     const deals = await Deal.find(filter)
+//       .populate("product", "name image")
+//       .sort({ createdAt: -1 })
+//       .limit(limit * 1)
+//       .skip((page - 1) * limit);
+
+//     const total = await Deal.countDocuments(filter);
+
+//     res.status(200).json({
+//       success: true,
+//       deals,
+//       totalPages: Math.ceil(total / limit),
+//       currentPage: page,
+//       total,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+// GET /api/seller/deals
 export const getSellerDeals = async (req, res) => {
   try {
-    const { status, page = 1, limit = 10 } = req.query;
-    const filter = { seller: req.user._id };
+    const { page = 1, limit = 10, search = "" } = req.query;
+    const status = req.query.status || req.params.status;
+
+    // Find seller using the logged-in user's ID
+    const seller = await Seller.findOne({ user: req.user._id });
+    if (!seller) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Seller not found" });
+    }
+
+    // Build dynamic filter
+    const filter = { seller: seller._id };
     if (status) filter.status = status;
+    if (search) {
+      filter.title = { $regex: search, $options: "i" }; // search by deal title
+    }
 
     const deals = await Deal.find(filter)
-      .populate("product", "name image")
+      .populate("product", "name image price")
+      .populate("seller", "shopName shopImage")
       .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
 
     const total = await Deal.countDocuments(filter);
 
@@ -270,42 +313,125 @@ export const getSellerDeals = async (req, res) => {
       success: true,
       deals,
       totalPages: Math.ceil(total / limit),
-      currentPage: page,
+      currentPage: parseInt(page),
       total,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error in getSellerDeals:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
 // Get active deals for offers page
-export const getActiveDeals = async (req, res) => {
-  const featured = req.query.featured === "true";
+// export const getActiveDeals = async (req, res) => {
+//   const featured = req.query.featured === "true";
+//   try {
+//     const now = new Date();
+//     const deals = await Deal.find({
+//       status: "approved",
+//       startDate: { $lte: now },
+//       endDate: { $gte: now },
+//       ...(featured ? { featuredInOffers: true } : {}),
+//     })
+//       .populate("product", "name image description averageRating totalReviews")
+//       .populate("seller", "names shopName")
+//       .sort({ createdAt: -1 });
+//     const enrichedDeals = deals.map((deal) => {
+//       const moneySaved = deal.originalPrice - deal.dealPrice;
+//       return {
+//         ...deal._doc,
+//         moneySaved,
+//       };
+//     });
+//     res.status(200).json({
+//       success: true,
+//       deals: enrichedDeals,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+
+export const getFilteredDeals = async (req, res) => {
   try {
+    const {
+      page = 1,
+      limit = 10,
+      search = "",
+      title,
+      minDiscount,
+      flashSale,
+      endSoon,
+      sortBy = "startDate",
+      sortOrder = "desc",
+    } = req.query;
+
     const now = new Date();
-    const deals = await Deal.find({
+    const filter = {
       status: "approved",
       startDate: { $lte: now },
       endDate: { $gte: now },
-      ...(featured ? { featuredInOffers: true } : {}),
-    })
-      .populate("product", "name image description averageRating totalReviews")
-      .populate("seller", "names shopName")
-      .sort({ createdAt: -1 });
-    const enrichedDeals = deals.map((deal) => {
-      const moneySaved = deal.originalPrice - deal.dealPrice;
-      return {
-        ...deal._doc,
-        moneySaved,
-      };
-    });
+    };
+
+    //  General search (title based)
+    if (search) {
+      filter.title = { $regex: search, $options: "i" };
+    }
+
+    // Specific deal title match
+    if (title) {
+      filter.title = { $regex: title, $options: "i" }; // can be exact or partial
+    }
+
+    // Flash Sale
+    if (flashSale === "true") {
+      filter.featuredInOffers = true;
+    }
+
+    // End Soon (within 3 days)
+    if (endSoon === "true") {
+      const threeDaysLater = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      filter.endDate = { $lte: threeDaysLater, $gte: now };
+    }
+
+    // Minimum discount
+    if (minDiscount) {
+      filter.discountPercentage = { $gte: Number(minDiscount) };
+    }
+
+    // Sorting options
+    const sortOptions = {};
+    if (
+      ["startDate", "endDate", "dealPrice", "discountPercentage"].includes(
+        sortBy
+      )
+    ) {
+      sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
+    }
+
+    //  Pagination
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const totalDeals = await Deal.countDocuments(filter);
+    const deals = await Deal.find(filter)
+      .populate(
+        "product",
+        "title name image category subcategory stock brand totalReviews averageRating isPremium finalPrice"
+      )
+      .populate("seller", "shopName shopImage ownerName address")
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(Number(limit));
+
     res.status(200).json({
-      success: true,
-      deals: enrichedDeals,
+      totalDeals,
+      currentPage: Number(page),
+      totalPages: Math.ceil(totalDeals / limit),
+      deals,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Get Deals Error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -338,8 +464,12 @@ export const updateDeal = async (req, res) => {
   try {
     const { dealId } = req.params;
     const updateData = req.body;
+    const seller = await Seller.findOne({ user: req.user._id });
+    if (!seller) {
+      return res.status(404).json({ message: "Seller not found" });
+    }
 
-    const deal = await Deal.findOne({ _id: dealId, seller: req.user._id });
+    const deal = await Deal.findOne({ _id: dealId, seller: seller._id });
     if (!deal) {
       return res.status(404).json({ message: "Deal not found" });
     }

@@ -559,7 +559,7 @@ export default function ProductDetail() {
         quantity: quantity,
         // productId: deal.product._id,
         // quantity: 1,
-        price: item.price,
+        price: selectedVariant?.price || item.finalPrice,
         title: item.name,
         discount: item.discount,
         // selectedVariantId: selectedVariant?._id, // Optional if variants used
@@ -657,7 +657,8 @@ export default function ProductDetail() {
           <div className="pricing-section">
             <div className="price-row">
               <span className="current-price">
-                ₹{calculateDiscountedPriceFinal(item.price, item.discount)}
+                {/* ₹{calculateDiscountedPriceFinal(item.price, item.discount)} */}
+                ₹{item.finalPrice}
               </span>
               {/* {item.originalPrice && (
                 <span className="original-price">
@@ -720,7 +721,8 @@ export default function ProductDetail() {
             <div className="pricing-section">
               <div className="price-row">
                 <span className="current-price">
-                  ₹{calculateDiscountedPriceFinal(item.price, item.discount)}
+                  {/* ₹{calculateDiscountedPriceFinal(item.price, item.discount)} */}
+                  ₹{item.finalPrice}
                 </span>
                 {/* {item.originalPrice && (
                   <span className="original-price">
@@ -845,7 +847,7 @@ export default function ProductDetail() {
           <div className="mobile-purchase-integration">
             <div className="mobile-price-summary">
               <span className="card-price">
-                ₹{selectedVariant?.price || item.price}
+                ₹{selectedVariant?.price || item.finalPrice}
               </span>
               {item.originalPrice && (
                 <span className="card-original-price">
@@ -890,7 +892,7 @@ export default function ProductDetail() {
           <div className="purchase-card">
             <div className="price-summary">
               <span className="card-price">
-                ₹{selectedVariant?.price || item.price}
+                ₹{selectedVariant?.price || item.finalPrice}
               </span>
               {item.price && (
                 <span className="card-original-price">
@@ -1174,7 +1176,7 @@ export default function ProductDetail() {
                     quantity: 1,
                     // productId: deal.product._id,
                     // quantity: 1,
-                    price: product.price,
+                    price: product.finalPrice,
                     title: product.name,
                     discount: product.discount,
                   });

@@ -88,7 +88,7 @@ const productSchema = new mongoose.Schema(
     finalPrice: { type: Number },
     isPremium: {
       type: Boolean,
-      default: false, 
+      default: false,
     },
   },
   {
@@ -99,8 +99,10 @@ productSchema.index({ seller: 1 }); // Seller wise product find fast
 productSchema.index({ createdAt: -1 });
 productSchema.pre("save", function (next) {
   this.finalPrice = this.price - (this.price * this.discount) / 100;
+  console.log("Produc schema", this.finalPrice);
   next();
 });
+
 productSchema.pre("findOneAndUpdate", function (next) {
   const update = this.getUpdate();
 
