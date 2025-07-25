@@ -18,7 +18,7 @@ const dealSchema = new mongoose.Schema(
     },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "Seller",
       required: true,
     },
     originalPrice: {
@@ -92,6 +92,8 @@ const dealSchema = new mongoose.Schema(
 dealSchema.index({ seller: 1, status: 1 });
 dealSchema.index({ status: 1, startDate: 1, endDate: 1 });
 dealSchema.index({ product: 1 });
+
+
 
 // Virtual for checking if deal is currently active
 dealSchema.virtual("isActive").get(function () {

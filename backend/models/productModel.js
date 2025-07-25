@@ -52,9 +52,9 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
     brand: {
-      type: String,
-      required: false,
-      trim: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+      required: true,
     },
     seller: {
       type: mongoose.Schema.Types.ObjectId,
@@ -80,14 +80,21 @@ const productSchema = new mongoose.Schema(
       ref: "TechnicalDetails",
       required: true,
     },
+    activeDeal: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "deals",
+      default: null,
+    },
     finalPrice: { type: Number },
+    isPremium: {
+      type: Boolean,
+      default: false, 
+    },
   },
   {
     timestamps: true,
   }
 );
-
-const Product = mongoose.model("products", productSchema);
 productSchema.index({ seller: 1 }); // Seller wise product find fast
 productSchema.index({ createdAt: -1 });
 productSchema.pre("save", function (next) {
@@ -119,4 +126,5 @@ productSchema.pre("findOneAndUpdate", function (next) {
   next();
 });
 
+const Product = mongoose.model("products", productSchema);
 export default Product;

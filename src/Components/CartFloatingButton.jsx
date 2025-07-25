@@ -16,7 +16,7 @@ export default function CartFloatingButton() {
           {totalItems > 0 && (
             <span className="cart-float-count">{totalItems}</span>
           )}
-          <span className="cart-float-label">View Cart</span>
+          {/* <span className="cart-float-label">Cart</span> */}
         </button>
       </div>
       <CartModal open={open} onClose={() => setOpen(false)} />

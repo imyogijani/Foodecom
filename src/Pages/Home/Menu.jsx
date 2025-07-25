@@ -65,7 +65,7 @@ export default function Menu() {
           categoryId: activeTab,
           search: searchQuery,
           sortBy,
-          order: sortBy.includes("low") ? "asc" : "desc",
+          order,
           minPrice: priceRange[0],
           maxPrice: priceRange[1],
         });
@@ -80,7 +80,7 @@ export default function Menu() {
     };
 
     fetchData();
-  }, [currentPage, activeTab, searchQuery, sortBy, priceRange]);
+  }, [currentPage, activeTab, searchQuery, sortBy, priceRange, order]);
 
   const handleAddToCart = async (e, product) => {
     e.stopPropagation();
@@ -152,10 +152,9 @@ export default function Menu() {
       setSortBy("rating");
       setOrder("desc");
     } else if (value === "reviews") {
-      setSortBy("reviews"); // Handle separately in backend
+      setSortBy("reviews");
       setOrder("desc");
     } else {
-      // Default: Sort by createdAt (newest first)
       setSortBy("createdAt");
       setOrder("desc");
     }
@@ -298,6 +297,13 @@ export default function Menu() {
       const response = await axios.get(
         `/api/products?${queryParams.toString()}`
       );
+
+      {/* const finalURL = `/api/products?${queryParams.toString()}`;
+      console.log("🟢 Final API URL called:", finalURL); */}
+
+      {
+        /* console.log(`/api/products?${queryParams.toString()}`) */
+      }
       return response.data;
     } catch (error) {
       console.error("Error fetching filtered products:", error);

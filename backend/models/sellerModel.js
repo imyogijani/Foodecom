@@ -31,7 +31,7 @@ const sellerSchema = new mongoose.Schema(
     categories: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Category", // Referencing the Category collection
+        ref: "Category",
       },
     ],
     location: {

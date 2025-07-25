@@ -48,7 +48,10 @@ const storage = multer.diskStorage({
     ) {
       const dest = path.join(__dirname, "../public/uploads/brands");
       cb(null, dest);
-    } else if (req.baseUrl.includes("avatar")) {
+    } else if (
+      req.baseUrl.includes("avatar") ||
+      req.originalUrl.includes("avatar")
+    ) {
       const dest = path.join(__dirname, "../public/uploads/avatars");
       cb(null, dest);
     } else if (req.baseUrl.includes("product")) {

@@ -80,7 +80,7 @@ const registerController = async (req, res) => {
       // shopImage,
       // shopImages,
       description,
-      categories,
+      // categories,
       location,
       address,
       names,
@@ -115,6 +115,7 @@ const registerController = async (req, res) => {
     };
 
     // 4. If shopowner, handle subscription & shop fields
+    let parsedCategories = [];
     if (role === "shopowner") {
       if (!subscriptionId || !shopName || !shopownerName) {
         return res.status(400).json({
@@ -132,19 +133,24 @@ const registerController = async (req, res) => {
         });
       }
 
-      if (
-        !categories ||
-        !Array.isArray(categories) ||
-        categories.length === 0
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "At least one category is required for shopowner",
-        });
+      if (typeof req.body.categories === "string") {
+        try {
+          parsedCategories = JSON.parse(req.body.categories);
+        } catch (err) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid categories format",
+          });
+        }
+      } else {
+        parsedCategories = req.body.categories || [];
       }
 
-      const validCategories = await Category.find({ _id: { $in: categories } });
-      if (validCategories.length !== categories.length) {
+      const validCategories = await Category.find({
+        _id: { $in: parsedCategories },
+      });
+
+      if (validCategories.length !== parsedCategories.length) {
         return res.status(400).json({
           success: false,
           message: "Some categories are invalid",
@@ -157,6 +163,8 @@ const registerController = async (req, res) => {
       userData.shopName = shopName;
       userData.shopownerName = shopownerName;
       userData.shopImage = shopImage || null;
+    } else {
+      parsedCategories = req.body.categories || [];
     }
 
     // 5. Save user
@@ -171,7 +179,7 @@ const registerController = async (req, res) => {
         shopImages,
         ownerName: user.names || "", // Or from formData.shopownerName
         description: description || "",
-        categories: categories || [],
+        categories: parsedCategories || [],
         location: location || "",
         address: user.address || "",
         specialist: [],
@@ -483,6 +491,7 @@ const uploadAvatarController = async (req, res) => {
         // Continue with the update even if old file cleanup fails
       }
     }
+    // console.log("Uploaded file:", req.file);
 
     user.avatar = avatarUrl;
     await user.save();
@@ -576,9 +585,16 @@ export const acceptPlanUpdateController = async (req, res) => {
     if (!plan) {
       return res.status(404).json({ message: "Plan not found" });
     }
+
+    const startDate = new Date();
+    const endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1); // Assuming 1-month plan duration
+
     user.subscription = plan._id;
     user.subscriptionFeatures = plan.includedFeatures;
     user.subscriptionStartDate = new Date();
+    user.subscriptionEndDate = endDate;
+
     await user.save();
     return res.status(200).json({
       success: true,

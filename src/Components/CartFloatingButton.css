@@ -18,9 +18,9 @@
   background: #ff9900;
   color: #fff;
   border: none;
-  border-radius: 32px;
+  border-radius: 50px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13);
-  padding: 0.7rem 1.5rem 0.7rem 1.1rem;
+  /* padding: 0.7rem 1.5rem 0.7rem 1.1rem; */
   font-size: 1.1rem;
   font-weight: 600;
   display: flex;
@@ -42,7 +42,7 @@
 
 .cart-float-icon {
   font-size: 1.5rem;
-  margin-right: 0.2rem;
+  /* margin-right: 0.2rem; */
 }
 
 .cart-float-count {

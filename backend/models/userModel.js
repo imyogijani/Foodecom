@@ -71,6 +71,10 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    subscriptionEndDate: {
+      type: Date,
+      default: null,
+    },
     subscriptionFeatures: {
       type: [String],
       default: [],
