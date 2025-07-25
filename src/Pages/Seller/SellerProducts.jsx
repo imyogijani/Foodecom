@@ -32,7 +32,7 @@ const SellerProducts = () => {
       }
     } catch (error) {
       toast.error("Error fetching categories");
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -50,7 +50,7 @@ const SellerProducts = () => {
       }
     } catch (error) {
       toast.error("Error fetching products");
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ const SellerProducts = () => {
         }
       } catch (error) {
         toast.error("Error deleting product");
-        console.log(error);
+        console.error(error);
       }
     }
   };
@@ -84,6 +84,8 @@ const SellerProducts = () => {
   const closeEditModal = () => {
     setShowEditModal(false);
     setEditProduct(null);
+    setEditCategory("");
+    setEditStatus("");
   };
 
   const handleSaveEdit = async (e) => {
@@ -106,7 +108,7 @@ const SellerProducts = () => {
       fetchProducts();
     } catch (error) {
       toast.error("Error updating product");
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -114,7 +116,7 @@ const SellerProducts = () => {
     selectedCategory === "All"
       ? products
       : products.filter(
-          (product) => product.category.name === selectedCategory
+          (product) => product.category?.name === selectedCategory
         );
 
   if (loading) {
@@ -164,7 +166,7 @@ const SellerProducts = () => {
               <div key={product._id} className="product-card">
                 <div className="product-card-header">
                   <img
-                    src={product.images[0]}
+                    src={product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/150"}
                     alt={product.name}
                     className="product-card-image"
                   />
@@ -172,10 +174,10 @@ const SellerProducts = () => {
                 </div>
                 <div className="product-card-body">
                   <p className="product-card-detail">
-                    <strong>Category:</strong> {product.category.name}
+                    <strong>Category:</strong> {product.category?.name}
                   </p>
                   <p className="product-card-detail">
-                    <strong>Price:</strong> ₹{product.price.toFixed(2)}
+                    <strong>Price:</strong> ₹{product.price?.toFixed(2)}
                   </p>
                   <p className="product-card-detail">
                     <strong>Stock:</strong> {product.stock}
@@ -184,7 +186,7 @@ const SellerProducts = () => {
                     <strong>Status:</strong>
                     <span
                       className={`status ${product.status
-                        .toLowerCase()
+                        ?.toLowerCase()
                         .replace(" ", "-")}`}
                     >
                       {product.status}
@@ -211,47 +213,16 @@ const SellerProducts = () => {
             <h2>Edit Product</h2>
             <form onSubmit={handleSaveEdit}>
               <div className="form-group">
-                <label htmlFor="productName">Product Name</label>
-                <input
-                  type="text"
-                  id="productName"
-                  value={editProduct.name}
-                  disabled
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="productDescription">Description</label>
-                <textarea
-                  id="productDescription"
-                  value={editProduct.description}
-                  disabled
-                ></textarea>
-              </div>
-              <div className="form-group">
-                <label htmlFor="productPrice">Price</label>
-                <input
-                  type="number"
-                  id="productPrice"
-                  value={editProduct.price}
-                  disabled
-                />
-              </div>
-              <div className="form-group">
-                <label htmlFor="productStock">Stock</label>
-                <input
-                  type="number"
-                  id="productStock"
-                  value={editProduct.stock}
-                  disabled
-                />
-              </div>
-              <div className="form-group">
                 <label htmlFor="editCategory">Category</label>
                 <select
                   id="editCategory"
                   value={editCategory}
                   onChange={(e) => setEditCategory(e.target.value)}
+                  required
                 >
+                  <option value="" disabled>
+                    Select category
+                  </option>
                   {categories.map((category) => (
                     <option key={category._id} value={category._id}>
                       {category.name}
@@ -265,9 +236,14 @@ const SellerProducts = () => {
                   id="editStatus"
                   value={editStatus}
                   onChange={(e) => setEditStatus(e.target.value)}
+                  required
                 >
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
+                  <option value="" disabled>
+                    Select status
+                  </option>
+                  <option value="In Stock">In Stock</option>
+                  <option value="Low Stock">Low Stock</option>
+                  <option value="Out of Stock">Out of Stock</option>
                 </select>
               </div>
               <div className="modal-actions">
@@ -279,53 +255,6 @@ const SellerProducts = () => {
                   onClick={closeEditModal}
                   className="cancel-btn"
                 >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Product Modal */}
-      {showEditModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Edit Product</h2>
-            <form onSubmit={handleSaveEdit}>
-              <div className="form-group">
-                <label>Name</label>
-                <input type="text" value={editProduct?.name || ''} readOnly />
-              </div>
-              <div className="form-group">
-                <label>Category</label>
-                <select value={editCategory} onChange={e => setEditCategory(e.target.value)} required>
-                  <option value="" disabled>Select category</option>
-                  {categories.map(cat => (
-                    <option key={cat._id} value={cat._id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Price</label>
-                <input type="number" value={editProduct?.price || ''} readOnly />
-              </div>
-              <div className="form-group">
-                <label>Stock</label>
-                <input type="number" value={editProduct?.stock || ''} readOnly />
-              </div>
-              <div className="form-group">
-                <label>Status</label>
-                <select value={editStatus} onChange={e => setEditStatus(e.target.value)} required>
-                  <option value="" disabled>Select status</option>
-                  <option value="In Stock">In Stock</option>
-                  <option value="Low Stock">Low Stock</option>
-                  <option value="Out of Stock">Out of Stock</option>
-                </select>
-              </div>
-              <div className="modal-actions">
-                <button type="submit" className="btn btn-primary">Save</button>
-                <button type="button" className="btn btn-secondary" onClick={closeEditModal}>
                   Cancel
                 </button>
               </div>

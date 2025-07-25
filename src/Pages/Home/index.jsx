@@ -17,6 +17,8 @@ import {
   Shield,
   RefreshCw,
   Award,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { addToCartAPI } from "../../api/cartApi/cartApi";
 import HeroImg from "../../images/hero-img.svg";
@@ -62,26 +64,64 @@ export default function Home() {
     return filtered;
   }, [products, activeCategory, sortBy, searchQuery]);
 
-  // Navigation handler
-  const handleGetStarted = () => {
-    window.location.href = "/menu";
-  };
+  const fetchDeals = React.useCallback(async () => {
+    try {
+      // Fetch both offers and deals in parallel
+      const [offersRes, dealsRes] = await Promise.all([
+        axios.get("/api/offers/today"), // Remove hardcoded localhost URL
+        axios.get("/api/deals/active"),
+      ]);
 
-  // Initial data fetch
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        await Promise.all([fetchCategories(), fetchProducts(), fetchDeals()]);
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-        toast.error("Failed to load initial data");
-      }
-    };
+      // Extract offers data with fallback to empty array
+      const offers = offersRes?.data?.offers || [];
 
-    fetchInitialData();
+      // Map offers to consistent deal format
+      const mappedOffers = offers.map((offer) => {
+        // Destructure commonly used properties
+        const { product, _id, title, description, discount, price } = offer;
+
+        return {
+          _id,
+          title: title || product?.name || "Today's Offer",
+          description:
+            description ||
+            product?.description ||
+            "Special offer for today only!",
+          image: processImageUrl(product?.image),
+          dealPrice: calculateDealPrice(offer),
+          originalPrice: product?.price || price,
+          discountPercentage: discount || 0,
+          shopName: getShopName(offer),
+          isOffer: true,
+          rating: product?.rating || 4.5,
+          reviewCount: product?.reviewCount || 100,
+        };
+      });
+
+      // Combine offers with deals and update state
+      const deals = dealsRes?.data?.deals || [];
+      setDeals([...mappedOffers, ...deals]);
+    } catch (error) {
+      console.error("Deals fetch error:", error);
+      toast.error("Error fetching deals");
+      setDeals([]);
+    }
   }, []);
 
-  // API calls
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(
+        "/api/products?populateCategory=true&populateSubcategory=true"
+      );
+      setProducts(response.data.products);
+    } catch (error) {
+      console.error("Product fetch error:", error);
+      toast.error("Error fetching products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
@@ -107,53 +147,24 @@ export default function Home() {
     }
   };
 
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get(
-        "/api/products?populateCategory=true&populateSubcategory=true"
-      );
-      setProducts(response.data.products);
-    } catch (error) {
-      console.error("Product fetch error:", error);
-      toast.error("Error fetching products");
-    } finally {
-      setLoading(false);
-    }
+  // Navigation handler
+  const handleGetStarted = () => {
+    window.location.href = "/menu";
   };
 
-  const fetchDeals = async () => {
-    try {
-      const [offersRes, dealsRes] = await Promise.all([
-        axios.get("http://localhost:8080/api/offers/today"),
-        axios.get("/api/deals/active"),
-      ]);
+  // Initial data fetch
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        await Promise.all([fetchCategories(), fetchProducts(), fetchDeals()]);
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+        toast.error("Failed to load initial data");
+      }
+    };
 
-      const offers = offersRes.data.offers || [];
-      const mappedOffers = offers.map((offer) => ({
-        _id: offer._id,
-        title: offer.title || offer.product?.name || "Today's Offer",
-        description:
-          offer.description ||
-          offer.product?.description ||
-          "Special offer for today only!",
-        image: processImageUrl(offer.product?.image),
-        dealPrice: calculateDealPrice(offer),
-        originalPrice: offer.product?.price || offer.price,
-        discountPercentage: offer.discount || 0,
-        shopName: getShopName(offer),
-        isOffer: true,
-        rating: offer.product?.rating || 4.5,
-        reviewCount: offer.product?.reviewCount || 100,
-      }));
-
-      const allDeals = [...mappedOffers, ...(dealsRes.data.deals || [])];
-      setDeals(allDeals);
-    } catch (error) {
-      console.error("Deals fetch error:", error);
-      toast.error("Error fetching deals");
-      setDeals([]);
-    }
-  };
+    fetchInitialData();
+  }, [fetchDeals]);
 
   const processImageUrl = (image) => {
     const getFullUrl = (img) =>
@@ -231,21 +242,52 @@ export default function Home() {
     return stars;
   };
 
-  // Component definitions remain the same...
+  // Updated ProductCard component with improved image handling
   const ProductCard = ({ product }) => {
-    const image =
-      processImageUrl(product.image) ||
-      "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
+    const [imageError, setImageError] = useState(false);
+    const [imageLoading, setImageLoading] = useState(true);
+
+    const handleImageLoad = () => {
+      setImageLoading(false);
+      setImageError(false);
+    };
+
+    const handleImageError = () => {
+      setImageLoading(false);
+      setImageError(true);
+    };
+
+    const getImageSrc = () => {
+      if (imageError) {
+        return "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg";
+      }
+
+      const processedImage = processImageUrl(product.image);
+      return (
+        processedImage ||
+        "https://images.pexels.com/photos/6214360/pexels-photo-6214360.jpeg"
+      );
+    };
 
     return (
       <div className="card-base card-large product-card">
         <div className="card-image-container">
+          {imageLoading && (
+            <div className="image-loading-placeholder">
+              <div className="loading-spinner"></div>
+            </div>
+          )}
           <img
-            src={image}
+            src={getImageSrc()}
             alt={product.name}
             className="card-image"
             loading="lazy"
-            style={{ objectFit: "contain" }}
+            style={{
+              objectFit: "contain",
+              display: imageLoading ? "none" : "block",
+            }}
+            onLoad={handleImageLoad}
+            onError={handleImageError}
           />
         </div>
         <div className="card-content">
@@ -292,6 +334,155 @@ export default function Home() {
     </div>
   );
 }
+
+// Updated FeaturedProducts component with slider functionality
+const FeaturedProducts = ({ loading, filteredProducts, ProductCard }) => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(4);
+
+  // Update items per view based on screen size
+  useEffect(() => {
+    const updateItemsPerView = () => {
+      if (window.innerWidth < 480) {
+        setItemsPerView(1);
+      } else if (window.innerWidth < 768) {
+        setItemsPerView(2);
+      } else if (window.innerWidth < 1024) {
+        setItemsPerView(3);
+      } else {
+        setItemsPerView(4);
+      }
+    };
+
+    updateItemsPerView();
+    window.addEventListener("resize", updateItemsPerView);
+    return () => window.removeEventListener("resize", updateItemsPerView);
+  }, []);
+
+  const totalSlides = Math.ceil(filteredProducts.length / itemsPerView);
+  const maxSlide = Math.max(0, totalSlides - 1);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev >= maxSlide ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev <= 0 ? maxSlide : prev - 1));
+  };
+
+  const goToSlide = (slideIndex) => {
+    setCurrentSlide(slideIndex);
+  };
+
+  // Auto-slide functionality (optional)
+  useEffect(() => {
+    if (filteredProducts.length > itemsPerView) {
+      const interval = setInterval(nextSlide, 5000); // Auto-slide every 5 seconds
+      return () => clearInterval(interval);
+    }
+  }, [filteredProducts.length, itemsPerView, maxSlide]);
+
+  return (
+    <div className="products-section">
+      <div className="section-header">
+        <h2
+          style={{
+            fontWeight: "bold",
+            borderBottom: "2px solid #232f3e",
+            paddingBottom: "10px",
+            display: "block",
+            width: "fit-content",
+            textAlign: "center",
+            margin: "0 auto 30px",
+          }}
+        >
+          Featured Products
+        </h2>
+        <p>Handpicked items just for you</p>
+      </div>
+
+      {loading ? (
+        <LoadingGrid />
+      ) : filteredProducts.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="products-slider-container">
+          {/* Slider Navigation - Previous Button */}
+          {filteredProducts.length > itemsPerView && (
+            <button
+              className="slider-nav-btn slider-prev"
+              onClick={prevSlide}
+              disabled={currentSlide === 0}
+            >
+              <ChevronLeft size={24} />
+            </button>
+          )}
+
+          {/* Slider Content */}
+          <div className="products-slider-wrapper">
+            <div
+              className="products-slider-track"
+              style={{
+                transform: `translateX(-${
+                  currentSlide * (100 / totalSlides)
+                }%)`,
+                width: `${totalSlides * 100}%`,
+              }}
+            >
+              {filteredProducts.map((product) => (
+                <div
+                  key={product._id}
+                  className="slider-item"
+                  style={{ width: `${100 / (totalSlides * itemsPerView)}%` }}
+                >
+                  <ProductCard product={product} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Slider Navigation - Next Button */}
+          {filteredProducts.length > itemsPerView && (
+            <button
+              className="slider-nav-btn slider-next"
+              onClick={nextSlide}
+              disabled={currentSlide === maxSlide}
+            >
+              <ChevronRight size={24} />
+            </button>
+          )}
+
+          {/* Slider Indicators/Dots */}
+          {filteredProducts.length > itemsPerView && totalSlides > 1 && (
+            <div className="slider-indicators">
+              {Array.from({ length: totalSlides }).map((_, index) => (
+                <button
+                  key={index}
+                  className={`slider-dot ${
+                    currentSlide === index ? "active" : ""
+                  }`}
+                  onClick={() => goToSlide(index)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Products Counter */}
+          <div className="products-counter">
+            <span>
+              Showing{" "}
+              {Math.min(
+                currentSlide * itemsPerView + itemsPerView,
+                filteredProducts.length
+              )}{" "}
+              of {filteredProducts.length} products
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Subcomponents remain unchanged...
 const HeroSection = ({ searchQuery, setSearchQuery }) => (
@@ -431,39 +622,6 @@ const FilterSortBar = ({
         <option value="rating">Customer Rating</option>
       </select>
     </div>
-  </div>
-);
-
-const FeaturedProducts = ({ loading, filteredProducts, ProductCard }) => (
-  <div className="products-section">
-    <div className="section-header">
-      <h2
-        style={{
-          fontWeight: "bold",
-          borderBottom: "2px solid #232f3e",
-          paddingBottom: "10px",
-          display: "block",
-          width: "fit-content",
-          textAlign: "center",
-          margin: "0 auto 30px",
-        }}
-      >
-        Featured Products
-      </h2>
-      <p>Handpicked items just for you</p>
-    </div>
-
-    {loading ? (
-      <LoadingGrid />
-    ) : filteredProducts.length === 0 ? (
-      <EmptyState />
-    ) : (
-      <div className="cards-grid cards-grid-large">
-        {filteredProducts.slice(0, 12).map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
-      </div>
-    )}
   </div>
 );
 
