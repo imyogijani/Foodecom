@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 router.post("/create", authenticateToken, authorizeAdmin, createOffer);
-router.get("/all", authenticateToken, authorizeAdmin, getAllOffers);
+router.get("/all", authenticateToken, getAllOffers);
 router.put("/update/:id", authenticateToken, authorizeAdmin, updateOffer);
 router.delete("/delete/:id", authenticateToken, authorizeAdmin, deleteOffer);
 

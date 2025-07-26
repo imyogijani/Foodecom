@@ -1,11 +1,29 @@
 import nodemailer from "nodemailer";
+// import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  // eslint-disable-next-line no-undef
-  auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASS }, // app pass not mail
-});
+export const sendEmail = async (to, subject, text) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "meetchauhan925@gmail.com", //  your gmail here
+        pass: "123456789",
+      },
+    });
 
-export async function sendEmail({ to, subject, html }) {
-  await transporter.sendMail({ to, subject, html });
-}
+    const info = await transporter.sendMail({
+      from: `"eMall Test 👋"meetchauhan925@gmail.com`,
+      to,
+      subject,
+      text,
+    });
+
+    console.log("✅ Email sent:", info.messageId);
+    return true;
+  } catch (error) {
+    console.error("❌ Email send error:", error);
+    return false;
+  }
+};

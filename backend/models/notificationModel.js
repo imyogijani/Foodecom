@@ -43,7 +43,7 @@ const notificationSchema = new mongoose.Schema(
     relatedModel: {
       type: String,
       required: false,
-      enum: ["deals", "orders", "products", "users"],
+      enum: ["deals", "orders", "products", "users","payment"],
     },
     isRead: {
       type: Boolean,

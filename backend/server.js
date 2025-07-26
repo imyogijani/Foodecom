@@ -93,9 +93,12 @@ import storeRoutes from "./routes/storeRoutes.js";
 import brandRoutes from "./routes/brandRoutes.js";
 import menuRoutes from "./routes/menuItemRoutes.js";
 import sellerRoutes from "./routes/sellerRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import testNotificationRouter from "./routes/testNotification.js";
 import "./cronJobs/offerExpiryJob.js";
 import "./cronJobs/dealCleanup.js";
 import "./cronJobs/disableExpiredPremiums.js";
+import "./cronJobs/checkExpiredSubscriptions.js";
 
 app.use("/api/test", testRoutes);
 app.use("/api/auth", authRoutes);
@@ -105,9 +108,6 @@ app.use("/api/admin", adminRoutes);
 app.use("/api", subscriptionRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/deals", dealRoutes);
-app.use("/api/notifications", notificationRoutes);
-app.use("/api/analytics", analyticsRoutes);
-app.use("/api/analytics", gaProxyRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/technical-details", technicalDetailsRoutes);
@@ -116,6 +116,11 @@ app.use("/api/brands", brandRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/menu-items", menuRoutes);
 app.use("/api/sellers", sellerRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/test-notification", testNotificationRouter);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/analytics", gaProxyRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // app.use("/api/v1/inventory", require("./routes/inventoryRoutes"));
 
@@ -128,7 +133,6 @@ cron.schedule("0 * * * *", async () => {
     console.error("[CRON] Error running deal expiration:", err);
   }
 });
-
 
 // to see sever is proper running
 // http://localhost:8080/

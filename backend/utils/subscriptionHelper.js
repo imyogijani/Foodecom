@@ -71,7 +71,7 @@ export const assignSubscriptionToUser = async (
 
     await user.save();
 
-    // 🔁 If user is also a seller
+    //  If user is also a seller
     if (user.sellerId) {
       await Seller.findByIdAndUpdate(user.sellerId, {
         $set: {

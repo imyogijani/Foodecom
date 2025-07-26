@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { addToCartAPI } from "../../api/cartApi/cartApi";
 import HeroImg from "../../images/hero-img.svg";
+import { requestPushPermission } from "../../utils/pushNotification";
 
 export default function Home() {
   // State management
@@ -166,6 +167,15 @@ export default function Home() {
 
     fetchInitialData();
   }, [fetchDeals]);
+
+  const userId = JSON.parse(localStorage.getItem("user"));
+  // console.log("User Login after userId for requestPushPermission", userId?._id);
+
+  useEffect(() => {
+    if (userId?._id) {
+      requestPushPermission(userId._id);
+    }
+  }, [userId]);
 
   const processImageUrl = (image) => {
     const getFullUrl = (img) =>
@@ -723,9 +733,7 @@ const ProductPrice = ({ product }) => (
       <span className="original-price">₹{product.originalPrice}</span>
     )}
     {product.discount && (
-      <span className="discount-percentage">
-        ({product.discount}% off)
-      </span>
+      <span className="discount-percentage">({product.discount}% off)</span>
     )}
   </div>
 );

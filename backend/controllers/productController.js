@@ -5,6 +5,8 @@ import TechnicalDetails from "../models/technicalDetails.js";
 import { fileURLToPath } from "url";
 import Seller from "../models/sellerModel.js";
 import User from "../models/userModel.js";
+import UserSubscription from "../models/userSubscriptionModel.js";
+
 // import { attachActiveDeals } from "../utils/attachActiveDeals.js";
 import { getFeatureLimit } from "../helpers/checkSubscriptionFeature.js";
 
@@ -65,66 +67,61 @@ export const addProduct = async (req, res) => {
     const seller = await Seller.findOne({ user: req.userId });
     if (!seller) return res.status(404).json({ message: "Seller not found" });
 
-    const user = await User.findById(req.userId).populate("subscription");
-    console.log("User for product add time", user);
+    //  Step 1: Get ALL active, paid subscriptions for this user
+    const userSubs = await UserSubscription.find({
+      user: req.userId,
+      isActive: true,
+      paymentStatus: "paid",
+      endDate: { $gt: new Date() },
+    }).populate("subscription");
 
-    if (!user || !user.subscription || user.status !== "active") {
-      return res
-        .status(403)
-        .json({ message: "Subscription not active or user inactive" });
-    }
+    // console.log("Seller userSubs  ", userSubs);
 
-    const now = new Date();
-    if (
-      !user.subscriptionStartDate ||
-      !user.subscriptionEndDate ||
-      now < user.subscriptionStartDate ||
-      now > user.subscriptionEndDate
-    ) {
-      return res
-        .status(403)
-        .json({ message: "Subscription has expired or is not valid" });
-    }
-
-    const features = user.subscriptionFeatures || [];
-    console.log("Feature for subscriptions:", features);
-
-    // Product Limit Check
-    const productLimitFeature = features.find((f) =>
-      f.startsWith("productLimit:")
-    );
-    const limit = productLimitFeature
-      ? parseInt(productLimitFeature.split(":")[1])
-      : 0;
-
-    const currentProductCount = await Product.countDocuments({
-      seller: seller._id,
-    });
-    if (limit && currentProductCount >= limit) {
-      // Notify once
-      // await createNotification({
-      //   title: "Product Limit Reached",
-      //   message: `You've reached your product limit of ${limit}. Upgrade your plan to add more.`,
-      //   recipient: user._id,
-      //   type: "system",
-      //   relatedModel: "products",
-      //   priority: "high",
-      // });
-
+    //  If no active subscriptions found
+    if (!userSubs || userSubs.length === 0) {
       return res.status(403).json({
         success: false,
-        message: `Product limit (${limit}) reached. Upgrade plan to add more.`,
+        message: "No active subscription found. Please purchase a plan.",
       });
     }
 
-    // Featured (Premium) Product Check
-    // const wantsPremium = isPremium === true || isPremium === "true";
-    // if (wantsPremium && !features.includes("featuredListing")) {
-    //   return res
-    //     .status(403)
-    //     .json({ message: "Your plan does not allow premium listings." });
-    // }
-    const isPremium = features.includes("featuredListing");
+    //  Step 2: Combine limits from all subscriptions
+    let totalProductLimit = 0;
+    let totalProductsUsed = 0;
+    let allowPremium = false;
+
+    userSubs.forEach((sub) => {
+      // Parse included features from subscription
+      const featuresMap = {};
+      sub.subscription.includedFeatures.forEach((f) => {
+        const [key, value] = f.split(":");
+        featuresMap[key] = value ? parseInt(value) : true;
+      });
+
+      // Accumulate limits and usage
+      totalProductLimit += featuresMap["productLimit"] || 0;
+      // totalProductsUsed += sub.featuresUsed?.productsAdded || 0;
+      totalProductsUsed += sub.featuresUsed?.get("productsAdded") || 0;
+
+      // If any subscription allows featured listing
+      if (featuresMap["featuredListing"] === true) {
+        allowPremium = true;
+      }
+    });
+
+    // console.log("🟢 Subscription Info:");
+    // console.log("👉 totalProductLimit:", totalProductLimit);
+    // console.log("👉 totalProductsUsed:", totalProductsUsed);
+    // console.log("👉 allowPremium:", allowPremium);
+
+    //  Step 3: Validate total product usage
+    if (totalProductsUsed >= totalProductLimit) {
+      return res.status(403).json({
+        success: false,
+        message: `Product limit (${totalProductLimit}) reached. Upgrade your plan.`,
+      });
+    }
+
     // Optional technical details
     let techRef = null;
     if (technicalDetailsId) {
@@ -159,10 +156,28 @@ export const addProduct = async (req, res) => {
       image: images,
       variants: parsedVariants,
       technicalDetails: techRef,
-      isPremium,
+      isPremium: allowPremium,
     });
 
     await product.save();
+
+    //  Step 5: Distribute usage to first available subscription
+    const subToUpdate = userSubs.find((sub) => {
+      const limit = parseInt(
+        sub.subscription.includedFeatures
+          .find((f) => f.startsWith("productLimit:"))
+          ?.split(":")[1] || "0"
+      );
+      const used = sub.featuresUsed?.productsAdded || 0;
+      return used < limit;
+    });
+
+    if (subToUpdate) {
+      await UserSubscription.findByIdAndUpdate(subToUpdate._id, {
+        $inc: { "featuresUsed.productsAdded": 1 },
+        $set: { updatedAt: new Date() },
+      });
+    }
 
     return res.status(201).json({
       success: true,

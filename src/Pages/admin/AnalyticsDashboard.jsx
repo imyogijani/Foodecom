@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Line } from "react-chartjs-2";
+// import { requestPushPermission } from "../../utils/pushNotification";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -119,15 +120,26 @@ const AnalyticsDashboard = () => {
       },
     },
   };
+  // const userId = JSON.parse(localStorage.getItem("user"));
+  // console.log("User Login after userId for requestPushPermission", userId?._id);
 
+  // useEffect(() => {
+  //   if (userId?._id) {
+  //     requestPushPermission(userId._id);
+  //   }
+  // }, [userId]);
   return (
     <div className="p-4 sm:p-6">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Analytics Dashboard</h1>
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">
+        Analytics Dashboard
+      </h1>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
-          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Revenue</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">
+            Total Revenue
+          </h2>
           <p className="text-2xl sm:text-3xl font-bold text-green-600">
             ₹{salesData.totalRevenue.toLocaleString()}
           </p>
@@ -140,7 +152,9 @@ const AnalyticsDashboard = () => {
         </div>
 
         <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
-          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Orders</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">
+            Total Orders
+          </h2>
           <p className="text-2xl sm:text-3xl font-bold text-blue-600">
             {orderData.totalOrders.toLocaleString()}
           </p>
@@ -166,7 +180,9 @@ const AnalyticsDashboard = () => {
         </div>
 
         <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
-          <h2 className="text-lg sm:text-xl font-semibold mb-2">Total Products</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-2">
+            Total Products
+          </h2>
           <p className="text-2xl sm:text-3xl font-bold text-yellow-600">
             {productData.totalProducts.toLocaleString()}
           </p>
@@ -178,20 +194,30 @@ const AnalyticsDashboard = () => {
 
       {/* Top Selling Products Table */}
       <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md mb-6 sm:mb-8">
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Top Selling Products</h2>
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+          Top Selling Products
+        </h2>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white table-auto">
             <thead>
               <tr>
-                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">Product Name</th>
-                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">Sales Count</th>
-                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">Revenue</th>
+                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">
+                  Product Name
+                </th>
+                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">
+                  Sales Count
+                </th>
+                <th className="py-2 px-2 sm:px-4 border-b text-left text-xs sm:text-sm">
+                  Revenue
+                </th>
               </tr>
             </thead>
             <tbody>
               {productData.topSellingProducts.map((product) => (
                 <tr key={product.id} className="hover:bg-gray-50">
-                  <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">{product.name}</td>
+                  <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">
+                    {product.name}
+                  </td>
                   <td className="py-2 px-2 sm:px-4 border-b text-xs sm:text-sm">
                     {product.sales.toLocaleString()}
                   </td>
@@ -207,7 +233,9 @@ const AnalyticsDashboard = () => {
 
       {/* Revenue Chart */}
       <div className="bg-white p-3 sm:p-4 rounded-lg shadow-md">
-        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Revenue Over Time</h2>
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">
+          Revenue Over Time
+        </h2>
         <div className="h-64 sm:h-80">
           <Line data={revenueChartData} options={revenueChartOptions} />
         </div>

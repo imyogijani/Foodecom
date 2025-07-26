@@ -17,12 +17,36 @@ const router = express.Router();
 
 router.get("/subscriptions", getAllSubscriptions);
 
-router.use(authenticateToken, authorizeAdmin, isAdmin);
+// router.use();
 
-router.post("/subscriptions", createSubscription);
-router.get("/subscriptions/:id", getSubscriptionById);
+router.post(
+  "/subscriptions",
+  authenticateToken,
+  authorizeAdmin,
+  isAdmin,
+  createSubscription
+);
+router.get(
+  "/subscriptions/:id",
+  authenticateToken,
+  authorizeAdmin,
+  isAdmin,
+  getSubscriptionById
+);
 router.put("/subscriptions/:id", updateSubscription);
-router.delete("/subscriptions/:id", deleteSubscription);
-router.get("/plan-by-name/:planName", getSubscriptionByName);
+router.delete(
+  "/subscriptions/:id",
+  authenticateToken,
+  authorizeAdmin,
+  isAdmin,
+  deleteSubscription
+);
+router.get(
+  "/plan-by-name/:planName",
+  authenticateToken,
+  authorizeAdmin,
+  isAdmin,
+  getSubscriptionByName
+);
 
 export default router;

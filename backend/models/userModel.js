@@ -91,7 +91,7 @@ const userSchema = new mongoose.Schema(
     // shopImage: {
     //   type: String,
     //   default: null,
-    // },   
+    // },
     lastLogin: {
       type: Date,
       default: Date.now,
@@ -103,6 +103,7 @@ const userSchema = new mongoose.Schema(
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
+    pushToken: { type: String, default: null },
   },
   { timestamps: true }
 );

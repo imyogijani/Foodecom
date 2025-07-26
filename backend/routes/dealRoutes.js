@@ -12,7 +12,7 @@ import {
   deleteDeal,
   getFilteredDeals,
 } from "../controllers/dealController.js";
-import { authenticateToken, fetchUser } from "../middlewares/authMiddleware.js";
+import { authenticateToken,authorizeSeller, fetchUser } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -23,10 +23,10 @@ router.get("/active", getFilteredDeals); // New
 router.use(authenticateToken, fetchUser); // All routes below require authentication
 
 // Seller deal management
-router.post("/create", createDeal);
+router.post("/create",authorizeSeller, createDeal);
 router.get("/seller", getSellerDeals); // New -- seller?status=approved this use only status approved show
-router.patch("/:dealId", updateDeal);  // New 
-router.delete("/:dealId", deleteDeal);  
+router.patch("/:dealId",authorizeSeller, updateDeal);  // New 
+router.delete("/:dealId",authorizeSeller, deleteDeal);  
 router.post("/:dealId/end", endDeal);
 
 // Admin routes

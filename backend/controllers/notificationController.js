@@ -1,4 +1,53 @@
 import Notification from "../models/notificationModel.js";
+// import Notification from "../models/notificationModel.js";
+import User from "../models/userModel.js";
+import { sendEmail } from "../utils/sendEmail.js"; // tumhara nodemailer function
+import { sendPushNotification } from "../utils/sendPush.js"; // firebase wali file
+
+
+
+
+
+export const createNotification = async ({
+  recipient,
+  title,
+  message,
+  type = "system",
+  channels = ["inApp"],
+  ...rest
+}) => {
+  try {
+    const user = await User.findById(recipient);
+    const sentStatus = {};
+
+    // Email
+    if (channels.includes("email") && user?.email) {
+      sentStatus.email = await sendEmail(user.email, title, message);
+    }
+
+    // Push
+    if (channels.includes("push") && user?.pushToken) {
+      sentStatus.push = await sendPushNotification(user.pushToken, message);
+    }
+
+    // In-App (always saved to DB)
+    const notification = new Notification({
+      title,
+      message,
+      type,
+      recipient,
+      channels,
+      sent: sentStatus,
+      ...rest,
+    });
+
+    await notification.save();
+    return notification;
+  } catch (error) {
+    console.error("❌ Error creating notification:", error);
+    throw error;
+  }
+};
 
 // Get all notifications for a user
 export const getNotifications = async (req, res) => {
@@ -123,18 +172,19 @@ export const getUnreadCount = async (req, res) => {
 };
 
 // Create notification (utility function for internal use)
-export const createNotification = async (notificationData) => {
-  try {
-    const notification = new Notification(notificationData);
-    await notification.save();
-    return notification;
-  } catch (error) {
-    console.error("Error creating notification:", error);
-    throw error;
-  }
-};
+// export const createNotification = async (notificationData) => {
+//   try {
+//     const notification = new Notification(notificationData);
+//     await notification.save();
+//     return notification;
+//   } catch (error) {
+//     console.error("Error creating notification:", error);
+//     throw error;
+//   }
+// };
 
-// Utility: Send subscription plan change notification
+
+
 export const sendSubscriptionChangeNotification = async ({
   userId,
   oldPlan,
