@@ -37,8 +37,13 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // Memoized filtered products
+  const featuredProducts = React.useMemo(() => {
+    const featured = products.filter((p) => p.isPremium === true);
+    return featured.length > 0 ? featured : products;
+  }, [products]);
+
   const filteredProducts = React.useMemo(() => {
-    let filtered = products;
+    let filtered = featuredProducts;
 
     if (activeCategory) {
       filtered = filtered.filter((p) => p.category?.name === activeCategory);
@@ -63,7 +68,7 @@ export default function Home() {
     }
 
     return filtered;
-  }, [products, activeCategory, sortBy, searchQuery]);
+  }, [featuredProducts, activeCategory, sortBy, searchQuery]);
 
   const fetchDeals = React.useCallback(async () => {
     try {
