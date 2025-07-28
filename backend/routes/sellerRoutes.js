@@ -9,6 +9,8 @@ import {
   authorizeSeller,
 } from "../middlewares/authMiddleware.js";
 
+import { createCashfreeBeneficiary } from "../controllers/createCashfreeBeneficiary.js";
+
 const router = express.Router();
 
 router.get(
@@ -26,5 +28,12 @@ router.get(
 );
 
 router.get("/sale-data", authenticateToken, authorizeSeller, getSalesData);
+
+router.post(
+  "/create-cashfree-beneficiary",
+  authenticateToken,
+  authorizeSeller,
+  createCashfreeBeneficiary
+);
 
 export default router;
