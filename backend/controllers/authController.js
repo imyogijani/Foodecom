@@ -9,7 +9,7 @@ import Subscription from "../models/subscriptionModel.js"; // Changed to default
 import Seller from "../models/sellerModel.js";
 import Category from "../models/categoryModel.js";
 import crypto from "crypto";
-import { sendEmail } from "../utils/sendEmail.js";
+// import { sendEmail } from "../utils/sendEmail.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -603,11 +603,11 @@ export const forgotPassword = async (req, res) => {
     // Send this URL via email (use nodemailer or any email service)
     console.log("Send this reset link:", resetUrl);
 
-    await sendEmail({
-      to: email,
-      subject: "Reset Your Password",
-      html: `<p>Click <a href="${resetUrl}">here</a> to reset password.</p>`,
-    });
+    // await sendEmail({
+    //   to: email,
+    //   subject: "Reset Your Password",
+    //   html: `<p>Click <a href="${resetUrl}">here</a> to reset password.</p>`,
+    // });
 
     return res.status(200).json({
       success: true,

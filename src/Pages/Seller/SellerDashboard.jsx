@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from "react";
 import "./SellerDashboard.css";
+import {requestPushPermission} from "../../utils/pushNotification"
 import {
   LineChart,
   Line,
@@ -54,6 +55,15 @@ const SellerDashboard = () => {
 
     fetchAllData();
   }, []);
+
+    const userId = JSON.parse(localStorage.getItem("user"));
+    // console.log("User Login after userId for requestPushPermission", userId?._id);
+  
+    useEffect(() => {
+      if (userId?._id) {
+        requestPushPermission(userId._id);
+      }
+    }, [userId]);
   return (
     <div className="seller-dashboard">
       <SellerNotification />

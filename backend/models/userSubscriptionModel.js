@@ -40,6 +40,9 @@ const userSubscriptionSchema = new mongoose.Schema({
   },
 });
 
+userSubscriptionSchema.index({ user: 1, isActive: 1, endDate: -1 });
+
+
 const UserSubscription = mongoose.model(
   "UserSubscription",
   userSubscriptionSchema

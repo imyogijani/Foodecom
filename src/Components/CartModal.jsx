@@ -49,7 +49,7 @@ export default function CartModal({ open, onClose }) {
     // Check if user is logged in and is a customer
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (!token || !user || user.role !== "customer") {
+    if (!token || !user || user.role !== "client") {
       toast.warning("Please login as a customer to checkout.");
       onClose();
       navigate("/login", {

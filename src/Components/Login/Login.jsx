@@ -30,7 +30,7 @@ const Login = () => {
           if (response.data.success) {
             const userObj = JSON.parse(user);
             if (customerOnly) {
-              if (userObj.role === "customer") {
+              if (userObj.role === "client") {
                 navigate(returnUrl);
               } else {
                 setError(
@@ -104,7 +104,7 @@ const Login = () => {
         document.cookie = `token=${response.data.token}; path=/; max-age=86400; secure; samesite=strict`;
         toast.success("Welcome back! 👋");
         if (customerOnly) {
-          if (response.data.user.role === "customer") {
+          if (response.data.user.role === "client") {
             navigate(returnUrl);
           } else {
             setError(
