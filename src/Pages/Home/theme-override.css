@@ -339,62 +339,25 @@ h6 {
   }
 }
 
-.cards-grid-medium {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: 0 !important;
-  justify-content: flex-start !important;
-  align-items: flex-start !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
+/* --- Disabled conflicting styles for Home page category cards redesign --- */
+.cards-grid-medium,
 .card-base.card-medium.category-card,
 .card-medium.category-card,
-.category-card {
-  width: 120px !important;
-  min-width: 120px !important;
-  max-width: 120px !important;
-  min-height: 140px !important;
-  margin: 0 !important;
-}
-
-.category-card .card-image-container {
-  height: 60px !important;
-}
-
-.category-card .card-title {
-  font-size: 12px !important;
-}
-
+.category-card,
+.category-card .card-image-container,
+.category-card .card-title,
 .category-card .card-subtitle {
-  font-size: 10px !important;
+  all: unset !important;
+  /* Disabled previous !important rules to allow Home.css to take effect */
 }
+
 @media (max-width: 768px) {
-  .cards-grid-medium {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)) !important;
-    gap: 0 !important;
-    justify-content: flex-start !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+  .cards-grid-medium,
   .card-base.card-medium.category-card,
   .card-medium.category-card,
   .category-card {
-    width: 90px !important;
-    min-width: 90px !important;
-    max-width: 90px !important;
-    min-height: 100px !important;
-    margin: 0 !important;
-  }
-  .category-card .card-image-container {
-    height: 40px !important;
-  }
-  .category-card .card-title {
-    font-size: 10px !important;
-  }
-  .category-card .card-subtitle {
-    font-size: 9px !important;
+    all: unset !important;
   }
 }
+/* --- End override disable --- */
 

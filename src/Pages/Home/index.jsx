@@ -577,8 +577,35 @@ const CategoryCard = ({ category, setActiveCategory }) => (
   <div
     className="card-base category-card"
     onClick={() => setActiveCategory(category.name)}
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minWidth: 140,
+      maxWidth: 160,
+      height: 200,
+      borderRadius: 16,
+      boxShadow: "var(--shadow-soft)",
+      cursor: "pointer",
+      background: "var(--white)",
+      border: "2px solid var(--medium-gray)",
+      margin: "0",
+    }}
   >
-    <div className="card-image-container">
+    <div
+      className="card-image-container"
+      style={{
+        width: "100%",
+        height: 80,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "var(--light-gray)",
+        borderRadius: 12,
+        margin: "16px 0 8px 0",
+      }}
+    >
       <img
         src={
           category.image
@@ -587,6 +614,13 @@ const CategoryCard = ({ category, setActiveCategory }) => (
         }
         alt={category.name}
         className="card-image"
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: 10,
+          objectFit: "cover",
+          background: "#fff",
+        }}
         onError={(e) => {
           e.target.onerror = null;
           e.target.src =
@@ -594,10 +628,28 @@ const CategoryCard = ({ category, setActiveCategory }) => (
         }}
       />
     </div>
-    <div className="card-content">
-      <h3 className="category-card-title">{category.name}</h3>
-      <p className="card-subtitle">{category.shopCount || 0} stores</p>
-    </div>
+    <h3
+      className="category-card-title"
+      style={{
+        fontSize: "1.08rem",
+        fontWeight: 600,
+        margin: "0 0 4px 0",
+        textAlign: "center",
+      }}
+    >
+      {category.name}
+    </h3>
+    <p
+      className="card-subtitle"
+      style={{
+        fontSize: "0.98rem",
+        color: "var(--primary-color)",
+        textAlign: "center",
+        margin: 0,
+      }}
+    >
+      {category.shopCount || 0} stores
+    </p>
   </div>
 );
 
