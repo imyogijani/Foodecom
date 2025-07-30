@@ -331,10 +331,10 @@ export default function Home() {
     <div className="amazon-home-container">
       <HeroSection searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <TrustBadges />
-      <CategoriesSection
+      {/* /<CategoriesSection
         categories={categories}
         setActiveCategory={setActiveCategory}
-      />
+      /> */}
       <FilterSortBar
         categories={categories}
         activeCategory={activeCategory}
@@ -546,32 +546,32 @@ const TrustBadges = () => (
   </div>
 );
 
-const CategoriesSection = ({ categories, setActiveCategory }) => (
-  <div className="categories-section">
-    <h2
-      style={{
-        fontWeight: "bold",
-        borderBottom: "2px solid #232f3e",
-        paddingBottom: "10px",
-        display: "block",
-        width: "fit-content",
-        textAlign: "center",
-        margin: "0 auto 30px",
-      }}
-    >
-      Shop by Category
-    </h2>
-    <div className="cards-grid cards-grid-medium">
-      {categories.map((cat) => (
-        <CategoryCard
-          key={cat._id}
-          category={cat}
-          setActiveCategory={setActiveCategory}
-        />
-      ))}
-    </div>
-  </div>
-);
+// const CategoriesSection = ({ categories, setActiveCategory }) => (
+//   <div className="categories-section">
+//     <h2
+//       style={{
+//         fontWeight: "bold",
+//         borderBottom: "2px solid #232f3e",
+//         paddingBottom: "10px",
+//         display: "block",
+//         width: "fit-content",
+//         textAlign: "center",
+//         margin: "0 auto 30px",
+//       }}
+//     >
+//       Shop by Category
+//     </h2>
+//     <div className="cards-grid cards-grid-medium">
+//       {categories.map((cat) => (
+//         <CategoryCard
+//           key={cat._id}
+//           category={cat}
+//           setActiveCategory={setActiveCategory}
+//         />
+//       ))}
+//     </div>
+//   </div>
+// );
 
 const CategoryCard = ({ category, setActiveCategory }) => (
   <div
