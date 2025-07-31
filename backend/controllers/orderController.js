@@ -4,6 +4,11 @@ import Cart from "../models/cartModal.js";
 // import Order from "../models/orderModel.js";
 import Deal from "../models/dealModel.js";
 import Offer from "../models/offerModel.js";
+import Brand from "../models/brandModel.js";
+import Category from "../models/categoryModel.js";
+import mongoose from "mongoose";
+import Product from "../models/productModel.js";
+import Seller from "..//models/sellerModel.js";
 
 export const getUserOrders = async (req, res) => {
   try {
@@ -25,24 +30,85 @@ export const getUserOrders = async (req, res) => {
   }
 };
 
-export const getAllOrdersAdmin = async (req, res) => {
-  try {
-    const orders = await Order.find()
-      .populate("user", "name email")
-      .sort({ createdAt: -1 });
-    res.status(200).json({
-      success: true,
-      orders,
-    });
-  } catch (error) {
-    console.error("Error fetching all orders for admin:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error fetching all orders",
-      error: error.message,
-    });
+// export const getAllOrdersAdmin = async (req, res) => {
+//   try {
+//     const orders = await Order.find()
+//       .populate("user", "name email")
+//       .sort({ createdAt: -1 });
+//     res.status(200).json({
+//       success: true,
+//       orders,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching all orders for admin:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching all orders",
+//       error: error.message,
+//     });
+//   }
+// };
+// GET /admin/orders?page=1&limit=10&orderStatus=delivered&paymentStatus=paid&paymentMethod=UPI&fromDate=2024-07-01&toDate=2024-07-31
+// Authorization: Bearer <admin-token>
+
+export const getAllOrdersAdmin = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 20;
+  const skip = (page - 1) * limit;
+
+  const {
+    orderStatus,
+    paymentStatus,
+    paymentMethod,
+    fromDate,
+    toDate,
+    userId,
+  } = req.query;
+
+  const filter = {};
+
+  if (orderStatus) {
+    filter.orderStatus = orderStatus;
   }
-};
+
+  if (paymentStatus) {
+    filter.paymentStatus = paymentStatus;
+  }
+
+  if (paymentMethod) {
+    filter.paymentMethod = paymentMethod;
+  }
+
+  if (userId) {
+    filter.userId = userId;
+  }
+
+  if (fromDate && toDate) {
+    filter.createdAt = {
+      $gte: new Date(fromDate),
+      $lte: new Date(toDate),
+    };
+  }
+
+  const totalOrders = await Order.countDocuments(filter);
+
+  const orders = await Order.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate("userId", "name email") // fetch user info
+    .select(
+      "userId items totalAmount paymentMethod paymentStatus orderStatus isPaid createdAt"
+    );
+
+  res.status(200).json({
+    success: true,
+    totalOrders,
+    currentPage: page,
+    totalPages: Math.ceil(totalOrders / limit),
+    orders,
+  });
+});
 
 // export const createOrder = async (req, res) => {
 //   try {
@@ -240,19 +306,24 @@ export const createOrder = asyncHandler(async (req, res) => {
     cart.items.map(async (item) => {
       const product = item.productId;
 
-      let finalPrice = product.price;
-      const deal = await Deal.findOne({
-        product: product._id,
-        status: "active",
-        startDate: { $lte: new Date() },
-        endDate: { $gte: new Date() },
-      });
+      const quantity = item.quantity;
+      let finalPrice = product.finalPrice; // default: price after discount
 
-      if (deal) {
-        finalPrice = deal.dealPrice;
+      // If product has an activeDeal, check if it's still active
+      if (product.activeDeal) {
+        const now = new Date();
+
+        const deal = await Deal.findOne({
+          _id: product.activeDeal,
+          startDate: { $lte: now },
+          endDate: { $gte: now },
+        });
+
+        if (deal) {
+          finalPrice = deal.dealPrice;
+        }
       }
 
-      const quantity = item.quantity;
       const productTotal = finalPrice * quantity;
       subTotal += productTotal;
 
@@ -370,4 +441,259 @@ export const createOrder = asyncHandler(async (req, res) => {
   await cart.save();
 
   res.status(201).json({ success: true, order });
+});
+
+export const getOrderById = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const userId = req.user._id;
+
+  // Find order with product & seller populated
+  const order = await Order.findById(orderId)
+    .populate("userId", "name email")
+    .populate({
+      path: "items.productId",
+      select: "name image brand category",
+      populate: [
+        { path: "brand", model: Brand, select: "name logo" },
+        { path: "category", model: Category, select: "name" },
+      ],
+    })
+    .populate("items.sellerId", "shopName shopImage location")
+    .select("-__v");
+
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  // Access control (user only)
+  if (order.userId._id.toString() !== userId.toString()) {
+    return res
+      .status(403)
+      .json({ message: "Unauthorized to access this order" });
+  }
+
+  // Format clean Amazon-style response
+  const formattedOrder = {
+    orderId: order._id,
+    user: {
+      name: order.userId.name,
+      email: order.userId.email,
+    },
+    shippingAddress: order.shippingAddress,
+    payment: {
+      method: order.paymentMethod,
+      status: order.paymentStatus,
+      isPaid: order.isPaid,
+    },
+    coupon: {
+      code: order.couponCode,
+      discount: order.couponDiscount,
+      description: order.couponDescription,
+    },
+    orderStatus: order.orderStatus,
+    timestamps: {
+      createdAt: order.createdAt,
+      deliveredAt: order.deliveredAt,
+      cancelledAt: order.cancelledAt,
+    },
+    items: order.items.map((item) => ({
+      productId: item.productId._id,
+      name: item.productId.name,
+      image: item.productId.image?.[0] || null,
+      brand: item.productId.brand?.name || null,
+      brandLogo: item.productId.brand?.logo || null,
+      category: item.productId.category?.name || null,
+      quantity: item.quantity,
+      price: item.price,
+      finalPrice: item.finalPrice,
+      total: item.finalPrice * item.quantity,
+      deliveryStatus: item.deliveryStatus,
+      deliveryPartner: item.deliveryPartner,
+      trackingId: item.deliveryTrackingId,
+      expectedDeliveryDate: item.expectedDeliveryDate,
+      seller: {
+        shopName: item.sellerId?.shopName || "",
+        shopImage: item.sellerId?.shopImage || "",
+        location: item.sellerId?.location || "",
+      },
+    })),
+    pricing: {
+      subTotal: order.subTotal,
+      deliveryCharge: order.totalAmount - order.subTotal + order.couponDiscount,
+      discount: order.couponDiscount,
+      totalAmount: order.totalAmount,
+    },
+  };
+
+  res.status(200).json({
+    success: true,
+    order: formattedOrder,
+  });
+});
+
+export const getOrderTimeline = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const userId = req.user._id;
+
+  const order = await Order.findById(orderId).select("timeline userId");
+
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  // Allow user access only to their own order
+  if (order.userId.toString() !== userId.toString()) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  res.status(200).json({
+    success: true,
+    timeline: order.timeline,
+  });
+});
+
+export const getSellerOrderHistory = asyncHandler(async (req, res) => {
+  const userId = req.userId;
+
+  // ✅ Step 1: Find seller by userId
+  const seller = await Seller.findOne({ user: userId });
+  if (!seller) {
+    return res.status(404).json({ message: "Seller not found" });
+  }
+
+  const sellerId = seller._id;
+
+  // ✅ Step 2: Build filters
+  const {
+    page = 1,
+    limit = 10,
+    orderStatus,
+    paymentStatus,
+    productId,
+    from,
+    to,
+  } = req.query;
+
+  const skip = (page - 1) * limit;
+
+  // ✅ Step 3: Seller's product IDs
+  const sellerProducts = await Product.find({ seller: sellerId }).select("_id");
+  const productIds = sellerProducts.map((p) => p._id);
+
+  const matchStage = {
+    "items.productId": { $in: productIds },
+  };
+
+  if (orderStatus) {
+    matchStage.orderStatus = orderStatus;
+  }
+
+  if (paymentStatus) {
+    matchStage.paymentStatus = paymentStatus;
+  }
+
+  if (productId && mongoose.Types.ObjectId.isValid(productId)) {
+    matchStage["items.productId"] = mongoose.Types.ObjectId(productId);
+  }
+
+  if (from || to) {
+    matchStage.createdAt = {};
+    if (from) matchStage.createdAt.$gte = new Date(from);
+    if (to) matchStage.createdAt.$lte = new Date(to);
+  }
+
+  // ✅ Step 4: Total count
+  const totalOrders = await Order.countDocuments(matchStage);
+
+  // ✅ Step 5: Fetch orders
+  const orders = await Order.find(matchStage)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit))
+    .populate("userId", "name email")
+    .populate("items.productId", "name image")
+    .select("userId items totalAmount paymentStatus orderStatus createdAt");
+
+  // ✅ Step 6: Format per seller
+  const formattedOrders = [];
+
+  for (const order of orders) {
+    const filteredItems = order.items.filter((item) =>
+      productIds.some((pid) => pid.toString() === item.productId._id.toString())
+    );
+
+    if (filteredItems.length === 0) continue; // skip irrelevant orders
+
+    const formattedOrder = {
+      orderId: order._id,
+      customer: {
+        name: order.userId?.name || "N/A",
+        email: order.userId?.email || "N/A",
+      },
+      paymentStatus: order.paymentStatus,
+      orderStatus: order.orderStatus,
+      createdAt: order.createdAt,
+      items: filteredItems.map((item) => ({
+        productId: item.productId._id,
+        productName: item.productId.name,
+        productImage: item.productId.image?.[0],
+        quantity: item.quantity,
+        finalPrice: item.finalPrice,
+        total: item.finalPrice * item.quantity,
+        deliveryStatus: item.deliveryStatus,
+      })),
+    };
+
+    formattedOrders.push(formattedOrder);
+  }
+  res.status(200).json({
+    success: true,
+    totalOrders,
+    currentPage: parseInt(page),
+    totalPages: Math.ceil(totalOrders / limit),
+    orders: formattedOrders,
+  });
+});
+
+// Cancel order by user
+export const cancelOrder = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const userId = req.userId;
+
+  const order = await Order.findById(orderId);
+
+  if (!order) return res.status(404).json({ message: "Order not found" });
+
+  if (order.userId.toString() !== userId.toString())
+    return res.status(403).json({ message: "Unauthorized" });
+
+  if (order.orderStatus === "cancelled")
+    return res.status(400).json({ message: "Order already cancelled" });
+
+  if (["shipped", "in_transit", "delivered"].includes(order.orderStatus)) {
+    return res
+      .status(400)
+      .json({ message: "Cannot cancel after shipping has started" });
+  }
+
+  // ✅ Handle Refund if Paid Online
+  let refundInfo = null;
+  if (order.paymentStatus === "paid" && order.paymentMethod !== "COD") {
+    // TODO: call refund API here (Cashfree/Stripe etc.)
+    refundInfo = {
+      refundStatus: "initiated",
+      refundedAt: new Date(),
+    };
+    // You could also store refund txn ID here
+  }
+
+  // ✅ Mark cancelled
+  order.orderStatus = "cancelled";
+  order.cancelledAt = new Date();
+  await order.save();
+
+  res.status(200).json({
+    message: "Order cancelled successfully",
+    refund: refundInfo,
+  });
 });

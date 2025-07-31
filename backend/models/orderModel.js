@@ -197,6 +197,24 @@ const orderSchema = new mongoose.Schema(
       enum: ["processing", "confirmed", "in_transit", "delivered", "cancelled"],
       default: "processing",
     },
+    timeline: [
+      {
+        status: {
+          type: String,
+          enum: [
+            "processing",
+            "confirmed",
+            "in_transit",
+            "delivered",
+            "cancelled",
+          ],
+        },
+        time: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     paymentId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Payment",

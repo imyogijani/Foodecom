@@ -88,6 +88,22 @@ const paymentSchema = new mongoose.Schema(
       ref: "orders",
       required: true,
     },
+    planId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subscription",
+      required: false,
+    },
+    billingCycle: {
+      type: String,
+      enum: ["monthly", "yearly"],
+    },
+
+    purpose: {
+      type: String,
+      enum: ["order", "subscription"],
+      required: true,
+    },
+
     amount: {
       type: Number,
       required: true,

@@ -19,27 +19,35 @@ export const checkoutSummary = asyncHandler(async (req, res) => {
     cart.items.map(async (item) => {
       const product = item.productId;
 
-      let finalPrice = product.price;
-      const deal = await Deal.findOne({
-        product: product._id,
-        status: "active",
-        startDate: { $lte: new Date() },
-        endDate: { $gte: new Date() },
-      });
+      const quantity = item.quantity;
+      let finalPrice = product.finalPrice; // default: price after discount
 
-      if (deal) {
-        finalPrice = deal.dealPrice;
+      // If product has an activeDeal, check if it's still active
+      if (product.activeDeal) {
+        const now = new Date();
+
+        const deal = await Deal.findOne({
+          _id: product.activeDeal,
+          startDate: { $lte: now },
+          endDate: { $gte: now },
+        });
+
+        if (deal) {
+          finalPrice = deal.dealPrice;
+        }
       }
 
-      const quantity = item.quantity;
       const productTotal = finalPrice * quantity;
       subTotal += productTotal;
 
       return {
+        product,
         productId: product._id,
         sellerId: product.seller,
         quantity,
+        price: product.price,
         finalPrice,
+        productTotal,
       };
     })
   );

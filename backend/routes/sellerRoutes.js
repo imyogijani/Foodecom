@@ -3,6 +3,7 @@ import {
   getSellerDashboard,
   getRecentOrdersForSeller,
   getSalesData,
+  getSellerOrderHistory,
 } from "../controllers/sellerController.js";
 import {
   authenticateToken,
@@ -28,6 +29,12 @@ router.get(
 );
 
 router.get("/sale-data", authenticateToken, authorizeSeller, getSalesData);
+router.get(
+  "/seller-history",
+  authenticateToken,
+  authorizeSeller,
+  getSellerOrderHistory
+);
 
 router.post(
   "/create-cashfree-beneficiary",

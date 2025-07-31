@@ -4,43 +4,20 @@ import Order from "../models/orderModel.js";
 import Seller from "../models/sellerModel.js";
 import { createCashfreeOrder, verifyWebhook } from "../utils/cashfreeAPI.js";
 import { settleOrderPayout } from "./payoutController.js"; // Import the payout function
-
-
-// export const initiatePayment = asyncHandler(async (req, res) => {
-//   const { orderId } = req.body;
-//   const order = await Order.findById(orderId);
-//   if (!order) return res.status(404).json({ message: "Order not found" });
-
-//   const cfOrder = await createCashfreeOrder({
-//     orderId: order._id.toString(),
-//     amount: order.totalAmount,
-//     currency: order.currency || "INR",
-//     customer: { id: req.user._id.toString(), email: req.user.email, phone: req.user.phone }
-//   });
-
-//   const payment = await Payment.create({
-//     userId: req.user._id,
-//     orderId: order._id,
-//     amount: order.totalAmount,
-//     method: req.body.method,
-//     gateway: "Cashfree",
-//     providerOrderId: cfOrder.id
-//   });
-
-//   res.json({ paymentSessionId: cfOrder.session_id, amount: order.totalAmount });
-// });
-// controllers/paymentController.js
+import Subscription from "../models/sellerModel.js";
+import { assignSubscriptionToUser } from "../utils/subscriptionHelper.js";
 
 export const initiatePayment = asyncHandler(async (req, res) => {
   const { orderId, method } = req.body;
   const order = await Order.findById(orderId).populate("items.productId");
+  console.log("User:", req.userId); //  Add this
 
   if (!order) return res.status(404).json({ message: "Order not found" });
 
   if (method === "COD") {
     // just create record and exit
     const payment = await Payment.create({
-      userId: req.user._id,
+      userId: req.userId,
       orderId: order._id,
       amount: order.totalAmount,
       method: "COD",
@@ -48,6 +25,12 @@ export const initiatePayment = asyncHandler(async (req, res) => {
       status: "pending",
     });
 
+    order.paymentMethod = "COD";
+    order.paymentStatus = "pending";
+    order.isPaid = false;
+    order.timeline.push({ status: "processing" });
+    order.paymentId = payment._id;
+    await order.save();
     return res.json({ cod: true, message: "COD order initiated" });
   }
 
@@ -55,15 +38,16 @@ export const initiatePayment = asyncHandler(async (req, res) => {
   const sellerSplitMap = {}; // { sellerId: totalAmount }
 
   for (const item of order.items) {
-    const sellerId = item.productId.sellerId.toString();
-    sellerSplitMap[sellerId] =
-      (sellerSplitMap[sellerId] || 0) + item.totalPrice;
+    const sellerId = item.productId.seller.toString();
+    const price = item.totalPrice || item.finalPrice * item.quantity;
+
+    sellerSplitMap[sellerId] = (sellerSplitMap[sellerId] || 0) + price;
   }
 
   const splits = await Promise.all(
     Object.entries(sellerSplitMap).map(async ([sellerId, amt]) => {
       const seller = await Seller.findById(sellerId);
-      if (!seller || !seller.cashfreeVendorId)
+      if (!seller || !seller.cashfreeBeneId)
         throw new Error("Seller not onboarded");
       return {
         vendor_id: seller.cashfreeBeneId,
@@ -71,7 +55,13 @@ export const initiatePayment = asyncHandler(async (req, res) => {
       };
     })
   );
-
+  console.log("Splits:", splits);
+  console.log(
+    "user email and phone",
+    req.user.email,
+    req.user.phone,
+    req.user._id
+  );
   //  Create Cashfree Order with splits
   const cfOrder = await createCashfreeOrder({
     orderId: order._id.toString(),
@@ -120,10 +110,12 @@ export const paymentWebhook = asyncHandler(async (req, res) => {
     order.paymentStatus = "paid";
     order.isPaid = true;
     order.orderStatus = "confirmed";
-      await order.save();
-      
-      
-  //  Trigger async seller payout
+    // order.orderStatus = "confirmed";
+    order.timeline.push({ status: "confirmed", time: new Date() });
+    // await order.save();
+    await order.save();
+
+    //  Trigger async seller payout
 
     await settleOrderPayout(
       { params: { orderId: order._id } },
@@ -135,4 +127,82 @@ export const paymentWebhook = asyncHandler(async (req, res) => {
   }
 
   res.status(200).send("Webhook handled");
+});
+
+export const initiateSubscriptionPayment = asyncHandler(async (req, res) => {
+  const { planId, billingCycle } = req.body;
+  const user = req.user;
+
+  const subscription = await Subscription.findById(planId);
+  if (!subscription) {
+    return res.status(404).json({ message: "Plan not found" });
+  }
+
+  const amount =
+    billingCycle === "monthly"
+      ? parseFloat(subscription.pricing.monthly)
+      : parseFloat(subscription.pricing.yearly);
+
+  const orderId = `sub_${Date.now()}`;
+
+  const order = await createCashfreeOrder({
+    orderId,
+    amount,
+    currency: "INR",
+    customer: {
+      customer_id: user._id.toString(),
+      customer_email: user.email,
+      customer_phone: user.phone,
+    },
+  });
+
+  await Payment.create({
+    userId: user._id,
+    planId,
+    billingCycle,
+    purpose: "subscription",
+    amount,
+    currency: "INR",
+    method: "Online",
+    gateway: "Cashfree",
+    providerOrderId: order.order_id,
+    status: "pending",
+  });
+
+  res.json({
+    success: true,
+    paymentSessionId: order.payment_session_id,
+    orderId: order.order_id,
+    amount,
+  });
+});
+
+export const subscriptionWebhook = asyncHandler(async (req, res) => {
+  const valid = verifyWebhook(req.headers, req.body);
+  if (!valid) return res.status(400).send("Invalid signature");
+
+  const { order_id, order_status, payment_id } = req.body;
+
+  const payment = await Payment.findOne({ providerOrderId: order_id });
+  if (!payment) return res.status(404).send("Payment not found");
+
+  if (order_status === "PAID") {
+    payment.status = "success";
+    payment.providerPaymentId = payment_id;
+    payment.paidAt = new Date();
+    await payment.save();
+
+    // Assign subscription to user after payment
+    await assignSubscriptionToUser(
+      payment.userId,
+      payment.planId,
+      payment.billingCycle,
+      "paid"
+    );
+  } else {
+    payment.status = "failed";
+    await payment.save();
+  }
+
+  res.status(200).send("OK");
 });
