@@ -1,6 +1,11 @@
 // src/firebase/firebase.js
 import { initializeApp } from "firebase/app";
 import { getMessaging } from "firebase/messaging";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBNBplIKMtXjzaHjSg1HzF1JST60XYTh7g",
@@ -12,5 +17,8 @@ const firebaseConfig = {
 
 const firebaseApp = initializeApp(firebaseConfig);
 const messaging = getMessaging(firebaseApp);
+const auth = getAuth(firebaseApp);
 
 export { messaging };
+
+export { auth, createUserWithEmailAndPassword, sendEmailVerification };

@@ -4,6 +4,12 @@ import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axios from "../../utils/axios";
 import {
+  auth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "../../firebase/firebase";
+
+import {
   FaEnvelope,
   FaLock,
   FaUser,
@@ -72,6 +78,15 @@ const Register = () => {
     }
 
     try {
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+
+      // Send verification email
+      await sendEmailVerification(userCred.user);
+      toast.success("Email verification sent. Please check your inbox.");
       // Before sending formData to backend
       const submitData = {
         ...formData,
@@ -86,10 +101,31 @@ const Register = () => {
         toast.error(response.data.message);
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || "Registration failed. Please try again.";
-      setError(errorMessage);
-      toast.error(errorMessage);
+      // const errorMessage =
+      //   err.response?.data?.message || "Registration failed. Please try again.";
+      // setError(errorMessage);
+      // toast.error(errorMessage);
+      console.error("Firebase registration error:", err);
+
+      const errorCode = err.code;
+
+      if (errorCode === "auth/email-already-in-use") {
+        toast.error("This email is already registered. Try logging in.");
+      } else if (errorCode === "auth/invalid-email") {
+        toast.error("Invalid email address. Please check your email.");
+      } else if (errorCode === "auth/weak-password") {
+        toast.error("Password is too weak. Must be at least 6 characters.");
+      } else if (errorCode === "auth/network-request-failed") {
+        toast.error("Network error. Please check your connection.");
+      } else if (errorCode === "auth/operation-not-allowed") {
+        toast.error(
+          "Email/password sign-up is not allowed. Enable it in Firebase Authentication settings."
+        );
+      } else {
+        toast.error(
+          `Registration failed: ${err.message || "Try again later."}`
+        );
+      }
     } finally {
       setIsLoading(false);
     }
