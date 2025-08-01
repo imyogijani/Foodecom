@@ -42,6 +42,7 @@ export const initiatePayment = asyncHandler(async (req, res) => {
     const price = item.totalPrice || item.finalPrice * item.quantity;
 
     sellerSplitMap[sellerId] = (sellerSplitMap[sellerId] || 0) + price;
+    console.log("Seller Id ", sellerId);
   }
 
   const splits = await Promise.all(
@@ -82,6 +83,7 @@ export const initiatePayment = asyncHandler(async (req, res) => {
     amount: order.totalAmount,
     method,
     gateway: "Cashfree",
+    // purpose:"order",
     providerOrderId: cfOrder.order_id,
   });
 
@@ -205,4 +207,36 @@ export const subscriptionWebhook = asyncHandler(async (req, res) => {
   }
 
   res.status(200).send("OK");
+});
+
+// After deliveried boy conform status COD recive after settel payment seller by admin or delievry partener any webhook use to automatic
+// PATCH /api/payment/mark-cod-paid/:orderId
+export const markCodAsPaid = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+
+  const order = await Order.findById(orderId);
+  if (!order || order.paymentMethod !== "COD")
+    return res.status(400).json({ message: "Invalid COD order" });
+
+  const payment = await Payment.findOne({ orderId: order._id });
+  if (!payment) return res.status(404).json({ message: "Payment not found" });
+
+  //  Update status
+  payment.status = "success";
+  payment.paidAt = new Date();
+  await payment.save();
+
+  order.paymentStatus = "paid";
+  order.isPaid = true;
+  order.orderStatus = "confirmed";
+  order.timeline.push({ status: "confirmed", time: new Date() });
+  await order.save();
+
+  //  Trigger payout now
+  await settleOrderPayout(
+    { params: { orderId: order._id } },
+    { status: () => ({ json: () => {} }) }
+  );
+
+  res.json({ success: true, message: "COD marked as paid and payout done" });
 });

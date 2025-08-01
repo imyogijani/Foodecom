@@ -101,7 +101,7 @@ const paymentSchema = new mongoose.Schema(
     purpose: {
       type: String,
       enum: ["order", "subscription"],
-      required: true,
+      // required: true,
     },
 
     amount: {

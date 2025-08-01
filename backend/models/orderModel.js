@@ -1,109 +1,3 @@
-// import mongoose from "mongoose";
-
-// const orderSchema = new mongoose.Schema(
-//   {
-//     user: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       ref: "users",
-//       required: true,
-//     },
-//     items: [
-//       {
-//         name: { type: String, required: true },
-//         price: { type: Number, required: true },
-//         quantity: { type: Number, required: true },
-//         image: { type: String },
-//       },
-//     ],
-//     total: {
-//       type: Number,
-//       required: true,
-//     },
-//     status: {
-//       type: String,
-//       enum: ["pending", "processing", "completed", "cancelled"],
-//       default: "pending",
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// const Order = mongoose.model("orders", orderSchema);
-// export default Order;
-
-// import mongoose from "mongoose";
-
-// const orderSchema = new mongoose.Schema({
-//   user: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
-//   products: [
-//     {
-//       product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-//       quantity: Number,
-//       price: Number,
-//       dealApplied: Boolean,
-//     },
-//   ],
-//   totalAmount: Number,
-//   status: {
-//     type: String,
-//     enum: ["pending", "paid", "cancelled", "failed"],
-//     default: "pending",
-//   },
-//   paymentId: String, // Razorpay/Stripe ID
-//   address: String,
-//   createdAt: { type: Date, default: Date.now },
-// });
-
-// export default mongoose.model("Order", orderSchema);
-
-// models/orderModel.js
-// import mongoose from "mongoose";
-
-// const orderItemSchema = new mongoose.Schema({
-//   productId: { type: mongoose.Schema.Types.ObjectId, ref: "products", required: true },
-//   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "Seller", required: true },
-//   quantity: { type: Number, required: true },
-//   price: { type: Number, required: true }, // snapshot at order time
-//   discount: { type: Number, default: 0 }, // applied deal/offer
-//   finalPrice: { type: Number, required: true }, // after discount
-// });
-
-// const orderSchema = new mongoose.Schema(
-//   {
-//     userId: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
-//     items: [orderItemSchema],
-//     shippingAddress: {
-//       fullName: String,
-//       addressLine: String,
-//       city: String,
-//       state: String,
-//       pincode: String,
-//       phone: String,
-//     },
-//     totalAmount: { type: Number, required: true },
-//     paymentMethod: {
-//       type: String,
-//       enum: ["cash_on_delivery", "cashfree_upi", "cashfree_qr"],
-//       default: "cash_on_delivery",
-//     },
-//     paymentStatus: {
-//       type: String,
-//       enum: ["pending", "paid", "failed"],
-//       default: "pending",
-//     },
-//     orderStatus: {
-//       type: String,
-//       enum: ["processing", "shipped", "delivered", "cancelled"],
-//       default: "processing",
-//     },
-//     paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "payments", default: null },
-//   },
-//   { timestamps: true }
-// );
-
-// const Order = mongoose.model("orders", orderSchema);
-// export default Order;
-
 import mongoose from "mongoose";
 
 // Per Item Schema — supports multi-seller orders
@@ -130,6 +24,7 @@ const orderItemSchema = new mongoose.Schema({
       "out_for_delivery",
       "delivered",
       "cancelled",
+      "returned",
     ],
     default: "processing",
   },
@@ -139,11 +34,18 @@ const orderItemSchema = new mongoose.Schema({
     default: "Manual",
   },
   deliveryTrackingId: { type: String, default: null }, // AWB or tracking number
+  deliveryTrackingURL: { type: String, default: null }, // user can click and track
   deliveryCharge: { type: Number, default: 0 },
   expectedDeliveryDate: {
     type: Date,
     default: null,
   },
+
+  // 🎯 Return/Cancel Info
+  isReturnRequested: { type: Boolean, default: false },
+  isReturned: { type: Boolean, default: false },
+  returnedAt: { type: Date, default: null },
+  cancelledAt: { type: Date, default: null },
   dealId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "deals", // or "offers" if you use separate offer model
@@ -258,6 +160,11 @@ const orderSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+orderSchema.index({ userId: 1 });
+orderSchema.index({ "items.sellerId": 1 });
+orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ createdAt: -1 });
 
 const Order = mongoose.model("orders", orderSchema);
 export default Order;

@@ -13,10 +13,7 @@ export async function expireDeals() {
       path: path.join(path.dirname(fileURLToPath(import.meta.url)), "../.env"),
     });
     const MONGO_URL = process.env.MONGO_URL;
-    await mongoose.connect(MONGO_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGO_URL);
   }
   const now = new Date();
   // Find deals that are approved or active and endDate < now

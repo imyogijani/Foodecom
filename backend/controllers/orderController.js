@@ -10,25 +10,25 @@ import mongoose from "mongoose";
 import Product from "../models/productModel.js";
 import Seller from "..//models/sellerModel.js";
 
-export const getUserOrders = async (req, res) => {
-  try {
-    const orders = await Order.find({ user: req.userId }).sort({
-      createdAt: -1,
-    });
+// export const getUserOrders = async (req, res) => {
+//   try {
+//     const orders = await Order.find({ user: req.userId }).sort({
+//       createdAt: -1,
+//     });
 
-    res.status(200).json({
-      success: true,
-      orders,
-    });
-  } catch (error) {
-    console.error("Error fetching user orders:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error fetching orders",
-      error: error.message,
-    });
-  }
-};
+//     res.status(200).json({
+//       success: true,
+//       orders,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user orders:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Error fetching orders",
+//       error: error.message,
+//     });
+//   }
+// };
 
 // export const getAllOrdersAdmin = async (req, res) => {
 //   try {
@@ -109,172 +109,6 @@ export const getAllOrdersAdmin = asyncHandler(async (req, res) => {
     orders,
   });
 });
-
-// export const createOrder = async (req, res) => {
-//   try {
-//     const { items, total } = req.body;
-//     if (!items || !Array.isArray(items) || items.length === 0) {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "No items in order" });
-//     }
-//     if (!total || typeof total !== "number") {
-//       return res
-//         .status(400)
-//         .json({ success: false, message: "Total amount required" });
-//     }
-//     const order = new Order({
-//       user: req.userId,
-//       items,
-//       total,
-//       status: "pending",
-//     });
-//     await order.save();
-//     res.status(201).json({ success: true, order });
-//   } catch (error) {
-//     console.error("Error creating order:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Error creating order",
-//       error: error.message,
-//     });
-//   }
-// };
-
-// controllers/orderController.js
-
-// export const createOrder = asyncHandler(async (req, res) => {
-//   const userId = req.user._id;
-//   const {
-//     shippingAddress,
-//     paymentMethod,
-//     deliveryPartner = "Manual",
-//     appliedCoupon = null, // { code, discount, offerId, description }
-//   } = req.body;
-
-//   if (!shippingAddress || !paymentMethod) {
-//     return res.status(400).json({ message: "Missing required fields." });
-//   }
-
-//   const cart = await Cart.findOne({ userId }).populate("items.productId");
-//   if (!cart || cart.items.length === 0) {
-//     return res.status(400).json({ message: "Cart is empty." });
-//   }
-
-//   let subTotal = 0;
-//   let deliveryCharge = 50;
-
-//   const items = await Promise.all(
-//     cart.items.map(async (item) => {
-//       const product = item.productId;
-
-//       let finalPrice = product.price;
-//       const deal = await Deal.findOne({
-//         product: product._id,
-//         status: "active",
-//         startDate: { $lte: new Date() },
-//         endDate: { $gte: new Date() },
-//       });
-
-//       if (deal) {
-//         finalPrice = deal.dealPrice;
-//       }
-
-//       const quantity = item.quantity;
-//       const productTotal = finalPrice * quantity;
-//       subTotal += productTotal;
-
-//       return {
-//         productId: product._id,
-//         sellerId: product.seller,
-//         quantity,
-//         price: product.price,
-//         finalPrice,
-//         deliveryStatus: "processing",
-//         deliveryPartner,
-//         deliveryCharge: 0,
-//         commission: 0, // fill later if needed
-//       };
-//     })
-//   );
-
-//  let couponDiscount = 0;
-// let couponCode = null;
-// let couponDescription = null;
-// let offerId = null;
-
-// if (appliedCoupon && appliedCoupon.code) {
-//   const offer = await Offer.findOne({
-//     code: appliedCoupon.code,
-//     isActive: true,
-//     startDate: { $lte: new Date() },
-//     endDate: { $gte: new Date() },
-//   });
-
-//   if (!offer) {
-//     return res.status(400).json({ message: "Invalid or expired coupon." });
-//   }
-
-//   if (offer.usageLimit > 0 && offer.usedCount >= offer.usageLimit) {
-//     return res.status(400).json({ message: "Coupon usage limit reached." });
-//   }
-
-//   // Recalculate subTotal here or reuse previous calculation
-//   if (offer.minCartValue && subTotal < offer.minCartValue) {
-//     return res.status(400).json({
-//       message: `Minimum cart value ₹${offer.minCartValue} required to use this coupon.`,
-//     });
-//   }
-
-//   // Apply discount logic again (flat or percentage)
-//   let validSubTotal = subTotal; // or recalculate only on valid items if needed
-//   if (offer.type !== "CART") {
-//     // Optional: filter valid items
-//     // You can reuse logic from `applyCoupon`
-//   }
-
-//   if (offer.discountType === "FLAT") {
-//     couponDiscount = offer.discountValue;
-//   } else if (offer.discountType === "PERCENTAGE") {
-//     couponDiscount = Math.floor((validSubTotal * offer.discountValue) / 100);
-//     if (offer.maxDiscountAmount && couponDiscount > offer.maxDiscountAmount) {
-//       couponDiscount = offer.maxDiscountAmount;
-//     }
-//   }
-
-//   // ✅ Save to order
-//   couponCode = offer.code;
-//   couponDescription = offer.description || "";
-//   offerId = offer._id;
-// }
-
-//   const totalAmount = subTotal + deliveryCharge - couponDiscount;
-
-//   const order = new Order({
-//     userId,
-//     items,
-//     shippingAddress,
-//     subTotal,
-//     totalAmount,
-//     paymentMethod,
-//     paymentStatus: paymentMethod === "COD" ? "pending" : "pending",
-//     isPaid: false,
-
-//     // Coupon tracking
-//     couponCode,
-//     couponDiscount,
-//     couponDescription,
-//     offerId,
-//   });
-
-//   await order.save();
-
-//   // Empty cart
-//   cart.items = [];
-//   await cart.save();
-
-//   res.status(201).json({ success: true, order });
-// });
 
 export const createOrder = asyncHandler(async (req, res) => {
   const userId = req.user._id;
@@ -445,11 +279,11 @@ export const createOrder = asyncHandler(async (req, res) => {
 
 export const getOrderById = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
-  const userId = req.user._id;
+  const userId = req.userId;
 
   // Find order with product & seller populated
   const order = await Order.findById(orderId)
-    .populate("userId", "name email")
+    .populate("userId", "names email")
     .populate({
       path: "items.productId",
       select: "name image brand category",
@@ -476,7 +310,7 @@ export const getOrderById = asyncHandler(async (req, res) => {
   const formattedOrder = {
     orderId: order._id,
     user: {
-      name: order.userId.name,
+      name: order.userId.names,
       email: order.userId.email,
     },
     shippingAddress: order.shippingAddress,
@@ -555,7 +389,7 @@ export const getOrderTimeline = asyncHandler(async (req, res) => {
 export const getSellerOrderHistory = asyncHandler(async (req, res) => {
   const userId = req.userId;
 
-  // ✅ Step 1: Find seller by userId
+  //  Step 1: Find seller by userId
   const seller = await Seller.findOne({ user: userId });
   if (!seller) {
     return res.status(404).json({ message: "Seller not found" });
@@ -563,7 +397,7 @@ export const getSellerOrderHistory = asyncHandler(async (req, res) => {
 
   const sellerId = seller._id;
 
-  // ✅ Step 2: Build filters
+  //  Step 2: Build filters
   const {
     page = 1,
     limit = 10,
@@ -576,7 +410,7 @@ export const getSellerOrderHistory = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
-  // ✅ Step 3: Seller's product IDs
+  //  Step 3: Seller's product IDs
   const sellerProducts = await Product.find({ seller: sellerId }).select("_id");
   const productIds = sellerProducts.map((p) => p._id);
 
@@ -602,19 +436,20 @@ export const getSellerOrderHistory = asyncHandler(async (req, res) => {
     if (to) matchStage.createdAt.$lte = new Date(to);
   }
 
-  // ✅ Step 4: Total count
+  //  Step 4: Total count
   const totalOrders = await Order.countDocuments(matchStage);
 
-  // ✅ Step 5: Fetch orders
+  //  Step 5: Fetch orders
   const orders = await Order.find(matchStage)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(Number(limit))
-    .populate("userId", "name email")
+    .populate("userId", "names email")
     .populate("items.productId", "name image")
     .select("userId items totalAmount paymentStatus orderStatus createdAt");
 
-  // ✅ Step 6: Format per seller
+  //  Step 6: Format per seller
+  // Step 6: Group products by order
   const formattedOrders = [];
 
   for (const order of orders) {
@@ -624,15 +459,21 @@ export const getSellerOrderHistory = asyncHandler(async (req, res) => {
 
     if (filteredItems.length === 0) continue; // skip irrelevant orders
 
+    const orderTotal = filteredItems.reduce(
+      (sum, item) => sum + item.finalPrice * item.quantity,
+      0
+    );
+
     const formattedOrder = {
       orderId: order._id,
       customer: {
-        name: order.userId?.name || "N/A",
+        name: order.userId?.names || "N/A",
         email: order.userId?.email || "N/A",
       },
       paymentStatus: order.paymentStatus,
       orderStatus: order.orderStatus,
       createdAt: order.createdAt,
+      orderTotal: parseFloat(orderTotal.toFixed(2)),
       items: filteredItems.map((item) => ({
         productId: item.productId._id,
         productName: item.productId.name,
@@ -646,6 +487,7 @@ export const getSellerOrderHistory = asyncHandler(async (req, res) => {
 
     formattedOrders.push(formattedOrder);
   }
+
   res.status(200).json({
     success: true,
     totalOrders,
@@ -679,7 +521,6 @@ export const cancelOrder = asyncHandler(async (req, res) => {
   // ✅ Handle Refund if Paid Online
   let refundInfo = null;
   if (order.paymentStatus === "paid" && order.paymentMethod !== "COD") {
-    // TODO: call refund API here (Cashfree/Stripe etc.)
     refundInfo = {
       refundStatus: "initiated",
       refundedAt: new Date(),
@@ -687,7 +528,7 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     // You could also store refund txn ID here
   }
 
-  // ✅ Mark cancelled
+  //  Mark cancelled
   order.orderStatus = "cancelled";
   order.cancelledAt = new Date();
   await order.save();
@@ -696,4 +537,169 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     message: "Order cancelled successfully",
     refund: refundInfo,
   });
+});
+
+export const getUserOrders = asyncHandler(async (req, res) => {
+  const userId = req.userId;
+
+  // Pagination
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  // Filters
+  const { status, fromDate, toDate } = req.query;
+
+  const query = { userId };
+
+  if (status) {
+    query.orderStatus = status;
+  }
+
+  if (fromDate && toDate) {
+    query.createdAt = {
+      $gte: new Date(fromDate),
+      $lte: new Date(toDate),
+    };
+  }
+
+  // Total count for pagination
+  const totalOrders = await Order.countDocuments(query);
+
+  // Fetch paginated orders
+  const orders = await Order.find(query)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .select(
+      "items totalAmount paymentMethod paymentStatus orderStatus isPaid createdAt"
+    )
+    // show product name & image
+    .populate({
+      path: "items.productId",
+      select: "name image brand category",
+      populate: [
+        { path: "brand", model: Brand, select: "name logo" },
+        { path: "category", model: Category, select: "name" },
+      ],
+    })
+    .populate("items.sellerId", "shopName"); // show seller name
+
+  res.status(200).json({
+    success: true,
+    totalOrders,
+    currentPage: page,
+    totalPages: Math.ceil(totalOrders / limit),
+    orders,
+  });
+});
+
+// PATCH /orders/:orderId/confirm-received
+export const confirmOrderReceived = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+
+  const order = await Order.findById(orderId);
+
+  // Order not found
+  if (!order) {
+    return res.status(404).json({ message: "Order not found" });
+  }
+
+  // Auth check
+  if (order.userId.toString() !== req.userId.toString()) {
+    return res
+      .status(403)
+      .json({ message: "You are not authorized for this order." });
+  }
+
+  // Already delivered check
+  if (order.orderStatus === "delivered") {
+    return res
+      .status(400)
+      .json({ message: "Order is already marked as delivered." });
+  }
+
+  // Update each item to delivered
+  order.items.forEach((item) => {
+    item.deliveryStatus = "delivered";
+    item.deliveryConfirmedAt = new Date();
+  });
+
+  // Update main order status
+  order.orderStatus = "delivered";
+  order.deliveredAt = new Date();
+
+  order.timeline.push({
+    status: "delivered",
+    time: new Date(),
+  });
+
+  await order.save();
+
+  res.json({
+    success: true,
+    message: "Order and all items marked as delivered.",
+  });
+});
+
+// /orders/:orderId/items/:itemId/confirm-received
+export const confirmSingleItemReceived = asyncHandler(async (req, res) => {
+  const { orderId, itemId } = req.params;
+  const order = await Order.findById(orderId);
+
+  if (!order) return res.status(404).json({ message: "Order not found" });
+  if (order.userId.toString() !== req.userId.toString())
+    return res.status(403).json({ message: "Not your order" });
+
+  const item = order.items.id(itemId);
+  if (!item) return res.status(404).json({ message: "Item not found" });
+
+  item.deliveryStatus = "delivered";
+  item.deliveryConfirmedAt = new Date();
+
+  // Check if all items are delivered
+  const allDelivered = order.items.every(
+    (i) => i.deliveryStatus === "delivered"
+  );
+
+  if (allDelivered) {
+    order.orderStatus = "delivered";
+    order.deliveryConfirmedAt = new Date();
+    order.timeline.push({ status: "confirmed", time: new Date() });
+  }
+
+  await order.save();
+  res.json({ success: true, message: "Item marked as delivered." });
+});
+
+// Confirm Whole Order Delivered (Only If All Same Seller)
+// PATCH /orders/:orderId/confirm-all-items
+export const confirmAllItemsReceived = asyncHandler(async (req, res) => {
+  const { orderId } = req.params;
+  const order = await Order.findById(orderId);
+
+  if (!order) return res.status(404).json({ message: "Order not found" });
+  if (order.userId.toString() !== req.userId.toString())
+    return res.status(403).json({ message: "Not your order" });
+
+  const allSameSeller = order.items.every(
+    (item) => item.sellerId.toString() === order.items[0].sellerId.toString()
+  );
+
+  if (!allSameSeller) {
+    return res.status(400).json({ message: "Items are from multiple sellers" });
+  }
+
+  // Mark all items as delivered
+  order.items.forEach((item) => {
+    item.deliveryStatus = "delivered";
+    item.deliveryConfirmedAt = new Date();
+  });
+
+  order.orderStatus = "delivered";
+  order.deliveryConfirmedAt = new Date();
+  order.timeline.push({ status: "confirmed", time: new Date() });
+
+  await order.save();
+  res.json({ success: true, message: "Order fully marked as delivered." });
 });

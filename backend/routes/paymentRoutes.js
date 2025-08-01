@@ -3,9 +3,9 @@ import {
   initiatePayment,
   paymentWebhook,
 } from "../controllers/paymentController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { authenticateToken, fetchUser } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
-router.post("/initiate", protect, initiatePayment);
+router.post("/initiate", authenticateToken, fetchUser, initiatePayment);
 router.post("/webhook", paymentWebhook);
 export default router;

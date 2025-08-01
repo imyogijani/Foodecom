@@ -1,0 +1,64 @@
+/* AddProduct custom styles for dashboard look */
+.add-product-form .form-group {
+  margin-bottom: 1.5rem;
+}
+.add-product-form label {
+  font-weight: 600;
+  color: var(--text-color-dark, #222);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.add-product-form input,
+.add-product-form select,
+.add-product-form textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  transition: border 0.2s;
+}
+.add-product-form input:focus,
+.add-product-form select:focus,
+.add-product-form textarea:focus {
+  border-color: var(--primary, #4f46e5);
+  outline: none;
+}
+.add-product-form .brand-select {
+  margin-top: 0.5rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  width: 100%;
+  transition: border 0.2s;
+}
+.add-product-form .brand-select:focus {
+  border-color: var(--primary, #4f46e5);
+  outline: none;
+}
+.add-product-form .tech-stack-group {
+  margin-top: 1rem;
+  background: #f3f4f6;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(79,70,229,0.04);
+}
+.add-product-form .tech-stack-group label {
+  color: #4f46e5;
+  font-weight: 500;
+}
+.add-product-form .tech-stack-group textarea {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  min-height: 60px;
+  resize: vertical;
+}
